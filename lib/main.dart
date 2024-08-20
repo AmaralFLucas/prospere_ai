@@ -29,25 +29,11 @@ class _HomePageState extends State<HomePage> {
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 30, 163, 132),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: FittedBox(
-                fit: BoxFit.contain,
-                child: Image.asset(
+            Image.asset(
                   'assets/images/logo_porco.png',
-                  width: 50, // Ajuste conforme necessário
-                  height: 50, // Ajuste conforme necessário
+                  width: 200,
+                  height: 200,
                 ),
-              ),
-          )
-            
-            ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
@@ -83,7 +69,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                // Ação do botão
+              
               },
               child: Text('Login'),
               style: ElevatedButton.styleFrom(
@@ -91,6 +77,47 @@ class _HomePageState extends State<HomePage> {
                 minimumSize: Size(150, 50),
               ),
             ),
+            SizedBox(height: 68),
+            ElevatedButton(
+              onPressed: () {
+              
+              },
+              child: Text('Esqueci a Senha'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: myColor,
+                minimumSize: Size(150, 50),
+              ),
+            ),
+            SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 125,
+                  height: 2,
+                  color: Colors.black,
+                ),
+                SizedBox(width: 15),
+                Text('OU'),
+                SizedBox(width: 15),
+                Container(
+                  width: 125,
+                  height: 2,
+                  color: Colors.black,
+                ),
+              ]
+            ),
+            SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+              
+              },
+              child: Text('Criar Conta'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: myColor,
+                minimumSize: Size(150, 50),
+              ),
+            )
           ],
         ),
       ]),
