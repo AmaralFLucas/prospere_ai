@@ -24,10 +24,10 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                  'assets/images/logo_porco.png',
-                  width: 200,
-                  height: 200,
-                ),
+              'assets/images/logo_porco.png',
+              width: 200,
+              height: 200,
+            ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
@@ -66,6 +66,7 @@ class _HomePageState extends State<HomePage> {
               
               },
               child: Text('Entrar'),
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -78,6 +79,7 @@ class _HomePageState extends State<HomePage> {
                   MaterialPageRoute(builder: (context) => const EsqueciSenha())
                 );
               },
+
               child: Text('Esqueci a Senha'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
@@ -85,6 +87,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             SizedBox(height: 30),
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -110,6 +113,7 @@ class _HomePageState extends State<HomePage> {
                       MaterialPageRoute(builder: (context) => const Cadastro())
                     );
               },
+
               child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
