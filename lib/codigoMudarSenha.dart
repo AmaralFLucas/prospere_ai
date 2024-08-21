@@ -40,8 +40,10 @@ class _CodigoMudarSenhaState extends State<CodigoMudarSenha> {
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
+                print('Botao enviar clicado');
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const NovaSenha()));
+                    MaterialPageRoute(builder: (context) => const NovaSenha())
+                );
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/esqueciSenha.dart';
-import 'package:prospere_ai/homePage.dart';
+import 'package:prospere_ai/login.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({super.key});
@@ -73,9 +72,11 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-              
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login())
+                  );
               },
-              child: Text('Login'),
+              child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -84,8 +85,8 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(height: 68),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const HomePage())
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login())
                   );
               },
               child: Text('Voltar para Login'),
@@ -95,37 +96,6 @@ class _CadastroState extends State<Cadastro> {
               ),
             ),
             SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 15),
-                Text('OU'),
-                SizedBox(width: 15),
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-              ]
-            ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
-                );
-              },
-              child: Text('Esqueci a Senha'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
-            )
           ],
         ),
       ]),
