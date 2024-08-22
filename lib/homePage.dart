@@ -55,36 +55,182 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             body: 
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      width: 300,
-                      decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(12)),
-                      height: 200,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text('Lucas Farias'),
-                          Row(
+            SingleChildScrollView(
+              child:
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 221, 221, 221),
+                              borderRadius: BorderRadius.circular(12)),
+                          height: 200,
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Text('1111 1111 1111 1111'),
-                              Text('09/28'),
+                              Text('Saldo Atual'),
+                              Text('RS 433,15',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold
+                              ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text('RS 1.958,15',
+                                        style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      SizedBox(height: 10,),
+                                      Text('Receitas')
+                                      ],
+                                      ),
+                                      Container(
+                                        height: 50,
+                                        width: 2,
+                                        color: Colors.black,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text('RS 1525,00',
+                                            style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold
+                                            ),
+                                          ),
+                                          SizedBox(height: 10,),
+                                          Text('Despesas')
+                                        ],
+                                      )
+                                ],
+                              )
                             ],
-                          )
-                        ],
-                      ),
-                    )
-                  ]
-                ),
-              ]
-            ), 
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 221, 221, 221),
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child:
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                  
+                                  children: [
+                                    SizedBox(width: 12, height: 12,),
+                                    Text('Despesas',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    )
+                                  ],
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                            ]
+                          ),
+                          
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 221, 221, 221),
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child:
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                  
+                                  children: [
+                                    SizedBox(width: 12, height: 12,),
+                                    Text('Planejamento',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                            ]
+                          ),
+                          
+                        ),
+                  
+                ],
+                
+                
+              ),
+          )
+            
+
           ),
           Scaffold(
             appBar: AppBar(
