@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/cadastro.dart';
-import 'package:prospere_ai/homePage.dart';
+import 'package:prospere_ai/codigoMudarSenha.dart';
+import 'package:prospere_ai/Login.dart';
 
 class EsqueciSenha extends StatefulWidget {
   const EsqueciSenha({super.key});
@@ -41,7 +42,9 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
             SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
-              
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CodigoMudarSenha())
+                  );
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
@@ -53,7 +56,7 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const HomePage())
+                    MaterialPageRoute(builder: (context) => const Login())
                   );
               },
               child: Text('Voltar para Login'),

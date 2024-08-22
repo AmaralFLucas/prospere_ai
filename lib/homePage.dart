@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/cadastro.dart';
-import 'package:prospere_ai/esqueciSenha.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,110 +17,363 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo_porco.png',
-              width: 200,
-              height: 200,
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
+      body: PageView(
+        controller: pageController,
+        children: [
+          Scaffold(
+            drawer: Drawer(
+              child: ListView(
+                children: const <Widget>[
+                  DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                    ),
+                    child: Text('Drawer Header'),
+                  ),
+                  ListTile(
+                    title: Text('Item 1'),
+                    onTap: null,
+                  ),
+                  ListTile(
+                    title: Text('Item 2'),
+                    onTap: null,
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite a sua Senha',
-                  suffixIcon: IconButton(
-                    icon: eyeIcon,
+            appBar: AppBar(
+              backgroundColor: myColor,
+              leading: Builder(
+                builder: (BuildContext context) {
+                  return IconButton(
+                    icon: Icon(Icons.person),
                     onPressed: () {
-                      setState(() {
-                        mostrarSenha = !mostrarSenha;
-                        eyeIcon = mostrarSenha
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility);
-                      });
+                      Scaffold.of(context).openDrawer();
                     },
+                  );
+                },
+              ),
+            ),
+            body: 
+            SingleChildScrollView(
+              child:
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                              color: const Color.fromARGB(255, 221, 221, 221),
+                              borderRadius: BorderRadius.circular(12)),
+                          height: 200,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text('Saldo Atual'),
+                              Text('RS 433,15',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold
+                              ),
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text('RS 1.958,15',
+                                        style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold
+                                        ),
+                                      ),
+                                      SizedBox(height: 10,),
+                                      Text('Receitas')
+                                      ],
+                                      ),
+                                      Container(
+                                        height: 50,
+                                        width: 2,
+                                        color: Colors.black,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text('RS 1525,00',
+                                            style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold
+                                            ),
+                                          ),
+                                          SizedBox(height: 10,),
+                                          Text('Despesas')
+                                        ],
+                                      )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 221, 221, 221),
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child:
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                  
+                                  children: [
+                                    SizedBox(width: 12, height: 12,),
+                                    Text('Despesas',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    )
+                                  ],
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                            ]
+                          ),
+                          
+                        ),
+                        SizedBox(height: 10,),
+                        Container(
+                          decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 221, 221, 221),
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                        height: 500,
+                        width: MediaQuery.of(context).size.width,
+                        child:
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Row(
+                                  
+                                  children: [
+                                    SizedBox(width: 12, height: 12,),
+                                    Text('Planejamento',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      ),
+                                    )
+                                  ],
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  color: myColor,
+                                  borderRadius: BorderRadius.circular(12)
+                                ),
+                                
+                                height: 70,
+                                width: 650,
+                              ),
+                            ]
+                          ),
+                          
+                        ),
+                  
+                ],
+                
+                
+              ),
+          )
+            
+
+          ),
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: myColor,
+              automaticallyImplyLeading: false,
+            ),
+            body: Container(color: Colors.purple)
+          ),
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: myColor,
+              automaticallyImplyLeading: false,
+            ),
+            body:  
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
+                        width: 200,
+                        height: 200,
+                        color: Colors.blue,
+                        child: Text('Container'),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        color: Colors.blue,
+                        child: Text('Container'),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        width: 200,
+                        height: 200,
+                        color: Colors.blue,
+                        child: Text('Container'),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  width: 300,
+                  decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(12)),
+                  height: 200,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text('Lucas Farias'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text('1111 1111 1111 1111'),
+                          Text('09/28'),
+                        ],
+                      )
+                    ],
                   ),
                 ),
-                obscureText: mostrarSenha,
-              ),
+              ],
             ),
-            SizedBox(height: 32),
-            ElevatedButton(
+          ),
+          
+          
+          
+          Container(color: Colors.yellow,),
+          
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(onPressed: (){
+        
+      },
+      child: Icon(Icons.mic),
+      backgroundColor: myColor,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        height: 60,
+        notchMargin: 5,
+        shape: CircularNotchedRectangle(),
+        color: Color.fromARGB(255, 212, 217, 221),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(Icons.home),
+              color: initialPosition == 0 ? myColor : Colors.black,
               onPressed: () {
-              
-              },
-              child: Text('Entrar'),
+                pageController.animateToPage(0,
+                    duration: Duration(milliseconds: 300), curve: Curves.easeIn);
 
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
+                setState(() {
+                  initialPosition = 0;
+                });
+              },
             ),
-            SizedBox(height: 68),
-            ElevatedButton(
+            IconButton(
+              icon: Icon(Icons.list),
+              color: initialPosition == 1 ? myColor : Colors.black,
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
-                );
-              },
+                pageController.animateToPage(1,
+                    duration: Duration(milliseconds: 300), curve: Curves.easeIn);
 
-              child: Text('Esqueci a Senha'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
+                setState(() {
+                  initialPosition = 1;
+                });
+              },
             ),
-            SizedBox(height: 30),
-            
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 15),
-                Text('OU'),
-                SizedBox(width: 15),
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-              ]
-            ),
-            SizedBox(height: 30),
-            ElevatedButton(
+            IconButton(
+              icon: Icon(Icons.flag),
+              color: initialPosition == 2 ? myColor : Colors.black,
               onPressed: () {
-                Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const Cadastro())
-                    );
-              },
+                pageController.animateToPage(2,
+                    duration: Duration(milliseconds: 300), curve: Curves.easeIn);
 
-              child: Text('Criar Conta'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
-            )
+                setState(() {
+                  initialPosition = 2;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.more_horiz),
+              color: initialPosition == 3 ? myColor : Colors.black,
+              onPressed: () {
+                pageController.animateToPage(3,
+                    duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+
+                setState(() {
+                  initialPosition = 3;
+                });
+              },
+            ),
           ],
         ),
-      ]),
+      ),
     );
   }
 }

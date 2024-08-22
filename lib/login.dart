@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/login.dart';
+import 'package:prospere_ai/cadastro.dart';
+import 'package:prospere_ai/esqueciSenha.dart';
+import 'package:prospere_ai/homePage.dart';
 
-class NovaSenha extends StatefulWidget {
-  const NovaSenha({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<NovaSenha> createState() => _NovaSenhaState();
+  State<Login> createState() => _LoginState();
 }
 
 PageController pageController = PageController();
@@ -14,7 +16,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _NovaSenhaState extends State<NovaSenha> {
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +35,7 @@ class _NovaSenhaState extends State<NovaSenha> {
               child: TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Digite uma nova senha',
+                  labelText: 'Digite o seu E-mail',
                 ),
               ),
             ),
@@ -43,18 +45,31 @@ class _NovaSenhaState extends State<NovaSenha> {
               child: TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Digite a senha novamente',
+                  labelText: 'Digite a sua Senha',
+                  suffixIcon: IconButton(
+                    icon: eyeIcon,
+                    onPressed: () {
+                      setState(() {
+                        mostrarSenha = !mostrarSenha;
+                        eyeIcon = mostrarSenha
+                            ? Icon(Icons.visibility_off)
+                            : Icon(Icons.visibility);
+                      });
+                    },
+                  ),
                 ),
+                obscureText: mostrarSenha,
               ),
             ),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const HomePage())
+                );
               },
-              child: Text('Enviar'),
+              child: Text('Entrar'),
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -64,34 +79,44 @@ class _NovaSenhaState extends State<NovaSenha> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
+                );
               },
-              child: Text('Voltar para Login'),
+
+              child: Text('Esqueci a Senha'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
               ),
             ),
             SizedBox(height: 30),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
-              ),
-              SizedBox(width: 15),
-              Text('OU'),
-              SizedBox(width: 15),
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
-              ),
-            ]),
+            
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 125,
+                  height: 2,
+                  color: Colors.black,
+                ),
+                SizedBox(width: 15),
+                Text('OU'),
+                SizedBox(width: 15),
+                Container(
+                  width: 125,
+                  height: 2,
+                  color: Colors.black,
+                ),
+              ]
+            ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const Cadastro())
+                    );
+              },
+
               child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
