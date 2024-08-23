@@ -179,7 +179,8 @@ class _HomePageState extends State<HomePage> {
                             height: 70,
                             width: 650,
                           ),
-                        ]),
+                        ]
+                      ),
                   ),
                   SizedBox(
                     height: 10,
@@ -239,12 +240,72 @@ class _HomePageState extends State<HomePage> {
               appBar: AppBar(
                 backgroundColor: myColor,
                 automaticallyImplyLeading: false,
+                title: Text('Transações'),
               ),
               body: SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 221, 221, 221),
+                        borderRadius: BorderRadius.circular(12)),
+                    height: 200,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text('Saldo Atual'),
+                        Text(
+                          'RS 433,15',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'RS 1.958,15',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Receitas')
+                              ],
+                            ),
+                            Container(
+                              height: 50,
+                              width: 2,
+                              color: Colors.black,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  'RS 1525,00',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Despesas')
+                              ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                    Container(
                       decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 221, 221, 221),
                           borderRadius: BorderRadius.circular(12)),
@@ -253,21 +314,6 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 12,
-                                  height: 12,
-                                ),
-                                Text(
-                                  'Despesas',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              ],
-                            ),
                             Container(
                               decoration: BoxDecoration(
                                   color: myColor,
@@ -291,8 +337,117 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ]),
                     ),
-                    SizedBox(
-                      height: 10,
+                  ],
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                onPressed: () {},
+                child: Icon(Icons.plus_one),
+                backgroundColor: myColor,
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+              ),
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: myColor,
+                automaticallyImplyLeading: false,
+                title: Text('Planejamento'),
+              ),
+              body: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(bottom: 12),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 221, 221, 221),
+                        borderRadius: BorderRadius.circular(12)),
+                    height: 200,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text('Saldo Atual'),
+                        Text(
+                          'RS 433,15',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  'RS 1.958,15',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Receitas')
+                              ],
+                            ),
+                            Container(
+                              height: 50,
+                              width: 2,
+                              color: Colors.black,
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  'RS 1525,00',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                Text('Despesas')
+                              ],
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 12),
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 221, 221, 221),
+                        borderRadius: BorderRadius.circular(12)
+                      ),
+                      height: 300,
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                            Text('Grafico',
+                            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                          )
+                        ]
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: ElevatedButton(
+                        onPressed: () {
+
+                        },
+                        child: Text('Adicionar Planejamento',
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: myColor,
+                          minimumSize: Size(700, 70),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ),
                     ),
                     Container(
                       decoration: BoxDecoration(
@@ -303,21 +458,6 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Row(
-                              children: [
-                                SizedBox(
-                                  width: 12,
-                                  height: 12,
-                                ),
-                                Text(
-                                  'Planejamento',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              ],
-                            ),
                             Container(
                               decoration: BoxDecoration(
                                   color: myColor,
@@ -343,70 +483,98 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-              )),
+              )
+          ),
           Scaffold(
             appBar: AppBar(
               backgroundColor: myColor,
               automaticallyImplyLeading: false,
+              title: Text('Mais Opções'),
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        margin: EdgeInsets.all(12),
-                        padding: EdgeInsets.all(12),
-                        width: 200,
-                        height: 200,
-                        color: Colors.blue,
-                        child: Text('Container'),
-                      ),
+            body: SingleChildScrollView(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.start,
+                // crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: 
+                    BoxDecoration(
+                      color: Color.fromARGB(255, 212, 217, 221),
+                      borderRadius: BorderRadius.circular(12)
                     ),
-                    Expanded(
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        color: Colors.blue,
-                        child: Text('Container'),
-                      ),
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    
+                    child: Center(
+                      child: Text('Contas'),
                     ),
-                    Expanded(
-                      child: Container(
-                        width: 200,
-                        height: 200,
-                        color: Colors.blue,
-                        child: Text('Container'),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  width: 300,
-                  decoration: BoxDecoration(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(12)),
-                  height: 200,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text('Lucas Farias'),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Text('1111 1111 1111 1111'),
-                          Text('09/28'),
-                        ],
-                      )
-                    ],
                   ),
-                ),
-              ],
+                  // SizedBox(height: 10),
+                  Container(
+                    color: Colors.black,
+                    height: 2,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                  Container(
+                    decoration: 
+                      BoxDecoration(
+                        color: Color.fromARGB(255, 212, 217, 221),
+                        borderRadius: BorderRadius.circular(12)
+                      ),
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    
+                    child: Center(
+                      child: Text('Categorias'),
+                    ),
+                  ),
+                  // SizedBox(height: 10),
+                  Container(
+                    color: Colors.black,
+                    height: 2,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                  Container(
+                    decoration: 
+                      BoxDecoration(
+                        color: Color.fromARGB(255, 212, 217, 221),
+                        borderRadius: BorderRadius.circular(12)
+                      ),
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    
+                    child: Center(
+                      child: Text('Modo Viagem'),
+                    ),
+                  ),
+                  // SizedBox(height: 10),
+                  Container(
+                    color: Colors.black,
+                    height: 2,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                  Container(
+                    decoration: 
+                      BoxDecoration(
+                        color: Color.fromARGB(255, 212, 217, 221),
+                        borderRadius: BorderRadius.circular(12)
+                      ),
+                    height: 70,
+                    width: MediaQuery.of(context).size.width,
+                    
+                    child: Center(
+                      child: Text('Esportar Relatório'),
+                    ),
+                  ),
+                  // SizedBox(height: 10),
+                  Container(
+                    color: Colors.black,
+                    height: 2,
+                    width: MediaQuery.of(context).size.width,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            color: Colors.yellow,
           ),
         ],
       ),
@@ -434,7 +602,7 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             IconButton(
-              icon: Icon(Icons.list),
+              icon: Icon(Icons.currency_exchange),
               color: initialPosition == 1 ? myColor : Colors.black,
               onPressed: () {
                 pageController.animateToPage(1,
