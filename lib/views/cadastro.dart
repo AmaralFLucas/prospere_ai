@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/cadastro.dart';
-import 'package:prospere_ai/homePage.dart';
+import 'package:prospere_ai/views/Login.dart';
 
-class EsqueciSenha extends StatefulWidget {
-  const EsqueciSenha({super.key});
+class Cadastro extends StatefulWidget {
+  const Cadastro({super.key});
 
   @override
-  State<EsqueciSenha> createState() => _EsqueciSenhaState();
+  State<Cadastro> createState() => _CadastroState();
 }
 
 PageController pageController = PageController();
@@ -15,7 +14,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _EsqueciSenhaState extends State<EsqueciSenha> {
+class _CadastroState extends State<Cadastro> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +38,43 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
               ),
             ),
             SizedBox(height: 16),
+            SizedBox(
+              width: 300,
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Digite o seu CPF',
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            SizedBox(
+              width: 300,
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Digite a sua Senha',
+                  suffixIcon: IconButton(
+                    icon: eyeIcon,
+                    onPressed: () {
+                      setState(() {
+                        mostrarSenha = !mostrarSenha;
+                        eyeIcon = mostrarSenha
+                            ? Icon(Icons.visibility_off)
+                            : Icon(Icons.visibility);
+                      });
+                    },
+                  ),
+                ),
+                obscureText: mostrarSenha,
+              ),
+            ),
+            SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-              
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login())
+                  );
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
@@ -52,8 +85,8 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
             SizedBox(height: 68),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const HomePage())
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login())
                   );
               },
               child: Text('Voltar para Login'),
@@ -63,37 +96,6 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
               ),
             ),
             SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 15),
-                Text('OU'),
-                SizedBox(width: 15),
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-              ]
-            ),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const Cadastro())
-                    );
-              },
-              child: Text('Criar Conta'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
-            )
           ],
         ),
       ]),

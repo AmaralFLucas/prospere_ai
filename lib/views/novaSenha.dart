@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/cadastro.dart';
-import 'package:prospere_ai/esqueciSenha.dart';
+import 'package:prospere_ai/views/cadastro.dart';
+import 'package:prospere_ai/views/login.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class NovaSenha extends StatefulWidget {
+  const NovaSenha({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<NovaSenha> createState() => _NovaSenhaState();
 }
 
 PageController pageController = PageController();
@@ -15,7 +15,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _HomePageState extends State<HomePage> {
+class _NovaSenhaState extends State<NovaSenha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,17 +24,17 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                  'assets/images/logo_porco.png',
-                  width: 200,
-                  height: 200,
-                ),
+              'assets/images/logo_porco.png',
+              width: 200,
+              height: 200,
+            ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
               child: TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
+                  labelText: 'Digite uma nova senha',
                 ),
               ),
             ),
@@ -44,28 +44,17 @@ class _HomePageState extends State<HomePage> {
               child: TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Digite a sua Senha',
-                  suffixIcon: IconButton(
-                    icon: eyeIcon,
-                    onPressed: () {
-                      setState(() {
-                        mostrarSenha = !mostrarSenha;
-                        eyeIcon = mostrarSenha
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility);
-                      });
-                    },
-                  ),
+                  labelText: 'Digite a senha novamente',
                 ),
-                obscureText: mostrarSenha,
               ),
             ),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-              
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login()));
               },
-              child: Text('Entrar'),
+              child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -75,40 +64,35 @@ class _HomePageState extends State<HomePage> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
-                );
+                    MaterialPageRoute(builder: (context) => const Login()));
               },
-              child: Text('Esqueci a Senha'),
+              child: Text('Voltar para Login'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
               ),
             ),
             SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 15),
-                Text('OU'),
-                SizedBox(width: 15),
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-              ]
-            ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Container(
+                width: 125,
+                height: 2,
+                color: Colors.black,
+              ),
+              SizedBox(width: 15),
+              Text('OU'),
+              SizedBox(width: 15),
+              Container(
+                width: 125,
+                height: 2,
+                color: Colors.black,
+              ),
+            ]),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const Cadastro())
-                    );
+                    MaterialPageRoute(builder: (context) => const Cadastro()));
               },
               child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(

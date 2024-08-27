@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/esqueciSenha.dart';
-import 'package:prospere_ai/homePage.dart';
+import 'package:prospere_ai/views/cadastro.dart';
+import 'package:prospere_ai/views/esqueciSenha.dart';
+import 'package:prospere_ai/views/homePage.dart';
 
-class Cadastro extends StatefulWidget {
-  const Cadastro({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<Cadastro> createState() => _CadastroState();
+  State<Login> createState() => _LoginState();
 }
 
 PageController pageController = PageController();
@@ -15,7 +16,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _CadastroState extends State<Cadastro> {
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,19 +25,9 @@ class _CadastroState extends State<Cadastro> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                  'assets/images/logo_porco.png',
-                  width: 200,
-                  height: 200,
-                ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
-              ),
+              'assets/images/logo_porco.png',
+              width: 200,
+              height: 200,
             ),
             SizedBox(height: 16),
             SizedBox(
@@ -44,7 +35,7 @@ class _CadastroState extends State<Cadastro> {
               child: TextField(
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Digite o seu CPF',
+                  labelText: 'Digite o seu E-mail',
                 ),
               ),
             ),
@@ -73,9 +64,12 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-              
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const HomePage())
+                );
               },
-              child: Text('Login'),
+              child: Text('Entrar'),
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -85,16 +79,18 @@ class _CadastroState extends State<Cadastro> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const HomePage())
-                  );
+                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
+                );
               },
-              child: Text('Voltar para Login'),
+
+              child: Text('Esqueci a Senha'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
               ),
             ),
             SizedBox(height: 30),
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -117,10 +113,11 @@ class _CadastroState extends State<Cadastro> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
-                );
+                      MaterialPageRoute(builder: (context) => const Cadastro())
+                    );
               },
-              child: Text('Esqueci a Senha'),
+
+              child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
