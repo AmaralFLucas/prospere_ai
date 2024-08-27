@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/customBottomAppBar.dart';
-
+import 'package:prospere_ai/views/mais.dart';
+import 'package:prospere_ai/views/planejamento.dart';
+import 'package:prospere_ai/views/transacoes.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,14 +10,14 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 late PageController pageController;
 int initialPosition = 0;
 bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
-class _HomePageState extends State<HomePage> {
-  
 
+class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
@@ -27,6 +29,19 @@ class _HomePageState extends State<HomePage> {
     pageController.dispose();
     super.dispose();
   }
+
+  void _onTabSelected(int index) {
+    setState(() {
+      initialPosition = index;
+      pageController.animateToPage(
+        index,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  void _onFabPressed() {}
 
   @override
   Widget build(BuildContext context) {
@@ -258,6 +273,9 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          Transacoes(),
+          Planejamento(),
+          Mais(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -269,14 +287,9 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: CustomBottomAppBar(
         myColor: myColor,
         selectedIndex: initialPosition,
-        onTabSelected: (0){
-
-        },
+        onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
     );
   }
 }
-
-
-
