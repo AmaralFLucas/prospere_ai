@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/customBottomAppBar.dart';
 import 'package:prospere_ai/views/mais.dart';
+import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';
 
@@ -57,18 +58,43 @@ class _HomePageState extends State<HomePage> {
           Scaffold(
             drawer: Drawer(
               child: ListView(
-                children: const <Widget>[
+                children: <Widget>[
                   DrawerHeader(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.blue,
                     ),
-                    child: Text('Drawer Header'),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => MeuCadastro(),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.people, size: 100, color: Colors.white),
+                          SizedBox(
+                              height:
+                                  10), // Espaçamento entre o ícone e o botão, se necessário
+                          Text(
+                            'Profile',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  ListTile(
+                  const ListTile(
                     title: Text('Item 1'),
                     onTap: null,
                   ),
-                  ListTile(
+                  const ListTile(
                     title: Text('Item 2'),
                     onTap: null,
                   ),

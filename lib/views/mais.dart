@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/views/categoriasReceitas.dart';
 
 class Mais extends StatefulWidget {
   const Mais({super.key});
@@ -40,13 +41,19 @@ class _MaisState extends State<Mais> {
               width: double.infinity,
             ),
             Container(
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
-                  borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(),
               height: 70,
               width: double.infinity,
-              child: Center(
-                child: Text('Categorias'),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const categoriaReceita()));
+                },
+                child: Text('Categorias', style: TextStyle(color: Colors.black)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 212, 217, 221),
+                  minimumSize: Size(150, 50),
+                ),
               ),
             ),
             // SizedBox(height: 10),
