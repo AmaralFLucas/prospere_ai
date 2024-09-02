@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/customBottomAppBar.dart';
+import 'package:prospere_ai/components/customBottomAppBar.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';

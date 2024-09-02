@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
 import 'package:prospere_ai/views/homePage.dart';
@@ -32,34 +33,32 @@ class _LoginState extends State<Login> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
-              ),
+              child: MeuInput(labelText: 'Email'),
             ),
-            SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite a sua Senha',
-                  suffixIcon: IconButton(
-                    icon: eyeIcon,
-                    onPressed: () {
-                      setState(() {
-                        mostrarSenha = !mostrarSenha;
-                        eyeIcon = mostrarSenha
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility);
-                      });
-                    },
-                  ),
-                ),
-                obscureText: mostrarSenha,
-              ),
+              child: MeuInput(
+              labelText: 'Senha',
+              obscure: true,
+            ),
+              // TextField(
+              //   decoration: InputDecoration(
+              //     border: OutlineInputBorder(),
+              //     labelText: 'Digite a sua Senha',
+              //     suffixIcon: IconButton(
+              //       icon: eyeIcon,
+              //       onPressed: () {
+              //         setState(() {
+              //           mostrarSenha = !mostrarSenha;
+              //           eyeIcon = mostrarSenha
+              //               ? Icon(Icons.visibility_off)
+              //               : Icon(Icons.visibility);
+              //         });
+              //       },
+              //     ),
+              //   ),
+              //   obscureText: mostrarSenha,
+              // ),
             ),
             SizedBox(height: 32),
             ElevatedButton(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/login.dart';
 
@@ -31,22 +32,12 @@ class _NovaSenhaState extends State<NovaSenha> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite uma nova senha',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite uma nova senha')
             ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite a senha novamente',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite a senha novamente')
             ),
             SizedBox(height: 32),
             ElevatedButton(
