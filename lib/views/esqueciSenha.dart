@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/cadastro.dart';
-import 'package:prospere_ai/esqueciSenha.dart';
-import 'package:prospere_ai/homePage.dart';
+import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/views/cadastro.dart';
+import 'package:prospere_ai/views/codigoMudarSenha.dart';
+import 'package:prospere_ai/views/login.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class EsqueciSenha extends StatefulWidget {
+  const EsqueciSenha({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<EsqueciSenha> createState() => _EsqueciSenhaState();
 }
 
 PageController pageController = PageController();
@@ -16,7 +17,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _LoginState extends State<Login> {
+class _EsqueciSenhaState extends State<EsqueciSenha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,51 +26,23 @@ class _LoginState extends State<Login> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo_porco.png',
-              width: 200,
-              height: 200,
-            ),
+                  'assets/images/logo_porco.png',
+                  width: 200,
+                  height: 200,
+                ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite seu e-mail')
             ),
             SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite a sua Senha',
-                  suffixIcon: IconButton(
-                    icon: eyeIcon,
-                    onPressed: () {
-                      setState(() {
-                        mostrarSenha = !mostrarSenha;
-                        eyeIcon = mostrarSenha
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility);
-                      });
-                    },
-                  ),
-                ),
-                obscureText: mostrarSenha,
-              ),
-            ),
-            SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const HomePage())
-                );
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const CodigoMudarSenha())
+                  );
               },
-              child: Text('Entrar'),
-
+              child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -79,18 +52,16 @@ class _LoginState extends State<Login> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
-                );
+                    MaterialPageRoute(builder: (context) => const Login())
+                  );
               },
-
-              child: Text('Esqueci a Senha'),
+              child: Text('Voltar para Login'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
               ),
             ),
             SizedBox(height: 30),
-            
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -116,7 +87,6 @@ class _LoginState extends State<Login> {
                       MaterialPageRoute(builder: (context) => const Cadastro())
                     );
               },
-
               child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,

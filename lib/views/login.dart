@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/cadastro.dart';
-import 'package:prospere_ai/codigoMudarSenha.dart';
-import 'package:prospere_ai/Login.dart';
+import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/views/cadastro.dart';
+import 'package:prospere_ai/views/esqueciSenha.dart';
+import 'package:prospere_ai/views/homePage.dart';
 
-class EsqueciSenha extends StatefulWidget {
-  const EsqueciSenha({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  State<EsqueciSenha> createState() => _EsqueciSenhaState();
+  State<Login> createState() => _LoginState();
 }
 
 PageController pageController = PageController();
@@ -16,7 +17,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _EsqueciSenhaState extends State<EsqueciSenha> {
+class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,28 +26,49 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                  'assets/images/logo_porco.png',
-                  width: 200,
-                  height: 200,
-                ),
+              'assets/images/logo_porco.png',
+              width: 200,
+              height: 200,
+            ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
-              ),
+              child: MeuInput(labelText: 'Email'),
             ),
-            SizedBox(height: 16),
+            SizedBox(
+              width: 300,
+              child: MeuInput(
+              labelText: 'Senha',
+              obscure: true,
+            ),
+              // TextField(
+              //   decoration: InputDecoration(
+              //     border: OutlineInputBorder(),
+              //     labelText: 'Digite a sua Senha',
+              //     suffixIcon: IconButton(
+              //       icon: eyeIcon,
+              //       onPressed: () {
+              //         setState(() {
+              //           mostrarSenha = !mostrarSenha;
+              //           eyeIcon = mostrarSenha
+              //               ? Icon(Icons.visibility_off)
+              //               : Icon(Icons.visibility);
+              //         });
+              //       },
+              //     ),
+              //   ),
+              //   obscureText: mostrarSenha,
+              // ),
+            ),
+            SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const CodigoMudarSenha())
-                  );
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const HomePage())
+                );
               },
-              child: Text('Enviar'),
+              child: Text('Entrar'),
+
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
@@ -56,16 +78,18 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                  MaterialPageRoute(builder: (context) => const EsqueciSenha())
+                );
               },
-              child: Text('Voltar para Login'),
+
+              child: Text('Esqueci a Senha'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
                 minimumSize: Size(150, 50),
               ),
             ),
             SizedBox(height: 30),
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -91,6 +115,7 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
                       MaterialPageRoute(builder: (context) => const Cadastro())
                     );
               },
+
               child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,

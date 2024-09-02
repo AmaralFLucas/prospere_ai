@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/login.dart';
+import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/services/firebase_service.dart';
+import 'package:prospere_ai/views/login.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({super.key});
@@ -15,6 +17,9 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _CadastroState extends State<Cadastro> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,48 +35,29 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
-              ),
+              child: MeuInput(
+                labelText: 'Digite o seu E-mail',
+                controller: emailController,
+              )
             ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu CPF',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite o seu CPF')
             ),
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite a sua Senha',
-                  suffixIcon: IconButton(
-                    icon: eyeIcon,
-                    onPressed: () {
-                      setState(() {
-                        mostrarSenha = !mostrarSenha;
-                        eyeIcon = mostrarSenha
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility);
-                      });
-                    },
-                  ),
-                ),
-                obscureText: mostrarSenha,
-              ),
+              child: MeuInput(
+                labelText: 'Digite a sua Senha',
+                obscure: true,
+                controller: passwordController,
+                )
             ),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
+                createUser(emailController, passwordController);
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Login())
                   );

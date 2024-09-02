@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/login.dart';
+import 'package:prospere_ai/views/login.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -7,12 +7,6 @@ void main() {
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       useMaterial3: false,
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        selectedItemColor: Color.fromARGB(255, 30, 163, 132),
-        unselectedItemColor: Colors.black,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-      ),
     ),
   ));
 }

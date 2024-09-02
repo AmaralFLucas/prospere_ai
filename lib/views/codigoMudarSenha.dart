@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/login.dart';
+import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/views/login.dart';
+import 'package:prospere_ai/views/cadastro.dart';
+import 'package:prospere_ai/views/novaSenha.dart';
 
-class NovaSenha extends StatefulWidget {
-  const NovaSenha({super.key});
+
+class CodigoMudarSenha extends StatefulWidget {
+  const CodigoMudarSenha({super.key});
 
   @override
-  State<NovaSenha> createState() => _NovaSenhaState();
+  State<CodigoMudarSenha> createState() => _CodigoMudarSenhaState();
 }
 
 PageController pageController = PageController();
@@ -14,7 +18,7 @@ bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
-class _NovaSenhaState extends State<NovaSenha> {
+class _CodigoMudarSenhaState extends State<CodigoMudarSenha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,29 +34,14 @@ class _NovaSenhaState extends State<NovaSenha> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite uma nova senha',
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite a senha novamente',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite o Código enviado para o seu e-mail'),
             ),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const NovaSenha())
+                );
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
@@ -62,11 +51,9 @@ class _NovaSenhaState extends State<NovaSenha> {
             ),
             SizedBox(height: 68),
             ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
+              onPressed: () {Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Login())
-                  );
-              },
+                  );},
               child: Text('Voltar para Login'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
@@ -91,7 +78,10 @@ class _NovaSenhaState extends State<NovaSenha> {
             ]),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const Cadastro())
+                    );},
               child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
