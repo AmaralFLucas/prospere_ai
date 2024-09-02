@@ -23,17 +23,25 @@ class _MaisState extends State<Mais> {
           // mainAxisAlignment: MainAxisAlignment.start,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              decoration: BoxDecoration(
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Contas()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
                   color: Color.fromARGB(255, 212, 217, 221),
-                  borderRadius: BorderRadius.circular(12)),
-              height: 70,
-              width: double.infinity,
-              child: Center(
-                child: Text('Contas'),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                height: 70,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Contas'),
+                ),
               ),
             ),
-            // SizedBox(height: 10),
             Container(
               color: Colors.black,
               height: 2,

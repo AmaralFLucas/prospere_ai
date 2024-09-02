@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class Transacoes extends StatefulWidget {
@@ -123,5 +122,3 @@ class _TransacoesState extends State<Transacoes> {
   );
   }
 }
-
- 
