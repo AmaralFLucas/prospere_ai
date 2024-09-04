@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/codigoMudarSenha.dart';
-import 'package:prospere_ai/views/Login.dart';
+import 'package:prospere_ai/views/login.dart';
 
 class EsqueciSenha extends StatefulWidget {
   const EsqueciSenha({super.key});
@@ -32,12 +33,7 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o seu E-mail',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite seu e-mail')
             ),
             SizedBox(height: 16),
             ElevatedButton(

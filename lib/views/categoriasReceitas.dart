@@ -2,159 +2,243 @@ import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasDespesas.dart';
 import 'package:prospere_ai/views/homePage.dart';
 
-class CategoriaReceita extends StatefulWidget {
-  const CategoriaReceita({super.key});
+class categoriaReceita extends StatefulWidget {
+  const categoriaReceita({super.key});
 
   @override
-  State<CategoriaReceita> createState() => _CategoriaReceitaState();
+  State<categoriaReceita> createState() => _categoriaReceitaState();
 }
 
-Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color myColor = Color.fromARGB(255, 30, 163, 132);
 
-class _CategoriaReceitaState extends State<CategoriaReceita> {
+class _categoriaReceitaState extends State<categoriaReceita> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(25),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: myColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color.fromARGB(67, 0, 0, 0),
-                    spreadRadius: 6,
-                    blurRadius: 3,
-                    offset: const Offset(0, 1), // changes position of shadow
-                  ),
-                ],
-              ),
-              height: 100,
-              child: Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    color: Colors.white,
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const HomePage()));
-                    },
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
-                    'Categorias de Receitas',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+        body: PageView(
+      children: [
+        Scaffold(
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                  padding: EdgeInsets.all(25),
+                  width: double.infinity,
+                  decoration: BoxDecoration(color: myColor, boxShadow: [
+                    BoxShadow(
+                      color: const Color.fromARGB(67, 0, 0, 0),
+                      spreadRadius: 6,
+                      blurRadius: 3,
+                      offset: Offset(0, 1), // changes position of shadow
                     ),
+                  ]),
+                  height: 100,
+                  child: Column(
+                    children: [
+                      Row(children: [
+                        IconButton(
+                          icon: Icon(Icons.arrow_back),
+                          color: Color.fromARGB(255, 255, 255, 255),
+                          onPressed: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const HomePage()));
+                          },
+                        ),
+                        Text(
+                          'Categorias',
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ]),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 20, right: 10),
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 221, 221, 221),
-                borderRadius: BorderRadius.circular(55),
-              ),
-              height: 60,
-              width: 310,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Receitas',
-                        style: TextStyle(color: Colors.white)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: myColor,
-                      minimumSize: const Size(150, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(55),
-                      ),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const CategoriaDespesas()));
-                    },
-                    child: const Text('Despesas',
-                        style: TextStyle(color: Colors.black)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 197, 197, 197),
-                      minimumSize: const Size(150, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(55),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            _buildCategoryItem(Icons.trending_up_sharp, 'Investimento'),
-            _buildCategoryItem(Icons.card_giftcard, 'Presentes'),
-            _buildCategoryItem(Icons.monetization_on_outlined, 'Salário'),
-            _buildCategoryItem(Icons.workspace_premium, 'Prêmio'),
-            const SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                // Implementar a funcionalidade de gerenciar categorias aqui
-              },
-              child: const Text(
-                'Gerenciar Categorias',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 15, horizontal: 80),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
+                Container(
+                  margin: EdgeInsets.only(top: 20, right: 10),
+                  decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 221, 221, 221),
+                      borderRadius: BorderRadius.circular(55)),
+                  height: 60,
+                  width: 310,
+                  child: Column(children: [
+                    Row(
+                      children: [
+                        Padding(padding: EdgeInsets.only(right: 2.5)),
+                        Container(
+                          margin: EdgeInsets.only(right: 1),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(55)),
+                          height: 60,
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            child: Text('Receita',
+                                style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: myColor,
+                              minimumSize: Size(150, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(55),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 3)),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(55)),
+                          height: 60,
+                          width: 150,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) =>
+                                      const categoriaDespesas()));
+                            },
+                            child: Text('Despesas',
+                                style: TextStyle(color: Colors.black)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Color.fromARGB(255, 197, 197, 197),
+                              minimumSize: Size(150, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(55),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ]),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 50),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.trending_up_sharp, size: 60),
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
+                          Text(
+                            'Investimento',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.card_giftcard, size: 60),
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
+                          Text(
+                            'Presentes',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.more_horiz, size: 60),
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
+                          Text(
+                            'Outros',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.monetization_on_outlined, size: 60),
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
+                          Text(
+                            'Sálario',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.workspace_premium, size: 60),
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
+                          Text(
+                            'Prêmio',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryItem(IconData icon, String label) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 240, 240, 240),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 5,
-            spreadRadius: 2,
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 40, color: myColor),
-          const SizedBox(width: 20),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
+      ],
+    ));
   }
 }

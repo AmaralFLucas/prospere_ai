@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/customBottomAppBar.dart';
+import 'package:prospere_ai/components/customBottomAppBar.dart';
+import 'package:prospere_ai/views/configuracoes.dart';
 import 'package:prospere_ai/views/mais.dart';
+import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';
 
@@ -57,18 +59,48 @@ class _HomePageState extends State<HomePage> {
           Scaffold(
             drawer: Drawer(
               child: ListView(
-                children: const <Widget>[
+                children: <Widget>[
                   DrawerHeader(
-                    decoration: BoxDecoration(
-                      color: Colors.blue,
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.people,
+                              size: 100, color: Colors.white),
+                          IconButton(
+                            padding: EdgeInsets.only(left: 135, bottom: 100),
+                            icon: const Icon(
+                              Icons.settings,
+                              size: 25,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const Configuracoes()));
+                            },
+                          ),
+                        ],
+                      )),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const MeuCadastro()));
+                    },
+                    child: const Text(
+                      'Meu Cadastro',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
-                    child: Text('Drawer Header'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
+                      minimumSize: Size(50, 80),
+                    ),
                   ),
-                  ListTile(
-                    title: Text('Item 1'),
-                    onTap: null,
-                  ),
-                  ListTile(
+                  const ListTile(
                     title: Text('Item 2'),
                     onTap: null,
                   ),
