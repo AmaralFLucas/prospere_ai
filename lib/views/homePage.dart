@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
@@ -20,6 +21,8 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _HomePageState extends State<HomePage> {
+  AutenticacaoServico _autenServico = AutenticacaoServico();
+
   @override
   void initState() {
     super.initState();
@@ -100,10 +103,31 @@ class _HomePageState extends State<HomePage> {
                       minimumSize: Size(50, 80),
                     ),
                   ),
-                  const ListTile(
-                    title: Text('Item 2'),
-                    onTap: null,
-                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        _autenServico.deslogarUsuario();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(220, 255, 255, 255),
+                        minimumSize: Size(50, 80),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Sair',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          Icon(
+                            Icons.exit_to_app,
+                            color: Colors.red,
+                          ),
+                        ],
+                      )),
                 ],
               ),
             ),
