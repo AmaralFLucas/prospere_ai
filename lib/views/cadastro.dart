@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
-import 'package:prospere_ai/services/firebase_service.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/login.dart';
 
 class Cadastro extends StatefulWidget {
@@ -19,6 +19,10 @@ Icon eyeIcon = Icon(Icons.visibility_off);
 class _CadastroState extends State<Cadastro> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController cpfController = TextEditingController();
+  TextEditingController nomeController = TextEditingController();
+
+  AutenticacaoServico _autenServico = AutenticacaoServico();
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +36,13 @@ class _CadastroState extends State<Cadastro> {
                   width: 200,
                   height: 200,
                 ),
-            SizedBox(height: 16),
+            SizedBox(
+              width: 300,
+              child: MeuInput(
+                labelText: 'Digite o seu nome',
+                controller: nomeController,
+              )
+            ),
             SizedBox(
               width: 300,
               child: MeuInput(
@@ -40,12 +50,13 @@ class _CadastroState extends State<Cadastro> {
                 controller: emailController,
               )
             ),
-            SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: MeuInput(labelText: 'Digite o seu CPF')
+              child: MeuInput(
+                labelText: 'Digite o seu CPF',
+                controller: cpfController,
+                )
             ),
-            SizedBox(height: 16),
             SizedBox(
               width: 300,
               child: MeuInput(
@@ -54,10 +65,19 @@ class _CadastroState extends State<Cadastro> {
                 controller: passwordController,
                 )
             ),
+            SizedBox(
+              width: 300,
+              child: MeuInput(
+                labelText: 'Confirme a sua Senha',
+                obscure: true,
+                controller: passwordController,
+                )
+            ),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                createUser(emailController, passwordController);
+                print("${emailController.text}, ${cpfController.text}, ${passwordController.text},");
+                _autenServico.cadastrarUsuario(email: emailController.text, senha: passwordController.text, cpf: cpfController.text, nome: nomeController.text);
                   Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Login())
                   );
