@@ -95,7 +95,8 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const categoriaDespesas()));
+                                  builder: (context) =>
+                                      const categoriaDespesas()));
                             },
                             child: Text('Despesas',
                                 style: TextStyle(color: Colors.black)),
@@ -121,7 +122,9 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.trending_up_sharp, size: 60),
-                          SizedBox(width:50), // Adiciona espaço entre o ícone e o texto
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
                           Text(
                             'Investimento',
                             style: TextStyle(
@@ -143,7 +146,9 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.card_giftcard, size: 60),
-                          SizedBox(width:50), // Adiciona espaço entre o ícone e o texto
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
                           Text(
                             'Presentes',
                             style: TextStyle(
@@ -165,7 +170,9 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.more_horiz, size: 60),
-                          SizedBox(width:50), // Adiciona espaço entre o ícone e o texto
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
                           Text(
                             'Outros',
                             style: TextStyle(
@@ -187,7 +194,9 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.monetization_on_outlined, size: 60),
-                          SizedBox(width:50), // Adiciona espaço entre o ícone e o texto
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
                           Text(
                             'Sálario',
                             style: TextStyle(
@@ -209,7 +218,9 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.workspace_premium, size: 60),
-                          SizedBox(width:50), // Adiciona espaço entre o ícone e o texto
+                          SizedBox(
+                              width:
+                                  50), // Adiciona espaço entre o ícone e o texto
                           Text(
                             'Prêmio',
                             style: TextStyle(

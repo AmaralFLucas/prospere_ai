@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/homePage.dart';
 
-class MeuCadastro extends StatefulWidget {
-  const MeuCadastro({super.key});
+class Adicionarreceita extends StatefulWidget {
+  const Adicionarreceita({super.key});
 
   @override
-  State<MeuCadastro> createState() => _MeuCadastroState();
+  State<Adicionarreceita> createState() => _AdicionarreceitaState();
 }
 
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 
-class _MeuCadastroState extends State<MeuCadastro> {
+class _AdicionarreceitaState extends State<Adicionarreceita> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +32,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       offset: Offset(0, 1), // changes position of shadow
                     ),
                   ]),
-                  height: 100,
+                  height: 140,
                   child: Column(
                     children: [
                       Row(children: [
@@ -45,13 +45,32 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           },
                         ),
                         Text(
-                          'Meu Cadastro',
+                          'Adicionar Receita',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
                         ),
                       ]),
+                      Row(children: [
+                        Text(
+                          'Valor da Receita',
+                          style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ],),
+                      Row(children: [
+                        Text(
+                          "R\$",
+                          // "R\$ ${}",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
+                        ),
+                      ],),
                     ],
                   ),
                 ),
@@ -282,8 +301,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 150)),
                         Container(
                           margin: EdgeInsets.symmetric(vertical: 20),
                           decoration: BoxDecoration(

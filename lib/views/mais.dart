@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/views/categoriasReceitas.dart';
 import 'package:prospere_ai/views/contas.dart';
 
 class Mais extends StatefulWidget {
@@ -33,7 +34,7 @@ class _MaisState extends State<Mais> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
+                  color: Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
@@ -48,17 +49,26 @@ class _MaisState extends State<Mais> {
               height: 2,
               width: double.infinity,
             ),
-            Container(
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
-                  borderRadius: BorderRadius.circular(12)),
-              height: 70,
-              width: double.infinity,
-              child: Center(
-                child: Text('Categorias'),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const categoriaReceita()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(220, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                height: 70,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Categorias'),
+                ),
               ),
             ),
-            // SizedBox(height: 10),
             Container(
               color: Colors.black,
               height: 2,
@@ -66,7 +76,7 @@ class _MaisState extends State<Mais> {
             ),
             Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
+                  color: Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12)),
               height: 70,
               width: double.infinity,
@@ -82,7 +92,7 @@ class _MaisState extends State<Mais> {
             ),
             Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
+                  color: Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12)),
               height: 70,
               width: double.infinity,
