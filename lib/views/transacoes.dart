@@ -115,17 +115,16 @@ class _TransacoesState extends State<Transacoes> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const Adicionarreceita()));
-          },
-          
-          child: Text(
-            '+',
-            style: TextStyle(
-                fontSize: 40, fontWeight: FontWeight.normal, color: Colors.white),
-          ),
-          backgroundColor: myColor,),
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const Adicionarreceita()));
+        },
+        child: Icon(
+          Icons.add,
+          size: 40,
+        ),
+        backgroundColor: myColor,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
