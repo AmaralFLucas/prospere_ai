@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/views/homePage.dart';
 import 'package:prospere_ai/views/login.dart';
 
 class Cadastro extends StatefulWidget {
@@ -66,7 +67,6 @@ class _CadastroState extends State<Cadastro> {
                 child: MeuInput(
                   labelText: 'Confirme a sua Senha',
                   obscure: true,
-                  controller: passwordController,
                 )),
             SizedBox(height: 32),
             ElevatedButton(
