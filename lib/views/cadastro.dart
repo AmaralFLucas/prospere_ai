@@ -32,55 +32,52 @@ class _CadastroState extends State<Cadastro> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                  'assets/images/logo_porco.png',
-                  width: 200,
-                  height: 200,
-                ),
-            SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Digite o seu nome',
-                controller: nomeController,
-              )
+              'assets/images/logo_porco.png',
+              width: 200,
+              height: 200,
             ),
             SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Digite o seu E-mail',
-                controller: emailController,
-              )
-            ),
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Digite o seu nome',
+                  controller: nomeController,
+                )),
             SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Digite o seu CPF',
-                controller: cpfController,
-                )
-            ),
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Digite o seu E-mail',
+                  controller: emailController,
+                )),
             SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Digite a sua Senha',
-                obscure: true,
-                controller: passwordController,
-                )
-            ),
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Digite o seu CPF',
+                  controller: cpfController,
+                )),
             SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Confirme a sua Senha',
-                obscure: true,
-                controller: passwordController,
-                )
-            ),
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Digite a sua Senha',
+                  obscure: true,
+                  controller: passwordController,
+                )),
+            SizedBox(
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Confirme a sua Senha',
+                  obscure: true,
+                  controller: passwordController,
+                )),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                print("${emailController.text}, ${cpfController.text}, ${passwordController.text},");
-                _autenServico.cadastrarUsuario(email: emailController.text, senha: passwordController.text, cpf: cpfController.text, nome: nomeController.text);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                print(
+                    "${emailController.text}, ${cpfController.text}, ${passwordController.text},");
+                _autenServico.cadastrarUsuario(
+                    email: emailController.text,
+                    senha: passwordController.text,
+                    cpf: cpfController.text,
+                    nome: nomeController.text);
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
@@ -91,9 +88,8 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(height: 68),
             ElevatedButton(
               onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login()));
               },
               child: Text('Voltar para Login'),
               style: ElevatedButton.styleFrom(
