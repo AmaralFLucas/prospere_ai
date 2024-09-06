@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
 import 'package:prospere_ai/views/homePage.dart';
@@ -18,6 +19,11 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _LoginState extends State<Login> {
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  AutenticacaoServico _autenServico = AutenticacaoServico();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,13 +39,17 @@ class _LoginState extends State<Login> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: MeuInput(labelText: 'Email'),
+              child: MeuInput(
+                labelText: 'Email',
+                controller: emailController,
+                ),
             ),
             SizedBox(
               width: 300,
               child: MeuInput(
               labelText: 'Senha',
               obscure: true,
+              controller: passwordController,
             ),
               // TextField(
               //   decoration: InputDecoration(
@@ -63,9 +73,7 @@ class _LoginState extends State<Login> {
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const HomePage())
-                );
+                _autenServico.logarUsuarios(email: emailController.text, senha: passwordController.text);
               },
               child: Text('Entrar'),
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "229392966027",
+    "project_id": "prospereai-27e40",
+    "storage_bucket": "prospereai-27e40.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229392966027:android:f6ef7a435c11cfef26cf8e",
+        "android_client_info": {
+          "package_name": "lucas.farias.prospere_ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJGnuNFEXpKo7W1cg1GjHxEdjG4cP1ia4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
