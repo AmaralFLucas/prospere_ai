@@ -78,6 +78,9 @@ class _CadastroState extends State<Cadastro> {
                     senha: passwordController.text,
                     cpf: cpfController.text,
                     nome: nomeController.text);
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => HomePage(),
+                ));
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
