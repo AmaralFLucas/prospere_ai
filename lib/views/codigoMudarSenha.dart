@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/Login.dart';
+import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/novaSenha.dart';
 
@@ -33,17 +34,11 @@ class _CodigoMudarSenhaState extends State<CodigoMudarSenha> {
             SizedBox(height: 16),
             SizedBox(
               width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Digite o Código enviado para o seu e-mail',
-                ),
-              ),
+              child: MeuInput(labelText: 'Digite o Código enviado para o seu e-mail'),
             ),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                print('Botao enviar clicado');
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const NovaSenha())
                 );

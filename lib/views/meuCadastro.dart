@@ -282,8 +282,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 150)),
                         Container(
                           margin: EdgeInsets.symmetric(vertical: 20),
                           decoration: BoxDecoration(

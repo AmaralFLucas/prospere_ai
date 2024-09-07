@@ -34,7 +34,7 @@ class CustomBottomAppBar extends StatelessWidget {
             color: selectedIndex == 1 ? myColor : Colors.black,
             onPressed: () => onTabSelected(1),
           ),
-          SizedBox(width: 48), // Spacer for the FloatingActionButton
+          SizedBox(width: 48),
           IconButton(
             icon: Icon(Icons.flag),
             color: selectedIndex == 2 ? myColor : Colors.black,

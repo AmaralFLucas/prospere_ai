@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/Login.dart';
+import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/views/homePage.dart';
+import 'package:prospere_ai/views/login.dart';
 
 class Cadastro extends StatefulWidget {
   const Cadastro({super.key});
@@ -15,6 +18,13 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _CadastroState extends State<Cadastro> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController cpfController = TextEditingController();
+  TextEditingController nomeController = TextEditingController();
+
+  AutenticacaoServico _autenServico = AutenticacaoServico();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,58 +33,54 @@ class _CadastroState extends State<Cadastro> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-                  'assets/images/logo_porco.png',
-                  width: 200,
-                  height: 200,
-                ),
-            SizedBox(height: 16),
+              'assets/images/logo_porco.png',
+              width: 200,
+              height: 200,
+            ),
             SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Digite o seu nome',
+                  controller: nomeController,
+                )),
+            SizedBox(
+                width: 300,
+                child: MeuInput(
                   labelText: 'Digite o seu E-mail',
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
+                  controller: emailController,
+                )),
             SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                width: 300,
+                child: MeuInput(
                   labelText: 'Digite o seu CPF',
-                ),
-              ),
-            ),
-            SizedBox(height: 16),
+                  controller: cpfController,
+                )),
             SizedBox(
-              width: 300,
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                width: 300,
+                child: MeuInput(
                   labelText: 'Digite a sua Senha',
-                  suffixIcon: IconButton(
-                    icon: eyeIcon,
-                    onPressed: () {
-                      setState(() {
-                        mostrarSenha = !mostrarSenha;
-                        eyeIcon = mostrarSenha
-                            ? Icon(Icons.visibility_off)
-                            : Icon(Icons.visibility);
-                      });
-                    },
-                  ),
-                ),
-                obscureText: mostrarSenha,
-              ),
-            ),
+                  obscure: true,
+                  controller: passwordController,
+                )),
+            SizedBox(
+                width: 300,
+                child: MeuInput(
+                  labelText: 'Confirme a sua Senha',
+                  obscure: true,
+                )),
             SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                print(
+                    "${emailController.text}, ${cpfController.text}, ${passwordController.text},");
+                _autenServico.cadastrarUsuario(
+                    email: emailController.text,
+                    senha: passwordController.text,
+                    cpf: cpfController.text,
+                    nome: nomeController.text);
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => HomePage(),
+                ));
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
@@ -85,9 +91,8 @@ class _CadastroState extends State<Cadastro> {
             SizedBox(height: 68),
             ElevatedButton(
               onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => const Login()));
               },
               child: Text('Voltar para Login'),
               style: ElevatedButton.styleFrom(

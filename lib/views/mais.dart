@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
+import 'package:prospere_ai/views/contas.dart';
 
 class Mais extends StatefulWidget {
   const Mais({super.key});
@@ -24,39 +25,50 @@ class _MaisState extends State<Mais> {
           // mainAxisAlignment: MainAxisAlignment.start,
           // crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
-                  borderRadius: BorderRadius.circular(12)),
-              height: 70,
-              width: double.infinity,
-              child: Center(
-                child: Text('Contas'),
-              ),
-            ),
-            // SizedBox(height: 10),
-            Container(
-              color: Colors.black,
-              height: 2,
-              width: double.infinity,
-            ),
-            Container(
-              decoration: BoxDecoration(),
-              height: 70,
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const categoriaReceita()));
-                },
-                child: Text('Categorias', style: TextStyle(color: Colors.black)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 212, 217, 221),
-                  minimumSize: Size(150, 50),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Contas()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(220, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                height: 70,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Contas'),
                 ),
               ),
             ),
-            // SizedBox(height: 10),
+            Container(
+              color: Colors.black,
+              height: 2,
+              width: double.infinity,
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const categoriaReceita()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(220, 255, 255, 255),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                height: 70,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Categorias'),
+                ),
+              ),
+            ),
             Container(
               color: Colors.black,
               height: 2,
@@ -64,7 +76,7 @@ class _MaisState extends State<Mais> {
             ),
             Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
+                  color: Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12)),
               height: 70,
               width: double.infinity,
@@ -80,12 +92,12 @@ class _MaisState extends State<Mais> {
             ),
             Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 212, 217, 221),
+                  color: Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12)),
               height: 70,
               width: double.infinity,
               child: Center(
-                child: Text('Esportar Relatório'),
+                child: Text('Exportar Relatório'),
               ),
             ),
             // SizedBox(height: 10),

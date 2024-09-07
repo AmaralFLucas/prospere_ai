@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/customBottomAppBar.dart';
+import 'package:prospere_ai/components/customBottomAppBar.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/views/configuracoes.dart';
+import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
@@ -19,6 +22,8 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _HomePageState extends State<HomePage> {
+  AutenticacaoServico _autenServico = AutenticacaoServico();
+
   @override
   void initState() {
     super.initState();
@@ -60,44 +65,73 @@ class _HomePageState extends State<HomePage> {
               child: ListView(
                 children: <Widget>[
                   DrawerHeader(
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => MeuCadastro(),
-                          ),
-                        );
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.people, size: 100, color: Colors.white),
-                          SizedBox(
-                              height:
-                                  10), // Espaçamento entre o ícone e o botão, se necessário
-                          Text(
-                            'Profile',
-                            style: TextStyle(
+                          const Icon(Icons.people,
+                              size: 100, color: Colors.white),
+                          IconButton(
+                            padding: EdgeInsets.only(left: 135, bottom: 100),
+                            icon: const Icon(
+                              Icons.settings,
+                              size: 25,
                               color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
                             ),
+                            onPressed: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const Configuracoes()));
+                            },
                           ),
                         ],
-                      ),
+                      )),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const MeuCadastro()));
+                    },
+                    child: const Text(
+                      'Meu Cadastro',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
+                      minimumSize: Size(50, 80),
                     ),
                   ),
-                  const ListTile(
-                    title: Text('Item 1'),
-                    onTap: null,
-                  ),
-                  const ListTile(
-                    title: Text('Item 2'),
-                    onTap: null,
-                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        _autenServico.deslogarUsuario();
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => Login(),
+                        ));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(220, 255, 255, 255),
+                        minimumSize: Size(50, 80),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Sair',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          Icon(
+                            Icons.exit_to_app,
+                            color: Colors.red,
+                          ),
+                        ],
+                      )),
                 ],
               ),
             ),
