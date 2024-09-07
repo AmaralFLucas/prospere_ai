@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/transacoes.dart';
+
 
 List<Widget> data = <Widget>[Text('Hoje'), Text('Ontem'), Text('Outros')];
 

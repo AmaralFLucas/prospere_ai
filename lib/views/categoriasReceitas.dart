@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasDespesas.dart';
-import 'package:prospere_ai/views/mais.dart';
+
 
 class categoriaReceita extends StatefulWidget {
   const categoriaReceita({super.key});
