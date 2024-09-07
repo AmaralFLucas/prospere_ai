@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
+import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
@@ -106,6 +107,9 @@ class _HomePageState extends State<HomePage> {
                   ElevatedButton(
                       onPressed: () {
                         _autenServico.deslogarUsuario();
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => Login(),
+                        ));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
