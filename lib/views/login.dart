@@ -3,7 +3,7 @@ import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
-import 'package:prospere_ai/views/homePage.dart';
+
 
 class Login extends StatefulWidget {
   const Login({super.key});

@@ -3,17 +3,17 @@ import 'package:prospere_ai/views/homePage.dart';
 
 List<Widget> data = <Widget>[Text('Hoje'), Text('Ontem'), Text('Outros')];
 
-class Adicionarreceita extends StatefulWidget {
-  const Adicionarreceita({super.key});
+class Adicionardespesa extends StatefulWidget {
+  const Adicionardespesa({super.key});
 
   @override
-  State<Adicionarreceita> createState() => _AdicionarreceitaState();
+  State<Adicionardespesa> createState() => _AdicionardespesaState();
 }
 
 Color myColor = Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = Color.fromARGB(255, 121, 108, 108);
 
-class _AdicionarreceitaState extends State<Adicionarreceita> {
+class _AdicionardespesaState extends State<Adicionardespesa> {
   bool toggleValue = false;
   String pago = "Não Pago";
   List<bool> isSelected = [true, false, false];
@@ -106,7 +106,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             )),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 60)),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 30)),
                         AnimatedContainer(
                           duration: Duration(microseconds: 350),
                           height: 40,
@@ -152,7 +152,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                       ],
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                    Container(height: 2, width: 450, color: Colors.black),
+                    Container(height: 2, width: 400, color: Colors.black),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                       Icon(
@@ -196,7 +196,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                       ),
                     ]),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                    Container(height: 2, width: 450, color: Colors.black),
+                    Container(height: 2, width: 400, color: Colors.black),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -206,17 +206,12 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           size: 40,
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
-                        Icon(
-                          Icons.home_outlined,
-                          size: 40,
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 10)),
-                        Text('Casa',
+                        Text('Adicione uma Categoria',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.normal,
                             )),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 40)),
+                        Padding(padding: EdgeInsets.symmetric(horizontal: 20)),
                         Icon(
                           Icons.add,
                           size: 40,
@@ -224,7 +219,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                       ],
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                    Container(height: 2, width: 450, color: Colors.black),
+                    Container(height: 2, width: 400, color: Colors.black),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -234,7 +229,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           size: 40,
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 30)),
-                        Text('Anexo',
+                        Text('Anexe o Recibo',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.normal,
@@ -247,7 +242,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                       ],
                     ),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                    Container(height: 2, width: 450, color: Colors.black),
+                    Container(height: 2, width: 400, color: Colors.black),
                     Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

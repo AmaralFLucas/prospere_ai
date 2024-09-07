@@ -78,9 +78,6 @@ class _CadastroState extends State<Cadastro> {
               onPressed: () {
                 print("${emailController.text}, ${cpfController.text}, ${passwordController.text},");
                 _autenServico.cadastrarUsuario(email: emailController.text, senha: passwordController.text, cpf: cpfController.text, nome: nomeController.text);
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );
               },
               child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
