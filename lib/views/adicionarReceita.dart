@@ -91,7 +91,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                   margin: EdgeInsets.symmetric(vertical: 0),
                   padding: EdgeInsets.only(top: 20),
                   width: double.infinity,
-                  height: 1300,
+                  height: 500,
                   child: Column(children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,

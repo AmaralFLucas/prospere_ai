@@ -22,7 +22,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.all(25),
+                  padding: EdgeInsets.all(10),
                   width: double.infinity,
                   decoration: BoxDecoration(color: myColor, boxShadow: [
                     BoxShadow(
@@ -32,7 +32,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       offset: Offset(0, 1), // changes position of shadow
                     ),
                   ]),
-                  height: 100,
+                  height: 60,
                   child: Column(
                     children: [
                       Row(children: [
@@ -59,7 +59,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                   margin: EdgeInsets.symmetric(vertical: 0),
                   padding: EdgeInsets.only(top: 20),
                   width: double.infinity,
-                  height: 1300,
+                  height: 1350,
                   child: Column(children: [
                     Container(
                       padding: EdgeInsets.only(right: 175),
