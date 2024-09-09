@@ -12,6 +12,8 @@ class Transacoes extends StatefulWidget {
 }
 
 Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color cardColor = Color(0xFFF4F4F4);
+Color textColor = Colors.black87;
 
 class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
@@ -36,98 +38,23 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
       appBar: AppBar(
         backgroundColor: myColor,
         automaticallyImplyLeading: false,
-        title: Text('Transações'),
+        title: Text(
+          'Transações',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 221, 221, 221),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              height: 200,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text('Saldo Atual'),
-                  Text(
-                    'RS 433,15',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            'RS 1.958,15',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 10),
-                          Text('Receitas'),
-                        ],
-                      ),
-                      Container(
-                        height: 50,
-                        width: 2,
-                        color: Colors.black,
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            'RS 1.525,00',
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                          SizedBox(height: 10),
-                          Text('Despesas'),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            Container(
-              decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 221, 221, 221),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              height: 500,
-              width: double.infinity,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: myColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    height: 70,
-                    width: 650,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: myColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    height: 70,
-                    width: 650,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: myColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    height: 70,
-                    width: 650,
-                  ),
-                ],
-              ),
-            ),
+            _buildBalanceCard(),
+            SizedBox(height: 20),
+            _buildTransactionList(),
           ],
         ),
       ),
@@ -145,7 +72,7 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (BuildContext context) => Adicionarreceita()),
-                  );
+                );
                 _animationController.reverse();
               },
             ),
@@ -174,6 +101,137 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+    );
+  }
+
+  Widget _buildBalanceCard() {
+    return Container(
+      padding: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            'Saldo Atual',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+          SizedBox(height: 10),
+          Text(
+            'R\$ 433,15',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: myColor,
+            ),
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildBalanceDetail('Receitas', 'R\$ 1.958,15'),
+              Container(
+                height: 40,
+                width: 1,
+                color: Colors.black26,
+              ),
+              _buildBalanceDetail('Despesas', 'R\$ 1.525,00'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBalanceDetail(String title, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        SizedBox(height: 10),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            color: textColor.withOpacity(0.7),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionList() {
+    return Container(
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _buildTransactionItem('Transação 1', 'R\$ 150,00'),
+          SizedBox(height: 10),
+          _buildTransactionItem('Transação 2', 'R\$ 200,00'),
+          SizedBox(height: 10),
+          _buildTransactionItem('Transação 3', 'R\$ 250,00'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionItem(String title, String value) {
+    return Container(
+      decoration: BoxDecoration(
+        color: myColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

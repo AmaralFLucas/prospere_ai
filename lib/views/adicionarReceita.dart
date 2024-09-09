@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/homePage.dart';
+
 
 List<Widget> data = <Widget>[Text('Hoje'), Text('Ontem'), Text('Outros')];
 
@@ -48,10 +48,10 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           icon: Icon(Icons.arrow_back),
                           color: Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const HomePage()));
+                            Navigator.of(context).pop();
                           },
                         ),
+                        Padding(padding: EdgeInsets.only(left: 10)),
                         Text(
                           'Adicionar Receita',
                           style: TextStyle(
@@ -264,8 +264,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           width: 150,
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                              Navigator.of(context).pop();
                             },
                             child: Text('Cancelar',
                                 style: TextStyle(color: Colors.black)),
@@ -295,8 +294,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           width: 150,
                           child: ElevatedButton(
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                              Navigator.of(context).pop();
                             },
                             child: Text('Salvar'),
                             style: ElevatedButton.styleFrom(
