@@ -70,10 +70,10 @@ class _CadastroState extends State<Cadastro> {
                 )),
             SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 print(
                     "${emailController.text}, ${cpfController.text}, ${passwordController.text},");
-                _autenServico.cadastrarUsuario(
+                await _autenServico.cadastrarUsuario(
                     email: emailController.text,
                     senha: passwordController.text,
                     cpf: cpfController.text,
