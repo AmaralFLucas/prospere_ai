@@ -101,11 +101,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ElevatedButton(
-                      onPressed: () {
-                        _autenServico.deslogarUsuario();
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => Login(),
-                        ));
+                      onPressed: () async {
+                        await _autenServico.deslogarUsuario();
+                        // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        //   builder: (context) => Login(),
+                        // ));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:

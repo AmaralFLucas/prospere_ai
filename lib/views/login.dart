@@ -75,8 +75,8 @@ class _LoginState extends State<Login> {
                 await _autenServico.logarUsuarios(
                     email: emailController.text,
                     senha: passwordController.text);
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const HomePage()));
+                // Navigator.of(context).push(
+                //     MaterialPageRoute(builder: (context) => const HomePage()));
               },
               child: Text('Entrar'),
               style: ElevatedButton.styleFrom(
