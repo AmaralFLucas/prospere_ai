@@ -137,19 +137,19 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.17.5"
+  floating_action_bubble:
+    dependency: "direct main"
+    description:
+      name: floating_action_bubble
+      sha256: "760fd392eaf01e5bccf58889ceaf98d3e90f51066a7efd426d5db5888528931a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.4"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_lints:
-    dependency: "direct dev"
-    description:
-      name: flutter_lints
-      sha256: "3f41d009ba7172d5ff9be5f6e6e6abb4300e263aab8866d2a0842ed2a70f8f0c"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -160,6 +160,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_widgetz:
+    dependency: "direct main"
+    description:
+      name: flutter_widgetz
+      sha256: "3c603bd8ca2fcb2040a90bd55f3729fd75b66e1bdeded9aff3330fa9745940bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.0"
   http_parser:
     dependency: transitive
     description:
@@ -192,14 +200,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.1"
-  lints:
-    dependency: transitive
-    description:
-      name: lints
-      sha256: "976c774dd944a42e83e2467f4cc670daef7eed6295b10b36ae8c85bcbf828235"
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.0.0"
   matcher:
     dependency: transitive
     description:
@@ -316,7 +316,7 @@ packages:
       sha256: "5c5f338a667b4c644744b661f309fb8080bb94b18a7e91ef1dbd343bed00ed6d"
       url: "https://pub.dev"
     source: hosted
-    version: "14.2.4"
+    version: "14.2.5"
   web:
     dependency: transitive
     description:

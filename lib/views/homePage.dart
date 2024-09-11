@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
+import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
@@ -13,13 +15,15 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-late PageController pageController;
+late PageController pageController = PageController();
 int initialPosition = 0;
 bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
 Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _HomePageState extends State<HomePage> {
+  AutenticacaoServico _autenServico = AutenticacaoServico();
+
   @override
   void initState() {
     super.initState();
@@ -35,11 +39,7 @@ class _HomePageState extends State<HomePage> {
   void _onTabSelected(int index) {
     setState(() {
       initialPosition = index;
-      pageController.animateToPage(
-        index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      pageController.jumpToPage(index);
     });
   }
 
@@ -100,10 +100,34 @@ class _HomePageState extends State<HomePage> {
                       minimumSize: Size(50, 80),
                     ),
                   ),
-                  const ListTile(
-                    title: Text('Item 2'),
-                    onTap: null,
-                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        await _autenServico.deslogarUsuario();
+                        // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        //   builder: (context) => Login(),
+                        // ));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color.fromARGB(220, 255, 255, 255),
+                        minimumSize: Size(50, 80),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Sair',
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                          Icon(
+                            Icons.exit_to_app,
+                            color: Colors.red,
+                          ),
+                        ],
+                      )),
                 ],
               ),
             ),

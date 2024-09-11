@@ -97,7 +97,7 @@ class _MaisState extends State<Mais> {
               height: 70,
               width: double.infinity,
               child: Center(
-                child: Text('Esportar Relatório'),
+                child: Text('Exportar Relatório'),
               ),
             ),
             // SizedBox(height: 10),

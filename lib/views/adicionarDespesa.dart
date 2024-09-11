@@ -2,19 +2,19 @@ import 'package:flutter/material.dart';
 
 List<Widget> data = <Widget>[Text('Hoje'), Text('Ontem'), Text('Outros')];
 
-class Adicionarreceita extends StatefulWidget {
-  const Adicionarreceita({super.key});
+class Adicionardespesa extends StatefulWidget {
+  const Adicionardespesa({super.key});
 
   @override
-  State<Adicionarreceita> createState() => _AdicionarreceitaState();
+  State<Adicionardespesa> createState() => _AdicionardespesaState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = Color.fromARGB(255, 121, 108, 108);
 
-class _AdicionarreceitaState extends State<Adicionarreceita> {
+class _AdicionardespesaState extends State<Adicionardespesa> {
   bool toggleValue = false;
-  String recebido = "Não Recebido";
+  String pago = "Não Pago";
   List<bool> isSelected = [true, false, false];
   bool vertical = false;
 
@@ -52,7 +52,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                         ),
                         Padding(padding: EdgeInsets.only(left: 10)),
                         Text(
-                          'Adicionar Receita',
+                          'Adicionar Despesa',
                           style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -63,7 +63,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                         children: [
                           Padding(padding: EdgeInsets.only(bottom: 20)),
                           Text(
-                            'Valor total Receita',
+                            'Valor total Despesa',
                             style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -100,7 +100,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           size: 40,
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 10)),
-                        Text(recebido,
+                        Text(pago,
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -228,7 +228,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           size: 40,
                         ),
                         Padding(padding: EdgeInsets.symmetric(horizontal: 30)),
-                        Text('Anexe o Recebido',
+                        Text('Anexe o Recibo',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.normal,
@@ -321,9 +321,9 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
     setState(() {
       toggleValue = !toggleValue;
       if (toggleValue) {
-        recebido = "Recebido";
+        pago = "Pago";
       } else {
-        recebido = "Não Recebido";
+        pago = "Não Pago";
       }
     });
   }
