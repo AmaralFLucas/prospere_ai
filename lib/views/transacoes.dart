@@ -71,7 +71,7 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               onPress: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => Adicionarreceita()),
+                  MaterialPageRoute(builder: (BuildContext context) => AdicionarReceita()),
                 );
                 _animationController.reverse();
               },
@@ -85,7 +85,7 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               onPress: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => Adicionardespesa()),
+                  MaterialPageRoute(builder: (BuildContext context) => AdicionarDespesa()),
                 );
                 _animationController.reverse();
               },
