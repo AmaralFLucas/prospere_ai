@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
@@ -23,6 +24,7 @@ Icon eyeIcon = Icon(Icons.visibility_off);
 
 class _HomePageState extends State<HomePage> {
   AutenticacaoServico _autenServico = AutenticacaoServico();
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -329,7 +331,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          Transacoes(),
+          Transacoes(userId: uid),
           Planejamento(),
           Mais(),
         ],
