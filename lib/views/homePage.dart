@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-late PageController pageController;
+late PageController pageController = PageController();
 int initialPosition = 0;
 bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
@@ -39,11 +39,7 @@ class _HomePageState extends State<HomePage> {
   void _onTabSelected(int index) {
     setState(() {
       initialPosition = index;
-      pageController.animateToPage(
-        index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      pageController.jumpToPage(index);
     });
   }
 
@@ -105,11 +101,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   ElevatedButton(
-                      onPressed: () {
-                        _autenServico.deslogarUsuario();
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => Login(),
-                        ));
+                      onPressed: () async {
+                        await _autenServico.deslogarUsuario();
+                        // Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        //   builder: (context) => Login(),
+                        // ));
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:

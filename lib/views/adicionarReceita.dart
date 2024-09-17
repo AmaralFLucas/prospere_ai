@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 List<Widget> data = <Widget>[Text('Hoje'), Text('Ontem'), Text('Outros')];
 
 class Adicionarreceita extends StatefulWidget {
@@ -48,7 +47,7 @@ class _AdicionarreceitaState extends State<Adicionarreceita> {
                           icon: Icon(Icons.arrow_back),
                           color: Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.pop(context);
                           },
                         ),
                         Padding(padding: EdgeInsets.only(left: 10)),

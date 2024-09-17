@@ -40,8 +40,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           icon: Icon(Icons.arrow_back),
                           color: Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const HomePage()));
+                            Navigator.pop(context);
                           },
                         ),
                         Text(
