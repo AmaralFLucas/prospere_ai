@@ -11,7 +11,7 @@ class AdicionarDespesa extends StatefulWidget {
   State<AdicionarDespesa> createState() => _AdicionarreceitaState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = Color.fromARGB(255, 121, 108, 108);
 
 class _AdicionarreceitaState extends State<AdicionarDespesa> {
@@ -20,7 +20,7 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
   List<bool> isSelected = [true, false, false];
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
-  // Controllers para capturar o valor e a categoria
+
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
@@ -43,7 +43,7 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                         color: const Color.fromARGB(67, 0, 0, 0),
                         spreadRadius: 6,
                         blurRadius: 3,
-                        offset: Offset(0, 1), // changes position of shadow
+                        offset: Offset(0, 1),
                       ),
                     ]),
                     height: 150,
@@ -110,47 +110,9 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                     margin: EdgeInsets.symmetric(vertical: 0),
                     padding: EdgeInsets.only(top: 20),
                     width: double.infinity,
-                    height: 1300,
+                    // height: 250,
                     child: Column(
                       children: [
-                        // Campos adicionais aqui...
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.bookmark_border, size: 40),
-                            Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20)),
-                            Expanded(
-                              child: TextField(
-                                controller: _categoriaController,
-                                decoration: InputDecoration(
-                                  hintText: "Categoria",
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
-                        ElevatedButton(
-                          onPressed: () {
-                            // Função para selecionar data
-                            showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
-                            ).then((date) {
-                              if (date != null) {
-                                setState(() {
-                                  _dataSelecionada = Timestamp.fromDate(date);
-                                });
-                              }
-                            });
-                          },
-                          child: Text('Selecione uma Data'),
-                        ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -160,54 +122,157 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                             ),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10)),
-                            Text(
-                              pago,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            Text(pago,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                )),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 30)),
                             AnimatedContainer(
-                              duration: Duration(milliseconds: 350),
+                              duration: Duration(microseconds: 350),
                               height: 40,
                               width: 100,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: toggleValue
-                                    ? myColor.withOpacity(0.5)
-                                    : myColorGray.withOpacity(0.5),
-                              ),
-                              child: GestureDetector(
-                                onTap: toggleButton,
-                                child: Stack(
-                                  children: <Widget>[
-                                    AnimatedPositioned(
-                                      duration: Duration(milliseconds: 350),
-                                      top: 3,
-                                      left: toggleValue ? 60 : 0,
-                                      right: toggleValue ? 0 : 60,
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: toggleValue
+                                      ? myColor.withOpacity(0.5)
+                                      : myColorGray.withOpacity(0.5)),
+                              child: Stack(
+                                children: <Widget>[
+                                  AnimatedPositioned(
+                                    duration: Duration(milliseconds: 350),
+                                    curve: Curves.easeIn,
+                                    top: 3,
+                                    left: toggleValue ? 60 : 0,
+                                    right: toggleValue ? 0 : 60,
+                                    child: InkWell(
+                                      onTap: toggleButton,
                                       child: AnimatedSwitcher(
-                                        duration: Duration(milliseconds: 350),
-                                        child: toggleValue
-                                            ? Icon(Icons.circle,
-                                                color: myColor,
-                                                size: 35,
-                                                key: UniqueKey())
-                                            : Icon(Icons.circle,
-                                                color: myColorGray,
-                                                size: 35,
-                                                key: UniqueKey()),
-                                      ),
+                                          duration: Duration(milliseconds: 350),
+                                          transitionBuilder: (Widget child,
+                                              Animation<double> animation) {
+                                            return RotationTransition(
+                                                child: child, turns: animation);
+                                          },
+                                          child: toggleValue
+                                              ? Icon(Icons.circle,
+                                                  color: myColor,
+                                                  size: 35,
+                                                  key: UniqueKey())
+                                              : Icon(
+                                                  Icons.circle,
+                                                  color: myColorGray,
+                                                  size: 35,
+                                                  key: UniqueKey(),
+                                                )),
                                     ),
-                                  ],
-                                ),
+                                  )
+                                ],
                               ),
                             ),
                           ],
                         ),
-
+                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        Container(
+                          height: 2,
+                          color: myColorGray,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.bookmark_border, size: 40),
+                              Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 20)),
+                              Expanded(
+                                child: TextField(
+                                  controller: _categoriaController,
+                                  decoration: InputDecoration(
+                                    hintText: "Categoria",
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        Container(
+                          height: 2,
+                          color: myColorGray,
+                        ),
+                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.date_range_outlined,
+                              size: 40,
+                            ),
+                            Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 20)),
+                            AnimatedContainer(
+                              duration: Duration(milliseconds: 350),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const SizedBox(height: 5),
+                                  ToggleButtons(
+                                    direction: vertical
+                                        ? Axis.vertical
+                                        : Axis.horizontal,
+                                    onPressed: (int index) {
+                                      setState(() {
+                                        for (int i = 0;
+                                            i < isSelected.length;
+                                            i++) {
+                                          isSelected[i] = i == index;
+                                        }
+                                      });
+                                    },
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(8)),
+                                    selectedBorderColor:
+                                        Color.fromARGB(255, 0, 0, 0),
+                                    selectedColor: Colors.white,
+                                    fillColor: myColor,
+                                    color: Colors.black,
+                                    constraints: const BoxConstraints(
+                                      minHeight: 40.0,
+                                      minWidth: 80.0,
+                                    ),
+                                    isSelected: isSelected,
+                                    children: data,
+                                  ),
+                                  const SizedBox(height: 20),
+                                ],
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Função para selecionar data
+                                showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2100),
+                                ).then((date) {
+                                  if (date != null) {
+                                    setState(() {
+                                      _dataSelecionada =
+                                          Timestamp.fromDate(date);
+                                    });
+                                  }
+                                });
+                              },
+                              child: Text('Selecione uma Data'),
+                            ),
+                          ],
+                        ),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
