@@ -238,7 +238,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
             ? _animationController.reverse()
             : _animationController.forward(),
         iconColor: Colors.white,
-        iconData: Icons.add,
+        iconData: Icons.download,
         backGroundColor: myColor,
       ),
       ),
