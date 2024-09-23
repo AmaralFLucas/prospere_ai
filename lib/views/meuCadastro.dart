@@ -58,7 +58,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                   margin: EdgeInsets.symmetric(vertical: 0),
                   padding: EdgeInsets.only(top: 20),
                   width: double.infinity,
-                  height: 1300,
+                  height: 1350,
                   child: Column(children: [
                     Container(
                       padding: EdgeInsets.only(right: 175),
