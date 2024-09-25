@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/homePage.dart';
 
@@ -9,6 +10,7 @@ class MeuCadastro extends StatefulWidget {
 }
 
 Color myColor = Color.fromARGB(255, 30, 163, 132);
+String uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _MeuCadastroState extends State<MeuCadastro> {
   @override
@@ -301,7 +303,9 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                                  builder: (context) => HomePage(
+                                        userId: uid,
+                                      )));
                             },
                             child: Text('Cancelar',
                                 style: TextStyle(color: Colors.black)),
@@ -332,7 +336,9 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                                  builder: (context) => HomePage(
+                                        userId: uid,
+                                      )));
                             },
                             child: Text('Salvar'),
                             style: ElevatedButton.styleFrom(

@@ -2,28 +2,82 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-List<Widget> data = <Widget>[Text('Hoje'), Text('Ontem'), Text('Outros')];
-
 class AdicionarDespesa extends StatefulWidget {
   const AdicionarDespesa({super.key});
 
   @override
-  State<AdicionarDespesa> createState() => _AdicionarreceitaState();
+  State<AdicionarDespesa> createState() => _AdicionarDespesaState();
 }
 
 Color myColor = Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = Color.fromARGB(255, 121, 108, 108);
 
-class _AdicionarreceitaState extends State<AdicionarDespesa> {
+class _AdicionarDespesaState extends State<AdicionarDespesa> {
   bool toggleValue = false;
   String pago = "Não Pago";
   List<bool> isSelected = [true, false, false];
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
+  String? selectedBank;
 
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
+  bool outrosSelecionado = false;
+
+  Widget _buildDateSelection() {
+    if (_dataSelecionada != null) {
+      return ElevatedButton(
+        onPressed: () {
+          _selectDate(context);
+        },
+        child: Text(
+          '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
+          style: TextStyle(fontSize: 16, color: Colors.black),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: myColor,
+        ),
+      );
+    }
+
+    return ToggleButtons(
+      direction: vertical ? Axis.vertical : Axis.horizontal,
+      onPressed: (int index) {
+        setState(() {
+          for (int i = 0; i < isSelected.length; i++) {
+            isSelected[i] = i == index;
+          }
+
+          if (index == 2) {
+            _selectDate(context);
+          } else {
+            outrosSelecionado = false;
+            _dataSelecionada = index == 0
+                ? Timestamp.fromDate(DateTime.now())
+                : Timestamp.fromDate(
+                    DateTime.now().subtract(Duration(days: 1)));
+          }
+        });
+      },
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
+      selectedBorderColor: Colors.black,
+      selectedColor: Colors.white,
+      fillColor: myColor,
+      color: Colors.black,
+      constraints: const BoxConstraints(
+        minHeight: 40.0,
+        minWidth: 80.0,
+      ),
+      isSelected: isSelected,
+      children: <Widget>[
+        Text('Hoje'),
+        Text('Ontem'),
+        Text('Outros'),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +164,6 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                     margin: EdgeInsets.symmetric(vertical: 0),
                     padding: EdgeInsets.only(top: 20),
                     width: double.infinity,
-                    // height: 250,
                     child: Column(
                       children: [
                         Row(
@@ -189,12 +242,26 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 20)),
                               Expanded(
-                                child: TextField(
-                                  controller: _categoriaController,
-                                  decoration: InputDecoration(
-                                    hintText: "Categoria",
-                                  ),
-                                ),
+                                child: DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: 'Selecionar Categoria'),
+                items: [
+                  'Casa',
+                  'Educação',
+                  'Outros',
+                  'Eletrônicos',
+                  'Supermercados',
+                  'Transporte',
+                  'Viagem',
+                ].map((String bank) {
+                  return DropdownMenuItem<String>(
+                    value: bank,
+                    child: Text(bank),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  selectedBank = newValue;
+                },
+              ),
                               ),
                             ],
                           ),
@@ -214,63 +281,8 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                             ),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20)),
-                            AnimatedContainer(
-                              duration: Duration(milliseconds: 350),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const SizedBox(height: 5),
-                                  ToggleButtons(
-                                    direction: vertical
-                                        ? Axis.vertical
-                                        : Axis.horizontal,
-                                    onPressed: (int index) {
-                                      setState(() {
-                                        for (int i = 0;
-                                            i < isSelected.length;
-                                            i++) {
-                                          isSelected[i] = i == index;
-                                        }
-                                      });
-                                    },
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(8)),
-                                    selectedBorderColor:
-                                        Color.fromARGB(255, 0, 0, 0),
-                                    selectedColor: Colors.white,
-                                    fillColor: myColor,
-                                    color: Colors.black,
-                                    constraints: const BoxConstraints(
-                                      minHeight: 40.0,
-                                      minWidth: 80.0,
-                                    ),
-                                    isSelected: isSelected,
-                                    children: data,
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Função para selecionar data
-                                showDatePicker(
-                                  context: context,
-                                  initialDate: DateTime.now(),
-                                  firstDate: DateTime(2000),
-                                  lastDate: DateTime(2100),
-                                ).then((date) {
-                                  if (date != null) {
-                                    setState(() {
-                                      _dataSelecionada =
-                                          Timestamp.fromDate(date);
-                                    });
-                                  }
-                                });
-                              },
-                              child: Text('Selecione uma Data'),
-                            ),
+                            // O widget de seleção de data foi atualizado para ser dinâmico
+                            _buildDateSelection(),
                           ],
                         ),
                         Padding(padding: EdgeInsets.symmetric(vertical: 10)),
@@ -302,10 +314,13 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                               width: 150,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  _salvarReceita();
+                                  _salvarDespesa();
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Salvar'),
+                                child: Text(
+                                  'Adicionar',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: myColor,
                                   shape: RoundedRectangleBorder(
@@ -315,7 +330,7 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
                               ),
                             ),
                           ],
-                        ),
+                        )
                       ],
                     ),
                   ),
@@ -328,35 +343,32 @@ class _AdicionarreceitaState extends State<AdicionarDespesa> {
     );
   }
 
-  void _salvarReceita() {
-    double? valor = double.tryParse(_valorController.text);
-    String categoria = _categoriaController.text;
-    Timestamp data = _dataSelecionada ?? Timestamp.now();
+  void _selectDate(BuildContext context) async {
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
 
-    if (valor != null && categoria.isNotEmpty) {
-      // Substitua 'userId' pelo ID real do usuário
-      String userId = uid;
-
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('despesas')
-          .add({
-        'valor': valor,
-        'categoria': categoria,
-        'data': data,
-        'tipo': toggleValue ? "Realizado" : "Previsto",
-      }).then((_) {
-        print("Despesa adicionada com sucesso");
-      }).catchError((error) {
-        print("Falha ao adicionar despesa: $error");
+    if (selectedDate != null) {
+      setState(() {
+        _dataSelecionada = Timestamp.fromDate(selectedDate);
+        outrosSelecionado = true; // Define que "Outros" foi selecionado
       });
-    } else {
-      print("Por favor, insira todos os campos corretamente.");
     }
   }
 
-  toggleButton() {
+  void _salvarDespesa() {
+    FirebaseFirestore.instance.collection("users").doc(uid).collection("despesas").add({
+      'valor': _valorController.text,
+      'categoria': _categoriaController.text,
+      'data': _dataSelecionada ?? Timestamp.now(),
+      'pago': pago,
+    });
+  }
+
+  void toggleButton() {
     setState(() {
       toggleValue = !toggleValue;
       pago = toggleValue ? "Pago" : "Não Pago";
