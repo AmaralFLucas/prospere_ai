@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
@@ -24,6 +25,7 @@ class _CadastroState extends State<Cadastro> {
   TextEditingController nomeController = TextEditingController();
 
   AutenticacaoServico _autenServico = AutenticacaoServico();
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +81,9 @@ class _CadastroState extends State<Cadastro> {
                     cpf: cpfController.text,
                     nome: nomeController.text);
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => HomePage(),
+                  builder: (context) => HomePage(
+                    userId: uid,
+                  ),
                 ));
               },
               child: Text('Enviar'),
