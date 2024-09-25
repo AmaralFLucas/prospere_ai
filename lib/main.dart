@@ -17,6 +17,8 @@ void main() async {
   ));
 }
 
+String uid = FirebaseAuth.instance.currentUser!.uid;
+
 class RoteadorTela extends StatelessWidget {
   const RoteadorTela({super.key});
 
@@ -28,7 +30,9 @@ class RoteadorTela extends StatelessWidget {
           if (snapshot.hasData) {
             // return const HomePage();
 
-            return HomePage();
+            return HomePage(
+              userId: uid,
+            );
           } else {
             return Login();
           }
