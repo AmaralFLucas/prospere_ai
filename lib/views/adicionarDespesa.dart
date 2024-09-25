@@ -18,7 +18,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   List<bool> isSelected = [true, false, false];
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
-  String? selectedBank;
+  String? categoria;
 
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
@@ -243,25 +243,26 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                       EdgeInsets.symmetric(horizontal: 20)),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Selecionar Categoria'),
-                items: [
-                  'Casa',
-                  'Educação',
-                  'Outros',
-                  'Eletrônicos',
-                  'Supermercados',
-                  'Transporte',
-                  'Viagem',
-                ].map((String bank) {
-                  return DropdownMenuItem<String>(
-                    value: bank,
-                    child: Text(bank),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  selectedBank = newValue;
-                },
-              ),
+                                  decoration: InputDecoration(
+                                      labelText: 'Selecionar Categoria'),
+                                  items: [
+                                    'Casa',
+                                    'Educação',
+                                    'Outros',
+                                    'Eletrônicos',
+                                    'Supermercados',
+                                    'Transporte',
+                                    'Viagem',
+                                  ].map((String bank) {
+                                    return DropdownMenuItem<String>(
+                                      value: bank,
+                                      child: Text(bank),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newValue) {
+                                    _categoriaController.text = newValue!;
+                                  },
+                                ),
                               ),
                             ],
                           ),
@@ -281,7 +282,6 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                             ),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20)),
-                            // O widget de seleção de data foi atualizado para ser dinâmico
                             _buildDateSelection(),
                           ],
                         ),
@@ -354,18 +354,36 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
     if (selectedDate != null) {
       setState(() {
         _dataSelecionada = Timestamp.fromDate(selectedDate);
-        outrosSelecionado = true; // Define que "Outros" foi selecionado
+        outrosSelecionado = true;
       });
     }
   }
 
   void _salvarDespesa() {
-    FirebaseFirestore.instance.collection("users").doc(uid).collection("despesas").add({
-      'valor': _valorController.text,
-      'categoria': _categoriaController.text,
-      'data': _dataSelecionada ?? Timestamp.now(),
-      'pago': pago,
-    });
+    double? valor = double.tryParse(_valorController.text);
+    String categoria = _categoriaController.text;
+    Timestamp data = _dataSelecionada ?? Timestamp.now();
+
+    if (valor != null && categoria.isNotEmpty) {
+      String userId = uid;
+
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('despesas')
+          .add({
+        'valor': valor,
+        'categoria': categoria,
+        'data': data,
+        'tipo': toggleValue ? "Pago" : "Previsto",
+      }).then((_) {
+        print("Despesa adicionada com sucesso");
+      }).catchError((error) {
+        print("Falha ao adicionar despesa: $error");
+      });
+    } else {
+      print("Por favor, insira todos os campos corretamente.");
+    }
   }
 
   void toggleButton() {

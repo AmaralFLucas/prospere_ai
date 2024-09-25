@@ -17,7 +17,8 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Color cardColor = Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
-class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateMixin {
+class _TransacoesState extends State<Transacoes>
+    with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
 
@@ -31,28 +32,29 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 260),
     );
 
-    final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
-
-    // Buscar dados do banco de dados
     _loadData();
   }
 
   Future<void> _loadData() async {
-    List<Map<String, dynamic>> fetchedReceitas = await getReceitas(widget.userId);
-    List<Map<String, dynamic>> fetchedDespesas = await getDespesas(widget.userId);
+    List<Map<String, dynamic>> fetchedReceitas =
+        await getReceitas(widget.userId);
+    List<Map<String, dynamic>> fetchedDespesas =
+        await getDespesas(widget.userId);
 
-    // Somar receitas e despesas
-    double receitasSum = fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    double despesasSum = fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    
-    // Atualizar o estado com os valores calculados
+    double receitasSum =
+        fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double despesasSum =
+        fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+
     setState(() {
       receitas = fetchedReceitas;
       despesas = fetchedDespesas;
@@ -101,7 +103,8 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               onPress: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AdicionarReceita()),
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => AdicionarReceita()),
                 );
                 _animationController.reverse();
               },
@@ -115,7 +118,8 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               onPress: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AdicionarDespesa()),
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => AdicionarDespesa()),
                 );
                 _animationController.reverse();
               },
@@ -172,13 +176,15 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceDetail('Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
-              _buildBalanceDetail('Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
           ),
         ],
@@ -235,28 +241,26 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
   List<Widget> _buildTransactionItems() {
     List<Widget> transactionItems = [];
 
-    // Adicionar as receitas
     transactionItems.addAll(receitas.map((receita) {
       return Column(
         children: [
           _buildTransactionItem(
-            'Receita: ${receita['categoria']}', 
-            'R\$ ${receita['valor']}', 
-            Colors.white, // Texto das receitas permanece branco
+            'Receita: ${receita['categoria']}',
+            'R\$ ${receita['valor']}',
+            Colors.white,
           ),
           SizedBox(height: 10),
         ],
       );
     }).toList());
 
-    // Adicionar as despesas
     transactionItems.addAll(despesas.map((despesa) {
       return Column(
         children: [
           _buildTransactionItem(
-            'Despesa: ${despesa['categoria']}', 
-            'R\$ ${despesa['valor']}', 
-            Colors.red, // Texto das despesas será vermelho
+            'Despesa: ${despesa['categoria']}',
+            'R\$ ${despesa['valor']}',
+            Colors.red,
           ),
           SizedBox(height: 10),
         ],
@@ -302,8 +306,10 @@ Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
       .doc(userId)
       .collection('receitas')
       .get();
-  
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
 }
 
 Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
@@ -312,6 +318,8 @@ Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
       .doc(userId)
       .collection('despesas')
       .get();
-  
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
 }

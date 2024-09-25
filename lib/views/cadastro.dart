@@ -81,9 +81,7 @@ class _CadastroState extends State<Cadastro> {
                     cpf: cpfController.text,
                     nome: nomeController.text);
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => HomePage(
-                    userId: uid,
-                  ),
+                  builder: (context) => HomePage(),
                 ));
               },
               child: Text('Enviar'),
