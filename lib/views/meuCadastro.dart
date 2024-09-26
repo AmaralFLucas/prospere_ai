@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/homePage.dart';
 
@@ -10,7 +9,6 @@ class MeuCadastro extends StatefulWidget {
 }
 
 Color myColor = Color.fromARGB(255, 30, 163, 132);
-String uid = FirebaseAuth.instance.currentUser!.uid;
 
 class _MeuCadastroState extends State<MeuCadastro> {
   @override
@@ -31,7 +29,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       color: const Color.fromARGB(67, 0, 0, 0),
                       spreadRadius: 6,
                       blurRadius: 3,
-                      offset: Offset(0, 1), // changes position of shadow
+                      offset: Offset(0, 1),
                     ),
                   ]),
                   height: 100,
@@ -303,9 +301,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => HomePage(
-                                        userId: uid,
-                                      )));
+                                  builder: (context) => HomePage()));
                             },
                             child: Text('Cancelar',
                                 style: TextStyle(color: Colors.black)),
@@ -327,8 +323,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                   color: myColor,
                                   spreadRadius: 3,
                                   blurRadius: 0,
-                                  offset: Offset(
-                                      0, 0), // changes position of shadow
+                                  offset: Offset(0, 0),
                                 ),
                               ]),
                           height: 50,
@@ -336,9 +331,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => HomePage(
-                                        userId: uid,
-                                      )));
+                                  builder: (context) => HomePage()));
                             },
                             child: Text('Salvar'),
                             style: ElevatedButton.styleFrom(
