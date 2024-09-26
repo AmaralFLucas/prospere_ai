@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage>
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    // Buscar dados do banco de dados
     _loadData();
   }
 
@@ -89,13 +88,11 @@ class _HomePageState extends State<HomePage>
     List<Map<String, dynamic>> fetchedDespesas =
         await getDespesas(widget.userId);
 
-    // Somar receitas e despesas
     double receitasSum =
         fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
     double despesasSum =
         fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
 
-    // Atualizar o estado com os valores calculados
     setState(() {
       receitas = fetchedReceitas;
       despesas = fetchedDespesas;
@@ -379,17 +376,13 @@ class _HomePageState extends State<HomePage>
   }
 
 void _showVoice(BuildContext context) async {
-  // Inicializar o reconhecimento de voz
   bool available = await speechToText.initialize(
     onStatus: (status) {
-      // Listener do status de escuta
       if (status == 'done') {
         setState(() {
           isListening = false;
         });
         speechToText.stop();
-
-        // Fecha o AlertDialog automaticamente quando a escuta termina
         Navigator.of(context).pop();
       }
     },
@@ -403,20 +396,18 @@ void _showVoice(BuildContext context) async {
       isListening = true;
     });
 
-    // Iniciar a escuta com detecção automática de pausa
     speechToText.listen(
       onResult: (result) {
         setState(() {
           text = result.recognizedWords;
         });
       },
-      pauseFor: Duration(seconds: 3), // Define a pausa para 3 segundos
-      localeId: 'pt_BR',              // Ajuste para o idioma desejado
-      partialResults: true,            // Receber resultados parciais
+      pauseFor: Duration(seconds: 3),
+      localeId: 'pt_BR',
+      partialResults: true,
     );
   }
 
-  // Exibir o diálogo com o avatar animado
   showDialog(
     context: context,
     builder: (BuildContext context) {
