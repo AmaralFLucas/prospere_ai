@@ -1,3 +1,4 @@
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
@@ -5,6 +6,7 @@ import 'package:prospere_ai/views/inicio.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,6 +22,9 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Color cardColor = Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 Icon eyeIcon = Icon(Icons.visibility_off);
+var text = "";
+var isListening = false;
+SpeechToText speechToText = SpeechToText();
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
@@ -65,7 +70,9 @@ class _HomePageState extends State<HomePage>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showVoice(context);
+        },
         child: Icon(Icons.mic),
         backgroundColor: myColor,
       ),
@@ -76,6 +83,63 @@ class _HomePageState extends State<HomePage>
         onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
+    );
+  }
+
+  void _showVoice(BuildContext context) async {
+    bool available = await speechToText.initialize(
+      onStatus: (status) {
+        if (status == 'done') {
+          setState(() {
+            isListening = false;
+          });
+          speechToText.stop();
+          Navigator.of(context).pop();
+        }
+      },
+      onError: (error) {
+        print('Erro no reconhecimento: $error');
+      },
+    );
+
+    if (available) {
+      setState(() {
+        isListening = true;
+      });
+
+      speechToText.listen(
+        onResult: (result) {
+          setState(() {
+            text = result.recognizedWords;
+          });
+        },
+        pauseFor: Duration(seconds: 3),
+        localeId: 'pt_BR',
+        partialResults: true,
+      );
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AvatarGlow(
+                endRadius: 75.0,
+                animate: isListening,
+                glowColor: myColor,
+                child: CircleAvatar(
+                  backgroundColor: myColor,
+                  radius: 35,
+                  child: Icon(Icons.mic, size: 50, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

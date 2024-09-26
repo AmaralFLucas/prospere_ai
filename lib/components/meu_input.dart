@@ -12,18 +12,11 @@ class MeuInput extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
-        // autovalidateMode: AutovalidateMode.onUserInteraction,
-        // validator: (value) {
-        //   if (value!.length > 6) {
-        //     return 'Limite de caracteres ultrapassado';
-        //   }
-        // },
         controller: controller,
         obscureText: obscure ?? false,
         decoration: InputDecoration(
           border: OutlineInputBorder(),
           labelText: labelText,
-          // errorText: "Senha está incorreto."
         ),
       ),
     );

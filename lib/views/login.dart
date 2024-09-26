@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
                       ),
                       SizedBox(
                         width: 300,
-                        child: MeuInput(
+                        child: Senha(
                           labelText: 'Senha',
                           obscure: true,
                           controller: passwordController,

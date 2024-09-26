@@ -90,12 +90,12 @@ class _CadastroState extends State<Cadastro> {
                           context: context,
                           texto: "Cadastro efetuado com sucesso",
                           isErro: false);
+                      _autenServico.deslogarUsuario();
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => Login(),
+                      ));
                     }
                   });
-                  _autenServico.deslogarUsuario();
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => Login(),
-                  ));
                 },
                 child: Text('Enviar'),
                 style: ElevatedButton.styleFrom(
