@@ -364,7 +364,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
       'valor': _valorController.text,
       'categoria': _categoriaController.text,
       'data': _dataSelecionada ?? Timestamp.now(),
-      'pago': pago,
+      'tipo': pago,
     });
   }
 
