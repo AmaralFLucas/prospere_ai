@@ -14,7 +14,6 @@ class CustomBottomAppBar extends StatelessWidget {
     required this.onFabPressed,
   });
 
-  // Método auxiliar para construir um item de nav bar
   Widget buildNavBarItem(IconData icon, String label, int index) {
     return Column(
       mainAxisSize: MainAxisSize.min,

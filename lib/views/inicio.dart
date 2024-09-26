@@ -138,7 +138,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   ElevatedButton(
                     onPressed: () async {
                       await _autenServico.deslogarUsuario();
-                      // Pode adicionar lógica de navegação aqui se necessário.
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(220, 255, 255, 255),
