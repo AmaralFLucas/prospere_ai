@@ -12,6 +12,7 @@ import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, this.title, required this.userId})
       : super(key: key);
@@ -377,46 +378,66 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  void _showVoice(BuildContext context) async {
-    var available = await speechToText.initialize();
-    if (available) {
-      setState(() {
-        isListening = true;
-      });
-      speechToText.listen(
-        onResult: (result) {
-          setState(() {
-            text = result.recognizedWords;
-          });
-        },
-      );
-    }
+void _showVoice(BuildContext context) async {
+  // Inicializar o reconhecimento de voz
+  bool available = await speechToText.initialize(
+    onStatus: (status) {
+      // Listener do status de escuta
+      if (status == 'done') {
+        setState(() {
+          isListening = false;
+        });
+        speechToText.stop();
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AvatarGlow(
-                endRadius: 75.0,
-                animate: isListening,
-                duration: const Duration(milliseconds: 2000),
-                glowColor: myColor,
-                repeat: true,
-                repeatPauseDuration: const Duration(microseconds: 100),
-                showTwoGlows: true,
-                child: CircleAvatar(
-                  backgroundColor: myColor,
-                  radius: 35,
-                  child: const Icon(Icons.mic, size: 50, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-        );
+        // Fecha o AlertDialog automaticamente quando a escuta termina
+        Navigator.of(context).pop();
+      }
+    },
+    onError: (error) {
+      print('Erro no reconhecimento: $error');
+    },
+  );
+
+  if (available) {
+    setState(() {
+      isListening = true;
+    });
+
+    // Iniciar a escuta com detecção automática de pausa
+    speechToText.listen(
+      onResult: (result) {
+        setState(() {
+          text = result.recognizedWords;
+        });
       },
+      pauseFor: Duration(seconds: 3), // Define a pausa para 3 segundos
+      localeId: 'pt_BR',              // Ajuste para o idioma desejado
+      partialResults: true,            // Receber resultados parciais
     );
   }
-  }
+
+  // Exibir o diálogo com o avatar animado
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AvatarGlow(
+              endRadius: 75.0,
+              animate: isListening,
+              glowColor: myColor,
+              child: CircleAvatar(
+                backgroundColor: myColor,
+                radius: 35,
+                child: Icon(Icons.mic, size: 50, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+}
