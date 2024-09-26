@@ -1,3 +1,4 @@
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,8 @@ import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key, this.title, required this.userId})
@@ -27,6 +30,9 @@ Color myColor = Color.fromARGB(255, 30, 163, 132);
 Color cardColor = Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 Icon eyeIcon = Icon(Icons.visibility_off);
+var text = "";
+var isListening = false;
+SpeechToText speechToText = SpeechToText();
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
@@ -42,6 +48,9 @@ class _HomePageState extends State<HomePage>
   double totalDespesas = 0.0;
   double saldoAtual = 0.0;
 
+  var text = "";
+  var isListening = false;
+
   @override
   void initState() {
     super.initState();
@@ -55,7 +64,6 @@ class _HomePageState extends State<HomePage>
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    // Buscar dados do banco de dados
     _loadData();
   }
 
@@ -80,13 +88,11 @@ class _HomePageState extends State<HomePage>
     List<Map<String, dynamic>> fetchedDespesas =
         await getDespesas(widget.userId);
 
-    // Somar receitas e despesas
     double receitasSum =
         fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
     double despesasSum =
         fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
 
-    // Atualizar o estado com os valores calculados
     setState(() {
       receitas = fetchedReceitas;
       despesas = fetchedDespesas;
@@ -212,7 +218,9 @@ class _HomePageState extends State<HomePage>
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showVoice(context);
+        },
         child: Icon(Icons.mic),
         backgroundColor: myColor,
       ),
@@ -291,12 +299,12 @@ class _HomePageState extends State<HomePage>
             color: textColor,
           ),
         ),
-        SizedBox(height: 10),
+        SizedBox(height: 5),
         Text(
           title,
           style: TextStyle(
-            fontSize: 16,
-            color: textColor.withOpacity(0.7),
+            fontSize: 18,
+            color: textColor,
           ),
         ),
       ],
@@ -304,97 +312,123 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _buildTransactionList() {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            'Transações Recentes',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
           ),
-        ],
+        ),
+        SizedBox(height: 10),
+        Text(text),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: receitas.length + despesas.length,
+          itemBuilder: (context, index) {
+            if (index < receitas.length) {
+              return _buildTransactionItem(receitas[index], true);
+            } else {
+              return _buildTransactionItem(
+                  despesas[index - receitas.length], false);
+            }
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTransactionItem(Map<String, dynamic> transaction, bool isIncome) {
+    return ListTile(
+      leading: Icon(
+        isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+        color: isIncome ? Colors.green : Colors.red,
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ..._buildTransactionItems(),
-        ],
+      title: Text(
+        transaction['descricao'] ?? '',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: textColor,
+        ),
+      ),
+      subtitle: Text(
+        transaction['data'] ?? '',
+        style: TextStyle(
+          color: Colors.black54,
+        ),
+      ),
+      trailing: Text(
+        'R\$ ${transaction['valor']?.toStringAsFixed(2) ?? '0.00'}',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: isIncome ? Colors.green : Colors.red,
+        ),
       ),
     );
   }
 
-  List<Widget> _buildTransactionItems() {
-    List<Widget> transactionItems = [];
+void _showVoice(BuildContext context) async {
+  bool available = await speechToText.initialize(
+    onStatus: (status) {
+      if (status == 'done') {
+        setState(() {
+          isListening = false;
+        });
+        speechToText.stop();
+        Navigator.of(context).pop();
+      }
+    },
+    onError: (error) {
+      print('Erro no reconhecimento: $error');
+    },
+  );
 
-    transactionItems.addAll(despesas.map((despesa) {
-      return Column(
-        children: [
-          _buildTransactionItem(
-            'Despesa: ${despesa['categoria']}',
-            'R\$ ${despesa['valor']}',
-            Colors.red,
-          ),
-          SizedBox(height: 10),
-        ],
+  if (available) {
+    setState(() {
+      isListening = true;
+    });
+
+    speechToText.listen(
+      onResult: (result) {
+        setState(() {
+          text = result.recognizedWords;
+        });
+      },
+      pauseFor: Duration(seconds: 3),
+      localeId: 'pt_BR',
+      partialResults: true,
+    );
+  }
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AvatarGlow(
+              endRadius: 75.0,
+              animate: isListening,
+              glowColor: myColor,
+              child: CircleAvatar(
+                backgroundColor: myColor,
+                radius: 35,
+                child: Icon(Icons.mic, size: 50, color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       );
-    }).toList());
-
-    return transactionItems;
-  }
-
-  Widget _buildTransactionItem(String title, String value, Color textColor) {
-    return Container(
-      decoration: BoxDecoration(
-        color: myColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              color: textColor,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 16,
-              color: textColor,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+    },
+  );
 }
-
-Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('receitas')
-      .get();
-
-  return snapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
-}
-
-Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('despesas')
-      .get();
-
-  return snapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
 }
