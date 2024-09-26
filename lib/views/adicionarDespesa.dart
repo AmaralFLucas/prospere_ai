@@ -384,6 +384,12 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
     } else {
       print("Por favor, insira todos os campos corretamente.");
     }
+    FirebaseFirestore.instance.collection("users").doc(uid).collection("despesas").add({
+      'valor': _valorController.text,
+      'categoria': _categoriaController.text,
+      'data': _dataSelecionada ?? Timestamp.now(),
+      'tipo': pago,
+    });
   }
 
   void toggleButton() {
