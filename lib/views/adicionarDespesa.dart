@@ -2,19 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AdicionarDespesa extends StatefulWidget {
-  const AdicionarDespesa({super.key});
+class AdicionarReceita extends StatefulWidget {
+  const AdicionarReceita({super.key});
 
   @override
-  State<AdicionarDespesa> createState() => _AdicionarDespesaState();
+  State<AdicionarReceita> createState() => _AdicionarReceitaState();
 }
 
-Color myColor = Color.fromARGB(255, 178, 0, 0);
+Color myColor = Color.fromARGB(255, 30, 163, 132);
 Color myColorGray = Color.fromARGB(255, 121, 108, 108);
 
-class _AdicionarDespesaState extends State<AdicionarDespesa> {
+class _AdicionarReceitaState extends State<AdicionarReceita> {
   bool toggleValue = false;
-  String pago = "Não Pago";
+  String recebido = "Não Recebido";
   List<bool> isSelected = [true, false, false];
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -175,7 +175,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                             ),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10)),
-                            Text(pago,
+                            Text(recebido,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -246,13 +246,11 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                   decoration: InputDecoration(
                                       labelText: 'Selecionar Categoria'),
                                   items: [
-                                    'Casa',
-                                    'Educação',
+                                    'Investimento',
+                                    'Presentes',
                                     'Outros',
-                                    'Eletrônicos',
-                                    'Supermercados',
-                                    'Transporte',
-                                    'Viagem',
+                                    'Salário',
+                                    'Prêmio',
                                   ].map((String bank) {
                                     return DropdownMenuItem<String>(
                                       value: bank,
@@ -370,32 +368,26 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
       FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('despesas')
+          .collection('receitas')
           .add({
         'valor': valor,
         'categoria': categoria,
         'data': data,
-        'tipo': toggleValue ? "Pago" : "Previsto",
+        'tipo': toggleValue ? "Recebido" : "Não Recebido",
       }).then((_) {
-        print("Despesa adicionada com sucesso");
+        print("receita adicionada com sucesso");
       }).catchError((error) {
-        print("Falha ao adicionar despesa: $error");
+        print("Falha ao adicionar receitas: $error");
       });
     } else {
       print("Por favor, insira todos os campos corretamente.");
     }
-    FirebaseFirestore.instance.collection("users").doc(uid).collection("despesas").add({
-      'valor': _valorController.text,
-      'categoria': _categoriaController.text,
-      'data': _dataSelecionada ?? Timestamp.now(),
-      'tipo': pago,
-    });
   }
 
   void toggleButton() {
     setState(() {
       toggleValue = !toggleValue;
-      pago = toggleValue ? "Pago" : "Não Pago";
+      recebido = toggleValue ? "Recebido" : "Não Recebido";
     });
   }
 }
