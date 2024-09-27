@@ -2,19 +2,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AdicionarReceita extends StatefulWidget {
-  const AdicionarReceita({super.key});
+class AdicionarDespesa extends StatefulWidget {
+  const AdicionarDespesa({super.key});
 
   @override
-  State<AdicionarReceita> createState() => _AdicionarReceitaState();
+  State<AdicionarDespesa> createState() => _AdicionarDespesaState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = Color.fromARGB(255, 121, 108, 108);
 
-class _AdicionarReceitaState extends State<AdicionarReceita> {
+class _AdicionarDespesaState extends State<AdicionarDespesa> {
   bool toggleValue = false;
-  String recebido = "Não Recebido";
+  String pago = "Não Pago";
   List<bool> isSelected = [true, false, false];
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -175,7 +175,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ),
                             Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10)),
-                            Text(recebido,
+                            Text(pago,
                                 style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -368,16 +368,16 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
       FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
-          .collection('receitas')
+          .collection('despesas')
           .add({
         'valor': valor,
         'categoria': categoria,
         'data': data,
-        'tipo': toggleValue ? "Recebido" : "Não Recebido",
+        'tipo': toggleValue ? "Pago" : "Não Pago",
       }).then((_) {
-        print("receita adicionada com sucesso");
+        print("Despesa adicionada com sucesso");
       }).catchError((error) {
-        print("Falha ao adicionar receitas: $error");
+        print("Falha ao adicionar Despesas: $error");
       });
     } else {
       print("Por favor, insira todos os campos corretamente.");
@@ -387,7 +387,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   void toggleButton() {
     setState(() {
       toggleValue = !toggleValue;
-      recebido = toggleValue ? "Recebido" : "Não Recebido";
+      pago = toggleValue ? "Pago" : "Não Pago";
     });
   }
 }

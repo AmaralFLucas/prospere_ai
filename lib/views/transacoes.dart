@@ -14,6 +14,7 @@ class Transacoes extends StatefulWidget {
 }
 
 Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor2 = Color.fromARGB(255, 178, 0, 0);
 Color cardColor = Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
@@ -112,7 +113,7 @@ class _TransacoesState extends State<Transacoes>
             Bubble(
               title: "Adicionar Despesa",
               iconColor: Colors.white,
-              bubbleColor: myColor,
+              bubbleColor: myColor2,
               icon: Icons.trending_down,
               titleStyle: TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
@@ -247,7 +248,7 @@ class _TransacoesState extends State<Transacoes>
           _buildTransactionItem(
             'Receita: ${receita['categoria']}',
             'R\$ ${receita['valor']}',
-            Colors.white,
+            myColor,
           ),
           SizedBox(height: 10),
         ],
@@ -273,7 +274,6 @@ class _TransacoesState extends State<Transacoes>
   Widget _buildTransactionItem(String title, String value, Color textColor) {
     return Container(
       decoration: BoxDecoration(
-        color: myColor,
         borderRadius: BorderRadius.circular(12),
       ),
       padding: EdgeInsets.all(16),
