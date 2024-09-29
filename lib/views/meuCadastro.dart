@@ -29,7 +29,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       color: const Color.fromARGB(67, 0, 0, 0),
                       spreadRadius: 6,
                       blurRadius: 3,
-                      offset: Offset(0, 1), // changes position of shadow
+                      offset: Offset(0, 1),
                     ),
                   ]),
                   height: 100,
@@ -40,8 +40,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           icon: Icon(Icons.arrow_back),
                           color: Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const HomePage()));
+                            Navigator.pop(context);
                           },
                         ),
                         Text(
@@ -59,7 +58,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                   margin: EdgeInsets.symmetric(vertical: 0),
                   padding: EdgeInsets.only(top: 20),
                   width: double.infinity,
-                  height: 1300,
+                  height: 1350,
                   child: Column(children: [
                     Container(
                       padding: EdgeInsets.only(right: 175),
@@ -302,7 +301,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                                  builder: (context) => HomePage()));
                             },
                             child: Text('Cancelar',
                                 style: TextStyle(color: Colors.black)),
@@ -324,8 +323,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                   color: myColor,
                                   spreadRadius: 3,
                                   blurRadius: 0,
-                                  offset: Offset(
-                                      0, 0), // changes position of shadow
+                                  offset: Offset(0, 0),
                                 ),
                               ]),
                           height: 50,
@@ -333,7 +331,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const HomePage()));
+                                  builder: (context) => HomePage()));
                             },
                             child: Text('Salvar'),
                             style: ElevatedButton.styleFrom(

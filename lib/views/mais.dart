@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
 import 'package:prospere_ai/views/contas.dart';
+import 'package:prospere_ai/views/relatorio.dart';
 
 class Mais extends StatefulWidget {
   const Mais({super.key});
@@ -54,7 +55,7 @@ class _MaisState extends State<Mais> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const CategoriaReceita()),
+                      builder: (context) => const categoriaReceita()),
                 );
               },
               child: Container(
@@ -90,17 +91,26 @@ class _MaisState extends State<Mais> {
               height: 2,
               width: double.infinity,
             ),
-            Container(
-              decoration: BoxDecoration(
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Relatorio()),
+                );
+              },
+              child: Container(
+                decoration: BoxDecoration(
                   color: Color.fromARGB(220, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(12)),
-              height: 70,
-              width: double.infinity,
-              child: Center(
-                child: Text('Exportar Relatório'),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                height: 70,
+                width: double.infinity,
+                child: Center(
+                  child: Text('Relatório'),
+                ),
               ),
             ),
-            // SizedBox(height: 10),
             Container(
               color: Colors.black,
               height: 2,

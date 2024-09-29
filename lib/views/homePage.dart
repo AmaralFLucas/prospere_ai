@@ -1,10 +1,12 @@
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
-import 'package:prospere_ai/views/configuracoes.dart';
+import 'package:prospere_ai/views/inicio.dart';
 import 'package:prospere_ai/views/mais.dart';
-import 'package:prospere_ai/views/meuCadastro.dart';
 import 'package:prospere_ai/views/planejamento.dart';
 import 'package:prospere_ai/views/transacoes.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,13 +15,21 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-late PageController pageController;
+late PageController pageController = PageController();
 int initialPosition = 0;
 bool mostrarSenha = true;
 Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color cardColor = Color(0xFFF4F4F4);
+Color textColor = Colors.black87;
 Icon eyeIcon = Icon(Icons.visibility_off);
+var text = "";
+var isListening = false;
+SpeechToText speechToText = SpeechToText();
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   void initState() {
     super.initState();
@@ -35,16 +45,11 @@ class _HomePageState extends State<HomePage> {
   void _onTabSelected(int index) {
     setState(() {
       initialPosition = index;
-      pageController.animateToPage(
-        index,
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
+      pageController.jumpToPage(index);
     });
   }
 
   void _onFabPressed() {}
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,262 +61,18 @@ class _HomePageState extends State<HomePage> {
           });
         },
         children: [
-          Scaffold(
-            drawer: Drawer(
-              child: ListView(
-                children: <Widget>[
-                  DrawerHeader(
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.people,
-                              size: 100, color: Colors.white),
-                          IconButton(
-                            padding: EdgeInsets.only(left: 135, bottom: 100),
-                            icon: const Icon(
-                              Icons.settings,
-                              size: 25,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const Configuracoes()));
-                            },
-                          ),
-                        ],
-                      )),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const MeuCadastro()));
-                    },
-                    child: const Text(
-                      'Meu Cadastro',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
-                      minimumSize: Size(50, 80),
-                    ),
-                  ),
-                  const ListTile(
-                    title: Text('Item 2'),
-                    onTap: null,
-                  ),
-                ],
-              ),
-            ),
-            appBar: AppBar(
-              backgroundColor: myColor,
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return IconButton(
-                    icon: Icon(Icons.person),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                  );
-                },
-              ),
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 15),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(67, 0, 0, 0),
-                            spreadRadius: 6,
-                            blurRadius: 3,
-                            offset: Offset(0, 1), // changes position of shadow
-                          ),
-                        ],
-                        color: const Color.fromARGB(255, 221, 221, 221),
-                        borderRadius: BorderRadius.circular(12)),
-                    height: 200,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text('Saldo Atual'),
-                        Text(
-                          'RS 433,15',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Column(
-                              children: [
-                                Text(
-                                  'RS 1.958,15',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text('Receitas')
-                              ],
-                            ),
-                            Container(
-                              height: 50,
-                              width: 2,
-                              color: Colors.black,
-                            ),
-                            Column(
-                              children: [
-                                Text(
-                                  'RS 1525,00',
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text('Despesas')
-                              ],
-                            )
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 5),
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(67, 0, 0, 0),
-                            spreadRadius: 6,
-                            blurRadius: 3,
-                            offset: Offset(0, 1), // changes position of shadow
-                          ),
-                        ],
-                        color: const Color.fromARGB(255, 221, 221, 221),
-                        borderRadius: BorderRadius.circular(12)),
-                    height: 500,
-                    width: double.infinity,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 12,
-                                height: 12,
-                              ),
-                              Text(
-                                'Despesas',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: myColor,
-                                borderRadius: BorderRadius.circular(12)),
-                            height: 70,
-                            width: 650,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: myColor,
-                                borderRadius: BorderRadius.circular(12)),
-                            height: 70,
-                            width: 650,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: myColor,
-                                borderRadius: BorderRadius.circular(12)),
-                            height: 70,
-                            width: 650,
-                          ),
-                        ]),
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(vertical: 20),
-                    decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color.fromARGB(67, 0, 0, 0),
-                            spreadRadius: 6,
-                            blurRadius: 3,
-                            offset: Offset(0, 1), // changes position of shadow
-                          ),
-                        ],
-                        color: const Color.fromARGB(255, 221, 221, 221),
-                        borderRadius: BorderRadius.circular(12)),
-                    height: 500,
-                    width: double.infinity,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: 12,
-                                height: 12,
-                              ),
-                              Text(
-                                'Planejamento',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                            ],
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: myColor,
-                                borderRadius: BorderRadius.circular(12)),
-                            height: 70,
-                            width: 650,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: myColor,
-                                borderRadius: BorderRadius.circular(12)),
-                            height: 70,
-                            width: 650,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                                color: myColor,
-                                borderRadius: BorderRadius.circular(12)),
-                            height: 70,
-                            width: 650,
-                          ),
-                        ]),
-                  ),
-                ],
-              ),
-            ),
+          Inicio(
+            userId: uid,
           ),
-          Transacoes(),
+          Transacoes(userId: uid),
           Planejamento(),
           Mais(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showVoice(context);
+        },
         child: Icon(Icons.mic),
         backgroundColor: myColor,
       ),
@@ -322,6 +83,63 @@ class _HomePageState extends State<HomePage> {
         onTabSelected: _onTabSelected,
         onFabPressed: _onFabPressed,
       ),
+    );
+  }
+
+  void _showVoice(BuildContext context) async {
+    bool available = await speechToText.initialize(
+      onStatus: (status) {
+        if (status == 'done') {
+          setState(() {
+            isListening = false;
+          });
+          speechToText.stop();
+          Navigator.of(context).pop();
+        }
+      },
+      onError: (error) {
+        print('Erro no reconhecimento: $error');
+      },
+    );
+
+    if (available) {
+      setState(() {
+        isListening = true;
+      });
+
+      speechToText.listen(
+        onResult: (result) {
+          setState(() {
+            text = result.recognizedWords;
+          });
+        },
+        pauseFor: Duration(seconds: 3),
+        localeId: 'pt_BR',
+        partialResults: true,
+      );
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AvatarGlow(
+                endRadius: 75.0,
+                animate: isListening,
+                glowColor: myColor,
+                child: CircleAvatar(
+                  backgroundColor: myColor,
+                  radius: 35,
+                  child: Icon(Icons.mic, size: 50, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

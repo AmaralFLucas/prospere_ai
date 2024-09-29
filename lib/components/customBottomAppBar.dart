@@ -14,37 +14,41 @@ class CustomBottomAppBar extends StatelessWidget {
     required this.onFabPressed,
   });
 
+  Widget buildNavBarItem(IconData icon, String label, int index) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(icon),
+          color: selectedIndex == index ? myColor : Colors.black,
+          onPressed: () => onTabSelected(index),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            color: selectedIndex == index ? myColor : Colors.black,
+            fontSize: 12,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
       height: 60,
       notchMargin: 5,
       shape: CircularNotchedRectangle(),
-      color: Color.fromARGB(255, 212, 217, 221),
+      color: Color.fromARGB(255, 230, 234, 236),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(
-            icon: Icon(Icons.home),
-            color: selectedIndex == 0 ? myColor : Colors.black,
-            onPressed: () => onTabSelected(0),
-          ),
-          IconButton(
-            icon: Icon(Icons.currency_exchange),
-            color: selectedIndex == 1 ? myColor : Colors.black,
-            onPressed: () => onTabSelected(1),
-          ),
-          SizedBox(width: 48), // Spacer for the FloatingActionButton
-          IconButton(
-            icon: Icon(Icons.flag),
-            color: selectedIndex == 2 ? myColor : Colors.black,
-            onPressed: () => onTabSelected(2),
-          ),
-          IconButton(
-            icon: Icon(Icons.more_horiz),
-            color: selectedIndex == 3 ? myColor : Colors.black,
-            onPressed: () => onTabSelected(3),
-          ),
+          buildNavBarItem(Icons.home, 'Inicio', 0),
+          buildNavBarItem(Icons.currency_exchange, 'Transações', 1),
+          SizedBox(width: 48), // Espaço para o FAB
+          buildNavBarItem(Icons.flag, 'Planejamento', 2),
+          buildNavBarItem(Icons.more_horiz, 'Mais', 3),
         ],
       ),
     );
