@@ -8,7 +8,7 @@ class MeuCadastro extends StatefulWidget {
   State<MeuCadastro> createState() => _MeuCadastroState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class _MeuCadastroState extends State<MeuCadastro> {
   @override
@@ -22,11 +22,11 @@ class _MeuCadastroState extends State<MeuCadastro> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Container(
-                  padding: EdgeInsets.all(25),
+                  padding: const EdgeInsets.all(25),
                   width: double.infinity,
-                  decoration: BoxDecoration(color: myColor, boxShadow: [
+                  decoration: BoxDecoration(color: myColor, boxShadow: const [
                     BoxShadow(
-                      color: const Color.fromARGB(67, 0, 0, 0),
+                      color: Color.fromARGB(67, 0, 0, 0),
                       spreadRadius: 6,
                       blurRadius: 3,
                       offset: Offset(0, 1),
@@ -37,13 +37,13 @@ class _MeuCadastroState extends State<MeuCadastro> {
                     children: [
                       Row(children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back),
-                          color: Color.fromARGB(255, 255, 255, 255),
+                          icon: const Icon(Icons.arrow_back),
+                          color: const Color.fromARGB(255, 255, 255, 255),
                           onPressed: () {
                             Navigator.pop(context);
                           },
                         ),
-                        Text(
+                        const Text(
                           'Meu Cadastro',
                           style: TextStyle(
                               fontSize: 20,
@@ -55,14 +55,14 @@ class _MeuCadastroState extends State<MeuCadastro> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 0),
-                  padding: EdgeInsets.only(top: 20),
+                  margin: const EdgeInsets.symmetric(vertical: 0),
+                  padding: const EdgeInsets.only(top: 20),
                   width: double.infinity,
                   height: 1350,
                   child: Column(children: [
                     Container(
-                      padding: EdgeInsets.only(right: 175),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 175),
+                      child: const Text(
                         'Nome Completo',
                         style: TextStyle(
                           fontSize: 15,
@@ -70,8 +70,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -81,8 +81,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 250, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 250, top: 20),
+                      child: const Text(
                         'Email',
                         style: TextStyle(
                           fontSize: 15,
@@ -90,8 +90,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -101,8 +101,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 150, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 150, top: 20),
+                      child: const Text(
                         'Data de Nascimento',
                         style: TextStyle(
                           fontSize: 15,
@@ -110,8 +110,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -121,8 +121,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 230, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 230, top: 20),
+                      child: const Text(
                         'Telefone',
                         style: TextStyle(
                           fontSize: 15,
@@ -130,8 +130,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -141,8 +141,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 250, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 250, top: 20),
+                      child: const Text(
                         'Sexo',
                         style: TextStyle(
                           fontSize: 15,
@@ -150,8 +150,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -161,8 +161,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 190, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 190, top: 20),
+                      child: const Text(
                         'Nacionalidade',
                         style: TextStyle(
                           fontSize: 15,
@@ -170,8 +170,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -181,8 +181,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 255, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 255, top: 20),
+                      child: const Text(
                         'CPF',
                         style: TextStyle(
                           fontSize: 15,
@@ -190,8 +190,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -201,8 +201,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 255, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 255, top: 20),
+                      child: const Text(
                         'CEP',
                         style: TextStyle(
                           fontSize: 15,
@@ -210,8 +210,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -221,8 +221,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 240, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 240, top: 20),
+                      child: const Text(
                         'Cidade',
                         style: TextStyle(
                           fontSize: 15,
@@ -230,8 +230,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -241,8 +241,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 240, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 240, top: 20),
+                      child: const Text(
                         'Estado',
                         style: TextStyle(
                           fontSize: 15,
@@ -250,8 +250,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -261,8 +261,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(right: 160, top: 20),
-                      child: Text(
+                      padding: const EdgeInsets.only(right: 160, top: 20),
+                      child: const Text(
                         'Objetivo Financeiro',
                         style: TextStyle(
                           fontSize: 15,
@@ -270,8 +270,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 16),
-                    SizedBox(
+                    const SizedBox(height: 16),
+                    const SizedBox(
                       width: 300,
                       child: TextField(
                         decoration: InputDecoration(
@@ -284,7 +284,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          margin: EdgeInsets.symmetric(vertical: 20),
+                          margin: const EdgeInsets.symmetric(vertical: 20),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(55),
                               boxShadow: [
@@ -292,7 +292,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                   color: myColor,
                                   spreadRadius: 3,
                                   blurRadius: 0,
-                                  offset: Offset(
+                                  offset: const Offset(
                                       0, 0), // changes position of shadow
                                 ),
                               ]),
@@ -301,20 +301,20 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => HomePage()));
+                                  builder: (context) => const HomePage()));
                             },
-                            child: Text('Cancelar',
-                                style: TextStyle(color: Colors.black)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
-                              minimumSize: Size(150, 50),
+                              minimumSize: const Size(150, 50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(55),
                               ),
                             ),
+                            child: Text('Cancelar',
+                                style: TextStyle(color: Colors.black)),
                           ),
                         ),
-                        Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
+                        const Padding(padding: EdgeInsets.symmetric(horizontal: 15)),
                         Container(
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(55),
@@ -323,7 +323,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                   color: myColor,
                                   spreadRadius: 3,
                                   blurRadius: 0,
-                                  offset: Offset(0, 0),
+                                  offset: const Offset(0, 0),
                                 ),
                               ]),
                           height: 50,
@@ -331,16 +331,16 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           child: ElevatedButton(
                             onPressed: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => HomePage()));
+                                  builder: (context) => const HomePage()));
                             },
-                            child: Text('Salvar'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: myColor,
-                              minimumSize: Size(150, 50),
+                              minimumSize: const Size(150, 50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(55),
                               ),
                             ),
+                            child: Text('Salvar'),
                           ),
                         ),
                       ],

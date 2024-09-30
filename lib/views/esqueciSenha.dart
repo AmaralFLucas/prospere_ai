@@ -12,91 +12,106 @@ class EsqueciSenha extends StatefulWidget {
   State<EsqueciSenha> createState() => _EsqueciSenhaState();
 }
 
-PageController pageController = PageController();
-int initialPosition = 0;
-bool mostrarSenha = true;
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Icon eyeIcon = Icon(Icons.visibility_off);
-
 class _EsqueciSenhaState extends State<EsqueciSenha> {
-  AutenticacaoServico _autenServico = AutenticacaoServico();
+  final AutenticacaoServico _autenServico = AutenticacaoServico();
   TextEditingController emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo_porco.png',
-              width: 200,
-              height: 200,
-            ),
-            SizedBox(height: 16),
-            SizedBox(
+      backgroundColor: const Color.fromARGB(255, 30, 163, 132), // Cor de fundo
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 60.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Botão de voltar
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Voltar para a tela anterior
+                  },
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Logo
+              Image.asset(
+                'assets/images/logo_porco.png',
+                width: 200,
+                height: 200,
+              ),
+              const SizedBox(height: 16),
+              // Campo de entrada de email
+              SizedBox(
                 width: 300,
                 child: MeuInput(
                   labelText: 'Digite seu e-mail',
                   controller: emailController,
-                )),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                await _autenServico.redefinirSenha(email: emailController.text);
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const CodigoMudarSenha()));
-              },
-              child: Text('Enviar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+                ),
               ),
-            ),
-            SizedBox(height: 68),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login()));
-              },
-              child: Text('Voltar para Login'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+              const SizedBox(height: 32),
+              // Botão para continuar
+              ElevatedButton(
+                onPressed: () async {
+                  await _autenServico.redefinirSenha(
+                      email: emailController.text);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const CodigoMudarSenha()));
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color.fromARGB(255, 30, 163, 132),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text('Continuar'),
               ),
-            ),
-            SizedBox(height: 30),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
+              const SizedBox(height: 20),
+              // Botão para voltar para login
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const Login()));
+                },
+                child: const Text(
+                  'Voltar para Login',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
               ),
-              SizedBox(width: 15),
-              Text('OU'),
-              SizedBox(width: 15),
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
+              const SizedBox(height: 30),
+              // Opção para criar uma nova conta
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Não tem uma conta? ',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const Cadastro()));
+                    },
+                    child: const Text(
+                      'Criar Conta',
+                      style: TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ]),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Cadastro()));
-              },
-              child: Text('Criar Conta'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
-            )
-          ],
+            ],
+          ),
         ),
-      ]),
+      ),
     );
   }
 }

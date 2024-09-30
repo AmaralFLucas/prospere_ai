@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class Seguranca extends StatelessWidget {
   const Seguranca({super.key});
@@ -11,15 +11,15 @@ class Seguranca extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: myColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('Segurança'),
+        title: const Text('Segurança'),
       ),
       body: ListView(
-        children: [
+        children: const [
           ListTile(
             title: Text('Senha'),
             subtitle: Text('Configure sua senha para entrar no aplicativo'),
