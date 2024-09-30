@@ -9,8 +9,8 @@ class AdicionarDespesa extends StatefulWidget {
   State<AdicionarDespesa> createState() => _AdicionarDespesaState();
 }
 
-Color myColor = Color.fromARGB(255, 178, 0, 0);
-Color myColorGray = Color.fromARGB(255, 121, 108, 108);
+Color myColor = const Color.fromARGB(255, 178, 0, 0);
+Color myColorGray = const Color.fromARGB(255, 121, 108, 108);
 
 class _AdicionarDespesaState extends State<AdicionarDespesa> {
   bool toggleValue = false;
@@ -31,13 +31,13 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
         onPressed: () {
           _selectDate(context);
         },
-        child: Text(
-          '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
-          style: TextStyle(fontSize: 16, color: Colors.black),
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: myColor,
+        ),
+        child: Text(
+          '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
+          style: TextStyle(fontSize: 16, color: Colors.black),
         ),
       );
     }
@@ -57,7 +57,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
             _dataSelecionada = index == 0
                 ? Timestamp.fromDate(DateTime.now())
                 : Timestamp.fromDate(
-                    DateTime.now().subtract(Duration(days: 1)));
+                    DateTime.now().subtract(const Duration(days: 1)));
           }
         });
       },
@@ -71,7 +71,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
         minWidth: 80.0,
       ),
       isSelected: isSelected,
-      children: <Widget>[
+      children: const <Widget>[
         Text('Hoje'),
         Text('Ontem'),
         Text('Outros'),
@@ -90,11 +90,11 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(15),
                     width: double.infinity,
-                    decoration: BoxDecoration(color: myColor, boxShadow: [
+                    decoration: BoxDecoration(color: myColor, boxShadow: const [
                       BoxShadow(
-                        color: const Color.fromARGB(67, 0, 0, 0),
+                        color: Color.fromARGB(67, 0, 0, 0),
                         spreadRadius: 6,
                         blurRadius: 3,
                         offset: Offset(0, 1),
@@ -105,14 +105,14 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                       children: [
                         Row(children: [
                           IconButton(
-                            icon: Icon(Icons.arrow_back),
-                            color: Color.fromARGB(255, 255, 255, 255),
+                            icon: const Icon(Icons.arrow_back),
+                            color: const Color.fromARGB(255, 255, 255, 255),
                             onPressed: () {
                               Navigator.pop(context);
                             },
                           ),
-                          Padding(padding: EdgeInsets.only(left: 10)),
-                          Text(
+                          const Padding(padding: EdgeInsets.only(left: 10)),
+                          const Text(
                             'Adicionar Despesa',
                             style: TextStyle(
                                 fontSize: 20,
@@ -120,7 +120,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                 color: Colors.white),
                           ),
                         ]),
-                        Row(
+                        const Row(
                           children: [
                             Padding(padding: EdgeInsets.only(bottom: 20)),
                             Text(
@@ -138,11 +138,11 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                               child: TextField(
                                 controller: _valorController,
                                 keyboardType: TextInputType.number,
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 30,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   prefixText: "R\$ ",
                                   prefixStyle: TextStyle(
                                     fontSize: 30,
@@ -161,29 +161,29 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.symmetric(vertical: 0),
-                    padding: EdgeInsets.only(top: 20),
+                    margin: const EdgeInsets.symmetric(vertical: 0),
+                    padding: const EdgeInsets.only(top: 20),
                     width: double.infinity,
                     child: Column(
                       children: [
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.check_circle_outline_outlined,
                               size: 40,
                             ),
-                            Padding(
+                            const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10)),
                             Text(pago,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 )),
-                            Padding(
+                            const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 30)),
                             AnimatedContainer(
-                              duration: Duration(microseconds: 350),
+                              duration: const Duration(microseconds: 350),
                               height: 40,
                               width: 100,
                               decoration: BoxDecoration(
@@ -194,7 +194,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                               child: Stack(
                                 children: <Widget>[
                                   AnimatedPositioned(
-                                    duration: Duration(milliseconds: 350),
+                                    duration: const Duration(milliseconds: 350),
                                     curve: Curves.easeIn,
                                     top: 3,
                                     left: toggleValue ? 60 : 0,
@@ -202,11 +202,12 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                     child: InkWell(
                                       onTap: toggleButton,
                                       child: AnimatedSwitcher(
-                                          duration: Duration(milliseconds: 350),
+                                          duration: const Duration(milliseconds: 350),
                                           transitionBuilder: (Widget child,
                                               Animation<double> animation) {
                                             return RotationTransition(
-                                                child: child, turns: animation);
+                                                turns: animation,
+                                                child: child);
                                           },
                                           child: toggleValue
                                               ? Icon(Icons.circle,
@@ -226,24 +227,24 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                             ),
                           ],
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Container(
                           height: 2,
                           color: myColorGray,
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.bookmark_border, size: 40),
-                              Padding(
+                              const Icon(Icons.bookmark_border, size: 40),
+                              const Padding(
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 20)),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
-                                  decoration: InputDecoration(
+                                  decoration: const InputDecoration(
                                       labelText: 'Selecionar Categoria'),
                                   items: [
                                     'Investimento',
@@ -265,49 +266,49 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                             ],
                           ),
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Container(
                           height: 2,
                           color: myColorGray,
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.date_range_outlined,
                               size: 40,
                             ),
-                            Padding(
+                            const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20)),
                             _buildDateSelection(),
                           ],
                         ),
-                        Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              margin: EdgeInsets.symmetric(vertical: 20),
+                              margin: const EdgeInsets.symmetric(vertical: 20),
                               height: 50,
                               width: 150,
                               child: ElevatedButton(
                                 onPressed: () {
                                   Navigator.of(context).pop();
                                 },
-                                child: Text('Cancelar',
-                                    style: TextStyle(color: Colors.black)),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(55),
                                   ),
                                 ),
+                                child: Text('Cancelar',
+                                    style: TextStyle(color: Colors.black)),
                               ),
                             ),
-                            Padding(
+                            const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 15)),
-                            Container(
+                            SizedBox(
                               height: 50,
                               width: 150,
                               child: ElevatedButton(
@@ -315,15 +316,15 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                   _salvarDespesa();
                                   Navigator.of(context).pop();
                                 },
-                                child: Text(
-                                  'Adicionar',
-                                  style: TextStyle(color: Colors.white),
-                                ),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: myColor,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(55),
                                   ),
+                                ),
+                                child: Text(
+                                  'Adicionar',
+                                  style: TextStyle(color: Colors.white),
                                 ),
                               ),
                             ),

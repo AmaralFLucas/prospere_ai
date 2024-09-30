@@ -1,22 +1,51 @@
 import 'package:flutter/material.dart';
 
 class MeuInput extends StatelessWidget {
-  String labelText;
-  bool? obscure;
-  TextEditingController? controller;
+  final String labelText;
+  final bool obscure;
+  final TextEditingController? controller;
+  final Icon? prefixIcon;
 
-  MeuInput({super.key, required this.labelText, this.obscure, this.controller});
+  const MeuInput({
+    Key? key,
+    required this.labelText,
+    this.obscure = false,
+    this.controller,
+    this.prefixIcon,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
-        obscureText: obscure ?? false,
+        obscureText: obscure,
         decoration: InputDecoration(
-          border: OutlineInputBorder(),
           labelText: labelText,
+          labelStyle: const TextStyle(color: Colors.white70),
+          prefixIcon: prefixIcon,
+          filled: true,
+          fillColor: const Color.fromARGB(
+              166, 0, 0, 0), // Cor de fundo do campo de input
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0), // Bordas arredondadas
+            borderSide: BorderSide.none, // Remove a borda padrão
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: const BorderSide(
+              color: Color.fromARGB(255, 30, 163, 132), // Cor da borda ao focar
+              width: 2,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.0),
+            borderSide: const BorderSide(
+              color: Colors.transparent, // Cor da borda quando habilitado
+              width: 2,
+            ),
+          ),
         ),
       ),
     );
@@ -24,65 +53,40 @@ class MeuInput extends StatelessWidget {
 }
 
 class Email extends StatelessWidget {
-  String labelText;
-  TextEditingController? controller;
+  final String labelText;
+  final TextEditingController? controller;
 
-  Email({super.key, required this.labelText, this.controller});
+  const Email({Key? key, required this.labelText, this.controller})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        controller: controller,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: labelText,
-        ),
-        validator: (String? value) {
-          if (value == null || value.isEmpty) {
-            return "O e-mail não pode ser vazio";
-          } else if (value.length < 5) {
-            return "O e-mail é muito curto";
-          } else if (!value.contains("@")) {
-            return "O e-mail não é valido";
-          } else {
-            return null;
-          }
-        },
-      ),
+    return MeuInput(
+      labelText: labelText,
+      controller: controller,
+      prefixIcon: const Icon(Icons.email,
+          color: Color.fromARGB(255, 30, 163, 132)), // Ícone de e-mail
     );
   }
 }
 
 class Senha extends StatelessWidget {
-  String labelText;
-  bool? obscure;
-  TextEditingController? controller;
+  final String labelText;
+  final bool? obscure;
+  final TextEditingController? controller;
 
-  Senha({super.key, required this.labelText, this.controller, this.obscure});
+  const Senha(
+      {Key? key, required this.labelText, this.controller, this.obscure})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscure ?? false,
-        decoration: InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: labelText,
-        ),
-        validator: (String? value) {
-          if (value == null || value.isEmpty) {
-            return "A senha não pode ser vazia";
-          } else if (value.length < 6) {
-            return "A senha é muito curta";
-          } else {
-            return null;
-          }
-        },
-      ),
+    return MeuInput(
+      labelText: labelText,
+      controller: controller,
+      obscure: obscure ?? true,
+      prefixIcon: const Icon(Icons.lock,
+          color: Color.fromARGB(255, 30, 163, 132)), // Ícone de senha
     );
   }
 }

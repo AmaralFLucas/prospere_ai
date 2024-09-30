@@ -5,7 +5,7 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Transacoes extends StatefulWidget {
-  Transacoes({Key? key, this.title, required this.userId}) : super(key: key);
+  const Transacoes({Key? key, this.title, required this.userId}) : super(key: key);
   final String? title;
   final String userId;
 
@@ -13,9 +13,9 @@ class Transacoes extends StatefulWidget {
   State<Transacoes> createState() => _TransacoesState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Color myColor2 = Color.fromARGB(255, 178, 0, 0);
-Color cardColor = Color(0xFFF4F4F4);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color myColor2 = const Color.fromARGB(255, 178, 0, 0);
+Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
 class _TransacoesState extends State<Transacoes>
@@ -36,7 +36,7 @@ class _TransacoesState extends State<Transacoes>
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 260),
     );
 
     final curvedAnimation =
@@ -71,7 +71,7 @@ class _TransacoesState extends State<Transacoes>
       appBar: AppBar(
         backgroundColor: myColor,
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Transações',
           style: TextStyle(
             fontSize: 24,
@@ -81,18 +81,18 @@ class _TransacoesState extends State<Transacoes>
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildBalanceCard(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTransactionList(),
           ],
         ),
       ),
       floatingActionButton: Container(
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
         child: FloatingActionBubble(
           items: <Bubble>[
             Bubble(
@@ -100,12 +100,12 @@ class _TransacoesState extends State<Transacoes>
               iconColor: Colors.white,
               bubbleColor: myColor,
               icon: Icons.trending_up,
-              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => AdicionarReceita()),
+                      builder: (BuildContext context) => const AdicionarReceita()),
                 );
                 _animationController.reverse();
               },
@@ -115,12 +115,12 @@ class _TransacoesState extends State<Transacoes>
               iconColor: Colors.white,
               bubbleColor: myColor2,
               icon: Icons.trending_down,
-              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => AdicionarDespesa()),
+                      builder: (BuildContext context) => const AdicionarDespesa()),
                 );
                 _animationController.reverse();
               },
@@ -141,11 +141,11 @@ class _TransacoesState extends State<Transacoes>
 
   Widget _buildBalanceCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -164,7 +164,7 @@ class _TransacoesState extends State<Transacoes>
               color: textColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'R\$ ${saldoAtual.toStringAsFixed(2)}',
             style: TextStyle(
@@ -173,7 +173,7 @@ class _TransacoesState extends State<Transacoes>
               color: myColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -204,7 +204,7 @@ class _TransacoesState extends State<Transacoes>
             color: textColor,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           title,
           style: TextStyle(
@@ -218,11 +218,11 @@ class _TransacoesState extends State<Transacoes>
 
   Widget _buildTransactionList() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -250,7 +250,7 @@ class _TransacoesState extends State<Transacoes>
             'R\$ ${receita['valor']}',
             myColor,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       );
     }).toList());
@@ -263,7 +263,7 @@ class _TransacoesState extends State<Transacoes>
             'R\$ ${despesa['valor']}',
             Colors.red,
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       );
     }).toList());
@@ -276,7 +276,7 @@ class _TransacoesState extends State<Transacoes>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

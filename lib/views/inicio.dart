@@ -122,6 +122,10 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                             builder: (context) => const MeuCadastro()),
                       );
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
+                      minimumSize: const Size(50, 80),
+                    ),
                     child: const Text(
                       'Meu Cadastro',
                       style: TextStyle(
@@ -129,10 +133,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
-                      minimumSize: const Size(50, 80),
                     ),
                   ),
                   ElevatedButton(
@@ -143,9 +143,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                       backgroundColor: const Color.fromARGB(220, 255, 255, 255),
                       minimumSize: const Size(50, 80),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const [
+                      children: [
                         Text(
                           'Sair',
                           style: TextStyle(
@@ -195,11 +195,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
 
   Widget _buildBalanceCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -218,7 +218,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               color: textColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'R\$ ${saldoAtual.toStringAsFixed(2)}',
             style: TextStyle(
@@ -227,7 +227,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               color: myColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -258,7 +258,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             color: textColor,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           title,
           style: TextStyle(
@@ -272,11 +272,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
 
   Widget _buildTransactionList() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -303,7 +303,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             '${despesa['categoria']}',
             'R\$ ${despesa['valor']}',
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       );
     }).toList());
@@ -317,20 +317,20 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         color: myColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.white,
             ),
           ),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.red,

@@ -7,8 +7,8 @@ class Planejamento extends StatefulWidget {
   State<Planejamento> createState() => _PlanejamentoState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Color cardColor = Color(0xFFF4F4F4);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
 class _PlanejamentoState extends State<Planejamento> {
@@ -21,7 +21,7 @@ class _PlanejamentoState extends State<Planejamento> {
       appBar: AppBar(
         backgroundColor: myColor,
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Planejamento',
           style: TextStyle(
             fontSize: 24,
@@ -31,16 +31,16 @@ class _PlanejamentoState extends State<Planejamento> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildBalanceCard(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildChartCard(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildAddPlanButton(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildPlanList(),
           ],
         ),
@@ -50,11 +50,11 @@ class _PlanejamentoState extends State<Planejamento> {
 
   Widget _buildBalanceCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -73,7 +73,7 @@ class _PlanejamentoState extends State<Planejamento> {
               color: textColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'R\$ 433,15',
             style: TextStyle(
@@ -82,7 +82,7 @@ class _PlanejamentoState extends State<Planejamento> {
               color: myColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -111,7 +111,7 @@ class _PlanejamentoState extends State<Planejamento> {
             color: textColor,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           title,
           style: TextStyle(
@@ -125,11 +125,11 @@ class _PlanejamentoState extends State<Planejamento> {
 
   Widget _buildChartCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -156,18 +156,18 @@ class _PlanejamentoState extends State<Planejamento> {
       onPressed: () {
         _showAddPlanDialog(context);
       },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: myColor,
+        minimumSize: const Size(double.infinity, 60),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+      ),
       child: Text(
         'Adicionar Planejamento',
         style: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.bold,
-        ),
-      ),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: myColor,
-        minimumSize: Size(double.infinity, 60),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );
@@ -178,7 +178,7 @@ class _PlanejamentoState extends State<Planejamento> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -187,7 +187,7 @@ class _PlanejamentoState extends State<Planejamento> {
         ],
       ),
       child: ListView.builder(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         shrinkWrap: true,
         itemCount: planList.length,
         itemBuilder: (context, index) {
@@ -202,8 +202,8 @@ class _PlanejamentoState extends State<Planejamento> {
                 color: selectedPlanIndex == index ? myColor : cardColor,
                 borderRadius: BorderRadius.circular(12),
               ),
-              margin: EdgeInsets.symmetric(vertical: 8),
-              padding: EdgeInsets.all(16),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -216,7 +216,7 @@ class _PlanejamentoState extends State<Planejamento> {
                           selectedPlanIndex == index ? Colors.white : textColor,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'R\$: ${planList[index]['value']}',
                     style: TextStyle(
@@ -243,7 +243,7 @@ class _PlanejamentoState extends State<Planejamento> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Adicionar Planejamento'),
+          title: const Text('Adicionar Planejamento'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

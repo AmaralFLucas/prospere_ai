@@ -9,7 +9,7 @@ class categoriaReceita extends StatefulWidget {
   State<categoriaReceita> createState() => _categoriaReceitaState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class _categoriaReceitaState extends State<categoriaReceita> {
   @override
@@ -18,12 +18,12 @@ class _categoriaReceitaState extends State<categoriaReceita> {
       appBar: AppBar(
         backgroundColor: myColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(
+        title: const Text(
           'Categorias',
           style: TextStyle(
             fontSize: 20,
@@ -36,11 +36,11 @@ class _categoriaReceitaState extends State<categoriaReceita> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Container(
-              margin: EdgeInsets.only(right: 10),
+              margin: const EdgeInsets.only(right: 10),
               decoration: BoxDecoration(
-                color: Color.fromARGB(255, 221, 221, 221),
+                color: const Color.fromARGB(255, 221, 221, 221),
                 borderRadius: BorderRadius.circular(55),
               ),
               height: 60,
@@ -50,50 +50,50 @@ class _categoriaReceitaState extends State<categoriaReceita> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {},
-                      child: Text('Receita',
-                          style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: myColor,
-                        minimumSize: Size(150, 50),
+                        minimumSize: const Size(150, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(55),
                         ),
                       ),
+                      child: Text('Receita',
+                          style: TextStyle(color: Colors.white)),
                     ),
                   ),
-                  SizedBox(width: 3),
+                  const SizedBox(width: 3),
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute(
-                            builder: (context) => categoriaDespesas(),
+                            builder: (context) => const categoriaDespesas(),
                           ),
                         );
                       },
-                      child: Text('Despesas',
-                          style: TextStyle(color: Colors.black)),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 197, 197, 197),
-                        minimumSize: Size(150, 50),
+                        backgroundColor: const Color.fromARGB(255, 197, 197, 197),
+                        minimumSize: const Size(150, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(55),
                         ),
                       ),
+                      child: Text('Despesas',
+                          style: TextStyle(color: Colors.black)),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             _buildCategoryItem(Icons.trending_up_sharp, 'Investimento'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.card_giftcard, 'Presentes'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.more_horiz, 'Outros'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.monetization_on_outlined, 'Salário'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.workspace_premium, 'Prêmio'),
           ],
         ),
@@ -106,10 +106,10 @@ class _categoriaReceitaState extends State<categoriaReceita> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(icon, size: 60),
-        SizedBox(width: 50),
+        const SizedBox(width: 50),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,

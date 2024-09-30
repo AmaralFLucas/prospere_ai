@@ -15,13 +15,13 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-late PageController pageController = PageController();
+PageController pageController = PageController();
 int initialPosition = 0;
 bool mostrarSenha = true;
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Color cardColor = Color(0xFFF4F4F4);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
-Icon eyeIcon = Icon(Icons.visibility_off);
+Icon eyeIcon = const Icon(Icons.visibility_off);
 var text = "";
 var isListening = false;
 SpeechToText speechToText = SpeechToText();
@@ -65,16 +65,16 @@ class _HomePageState extends State<HomePage>
             userId: uid,
           ),
           Transacoes(userId: uid),
-          Planejamento(),
-          Mais(),
+          const Planejamento(),
+          const Mais(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _showVoice(context);
         },
-        child: Icon(Icons.mic),
         backgroundColor: myColor,
+        child: Icon(Icons.mic),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: CustomBottomAppBar(
@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage>
             text = result.recognizedWords;
           });
         },
-        pauseFor: Duration(seconds: 3),
+        pauseFor: const Duration(seconds: 3),
         localeId: 'pt_BR',
         partialResults: true,
       );
@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage>
                 child: CircleAvatar(
                   backgroundColor: myColor,
                   radius: 35,
-                  child: Icon(Icons.mic, size: 50, color: Colors.white),
+                  child: const Icon(Icons.mic, size: 50, color: Colors.white),
                 ),
               ),
             ],

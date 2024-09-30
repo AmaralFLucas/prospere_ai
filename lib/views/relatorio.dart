@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 
 class Relatorio extends StatefulWidget {
-  Relatorio({Key? key, this.title}) : super(key: key);
+  const Relatorio({Key? key, this.title}) : super(key: key);
   final String? title;
 
   @override
   State<Relatorio> createState() => _RelatorioState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Color cardColor = Color(0xFFF4F4F4);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
 class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMixin {
@@ -27,7 +27,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 260),
     );
 
     final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
@@ -42,15 +42,15 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Filtrar Relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          title: const Text('Filtrar Relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Selecione o período do relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 10),
+                    const Text('Selecione o período do relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -83,9 +83,9 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
                         ),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    Text('Selecione o tipo de relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 20),
+                    const Text('Selecione o tipo de relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -128,7 +128,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancelar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              child: const Text('Cancelar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -138,8 +138,8 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
                 });
                 Navigator.of(context).pop();
               },
-              child: Text('Salvar'),
               style: ElevatedButton.styleFrom(backgroundColor: myColor),
+              child: Text('Salvar'),
             ),
           ],
         );
@@ -156,8 +156,8 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          margin: EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
             color: isSelected ? myColor : Colors.grey[200],
             borderRadius: BorderRadius.circular(8),
@@ -180,17 +180,17 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Relatório'),
+        title: const Text('Relatório'),
         backgroundColor: myColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt_outlined),
+            icon: const Icon(Icons.filter_alt_outlined),
             onPressed: () {
               _showFilterDialog(context);
             },
@@ -198,26 +198,26 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             _buildBalanceCard(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildTransactionList(),
           ],
         ),
       ),
       floatingActionButton:Container(
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
         child: FloatingActionBubble(
         items: <Bubble>[
           Bubble(
             title: "PDF",
             iconColor: Colors.white,
-            bubbleColor:Color.fromARGB(255, 178, 0, 0),
+            bubbleColor:const Color.fromARGB(255, 178, 0, 0),
             icon: Icons.article_outlined,
-            titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               _animationController.reverse();
             },
@@ -227,7 +227,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
             iconColor: Colors.white,
             bubbleColor: myColor,
             icon: Icons.article_outlined,
-            titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
             onPress: () {
               _animationController.reverse();
             },
@@ -248,11 +248,11 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
 
   Widget _buildBalanceCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -272,7 +272,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
               color: textColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'Mês',
             style: TextStyle(
@@ -281,7 +281,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
               color: myColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -289,11 +289,11 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
 
   Widget _buildTransactionList() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -305,9 +305,9 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           _buildTransactionItem('Transação 1', 'R\$ 150,00'),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildTransactionItem('Transação 2', 'R\$ 200,00'),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _buildTransactionItem('Transação 3', 'R\$ 250,00'),
         ],
       ),
@@ -320,20 +320,20 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
         color: myColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.white,
             ),
           ),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.white,
             ),
