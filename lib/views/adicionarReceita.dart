@@ -37,7 +37,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
         ),
         child: Text(
           '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
-          style: TextStyle(fontSize: 16, color: Colors.black),
+          style: const TextStyle(fontSize: 16, color: Colors.black),
         ),
       );
     }
@@ -57,7 +57,8 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
             _dataSelecionada = index == 0
                 ? Timestamp.fromDate(DateTime.now())
                 : Timestamp.fromDate(
-                    DateTime.now().subtract(const Duration(days: 1)));
+                    DateTime.now().subtract(const Duration(days: 1)),
+                  );
           }
         });
       },
@@ -92,43 +93,50 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                   Container(
                     padding: const EdgeInsets.all(15),
                     width: double.infinity,
-                    decoration: BoxDecoration(color: myColor, boxShadow: const [
-                      BoxShadow(
-                        color: Color.fromARGB(67, 0, 0, 0),
-                        spreadRadius: 6,
-                        blurRadius: 3,
-                        offset: Offset(0, 1),
-                      ),
-                    ]),
+                    decoration: BoxDecoration(
+                      color: myColor,
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color.fromARGB(67, 0, 0, 0),
+                          spreadRadius: 6,
+                          blurRadius: 3,
+                          offset: Offset(0, 1),
+                        ),
+                      ],
+                    ),
                     height: 150,
                     child: Column(
                       children: [
-                        Row(children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 10)),
-                          const Text(
-                            'Adicionar Despesa',
-                            style: TextStyle(
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            const Padding(padding: EdgeInsets.only(left: 10)),
+                            const Text(
+                              'Adicionar Despesa',
+                              style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ]),
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                         const Row(
                           children: [
                             Padding(padding: EdgeInsets.only(bottom: 20)),
                             Text(
                               'Valor total Despesa',
                               style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
                             ),
                           ],
                         ),
@@ -139,9 +147,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                 controller: _valorController,
                                 keyboardType: TextInputType.number,
                                 style: const TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                                 decoration: const InputDecoration(
                                   prefixText: "R\$ ",
                                   prefixStyle: TextStyle(
@@ -175,64 +184,42 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ),
                             const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 10)),
-                            Text(recebido,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                )),
+                            Text(
+                              recebido,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 30)),
-                            AnimatedContainer(
-                              duration: const Duration(microseconds: 350),
-                              height: 40,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(20),
-                                  color: toggleValue
-                                      ? myColor.withOpacity(0.5)
-                                      : myColorGray.withOpacity(0.5)),
-                              child: Stack(
-                                children: <Widget>[
-                                  AnimatedPositioned(
-                                    duration: const Duration(milliseconds: 350),
-                                    curve: Curves.easeIn,
-                                    top: 3,
-                                    left: toggleValue ? 60 : 0,
-                                    right: toggleValue ? 0 : 60,
-                                    child: InkWell(
-                                      onTap: toggleButton,
-                                      child: AnimatedSwitcher(
-                                          duration: const Duration(milliseconds: 350),
-                                          transitionBuilder: (Widget child,
-                                              Animation<double> animation) {
-                                            return RotationTransition(
-                                                turns: animation,
-                                                child: child);
-                                          },
-                                          child: toggleValue
-                                              ? Icon(Icons.circle,
-                                                  color: myColor,
-                                                  size: 35,
-                                                  key: UniqueKey())
-                                              : Icon(
-                                                  Icons.circle,
-                                                  color: myColorGray,
-                                                  size: 35,
-                                                  key: UniqueKey(),
-                                                )),
-                                    ),
-                                  )
-                                ],
-                              ),
+                            Switch(
+                              value: toggleValue,
+                              onChanged: (bool newValue) {
+                                setState(() {
+                                  toggleValue = newValue;
+                                  recebido = toggleValue
+                                      ? "Recebido"
+                                      : "Não Recebido";
+                                });
+                              },
+                              activeColor: Colors.white,
+                              activeTrackColor: myColor,
+                              inactiveTrackColor: Colors.grey[300],
+                              inactiveThumbColor: Colors.white,
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
                             ),
                           ],
                         ),
-                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10)),
                         Container(
                           height: 2,
                           color: myColorGray,
                         ),
-                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10)),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Row(
@@ -240,8 +227,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             children: [
                               const Icon(Icons.bookmark_border, size: 40),
                               const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 20)),
+                                  padding: EdgeInsets.symmetric(horizontal: 20)),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   decoration: const InputDecoration(
@@ -252,10 +238,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     'Outros',
                                     'Salário',
                                     'Prêmio',
-                                  ].map((String bank) {
+                                  ].map((String categoria) {
                                     return DropdownMenuItem<String>(
-                                      value: bank,
-                                      child: Text(bank),
+                                      value: categoria,
+                                      child: Text(categoria),
                                     );
                                   }).toList(),
                                   onChanged: (String? newValue) {
@@ -266,25 +252,25 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ],
                           ),
                         ),
-                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10)),
                         Container(
                           height: 2,
                           color: myColorGray,
                         ),
-                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(
-                              Icons.date_range_outlined,
-                              size: 40,
-                            ),
+                            const Icon(Icons.date_range_outlined, size: 40),
                             const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 20)),
                             _buildDateSelection(),
                           ],
                         ),
-                        const Padding(padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10)),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -302,8 +288,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     borderRadius: BorderRadius.circular(55),
                                   ),
                                 ),
-                                child: Text('Cancelar',
-                                    style: TextStyle(color: Colors.black)),
+                                child: const Text(
+                                  'Cancelar',
+                                  style: TextStyle(color: Colors.black),
+                                ),
                               ),
                             ),
                             const Padding(
@@ -322,14 +310,17 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     borderRadius: BorderRadius.circular(55),
                                   ),
                                 ),
-                                child: Text(
+                                child: const Text(
                                   'Adicionar',
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    // fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -342,18 +333,16 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     );
   }
 
-  void _selectDate(BuildContext context) async {
-    final DateTime? selectedDate = await showDatePicker(
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      lastDate: DateTime(2101),
     );
-
-    if (selectedDate != null) {
+    if (picked != null && picked != _dataSelecionada?.toDate()) {
       setState(() {
-        _dataSelecionada = Timestamp.fromDate(selectedDate);
-        outrosSelecionado = true;
+        _dataSelecionada = Timestamp.fromDate(picked);
       });
     }
   }
@@ -378,7 +367,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
       }).then((_) {
         print("receita adicionada com sucesso");
       }).catchError((error) {
-        print("Falha ao adicionar receitas: $error");
+        print("Falha ao adicionar receita: $error");
       });
     } else {
       print("Por favor, insira todos os campos corretamente.");

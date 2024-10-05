@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/homePage.dart';
-import 'package:prospere_ai/views/telaInicio.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:prospere_ai/views/telaBoasVindas.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -30,7 +30,7 @@ class RoteadorTela extends StatelessWidget {
 
             return const HomePage();
           } else {
-            return const TelaInicio();
+            return TelaBoasVindas();
           }
         });
   }
