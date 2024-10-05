@@ -21,13 +21,14 @@ class MeuInput extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: obscure,
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: labelText,
-          labelStyle: const TextStyle(color: Colors.white70),
+          labelStyle: const TextStyle(color: Colors.white),
           prefixIcon: prefixIcon,
           filled: true,
-          fillColor: const Color.fromARGB(
-              166, 0, 0, 0), // Cor de fundo do campo de input
+          fillColor: const Color.fromARGB(166, 0, 0, 0),
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0), // Bordas arredondadas
             borderSide: BorderSide.none, // Remove a borda padrão
@@ -35,14 +36,15 @@ class MeuInput extends StatelessWidget {
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: const BorderSide(
-              color: Color.fromARGB(255, 30, 163, 132), // Cor da borda ao focar
+              color:
+                  Color.fromARGB(190, 255, 255, 255), // Cor da borda ao focar
               width: 2,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0),
             borderSide: const BorderSide(
-              color: Colors.transparent, // Cor da borda quando habilitado
+              color: Colors.transparent,
               width: 2,
             ),
           ),

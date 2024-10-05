@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
+import 'package:prospere_ai/views/inicioCadastro.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -67,7 +68,7 @@ class _LoginState extends State<Login> {
                   children: [
                     SizedBox(
                       width: 300,
-                      child: MeuInput(
+                      child: Email(
                         labelText: 'Email',
                         controller: emailController,
                       ),
@@ -75,7 +76,7 @@ class _LoginState extends State<Login> {
                     const SizedBox(height: 16),
                     SizedBox(
                       width: 300,
-                      child: MeuInput(
+                      child: Senha(
                         labelText: 'Senha',
                         obscure: true,
                         controller: passwordController,
@@ -90,9 +91,10 @@ class _LoginState extends State<Login> {
                   if (_formKey.currentState!.validate()) {
                     await _autenServico.logarUsuarios(
                       email: emailController.text,
-                      senha: passwordController.text,
-                    );
-                  }
+                      senha: passwordController.text);
+                  botaoPrincipalClicado();
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const RoteadorTela()));
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -127,7 +129,7 @@ class _LoginState extends State<Login> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const Cadastro()));
+                          builder: (context) => const InicioCadastro()));
                     },
                     child: const Text(
                       'Criar Conta',

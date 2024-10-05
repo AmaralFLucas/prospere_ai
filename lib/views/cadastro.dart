@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/views/homePage.dart';
-import 'package:prospere_ai/views/inicioLogin.dart';
+// import 'package:prospere_ai/views/homePage.dart';
+// import 'package:prospere_ai/views/inicioLogin.dart';
 import 'package:prospere_ai/views/login.dart';
 
 class Cadastro extends StatefulWidget {
@@ -150,8 +150,7 @@ class _CadastroState extends State<Cadastro> {
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (context) => const InicioLogin()),
+                    MaterialPageRoute(builder: (context) => const Login()),
                   );
                 },
                 child: Text(
