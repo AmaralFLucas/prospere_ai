@@ -90,11 +90,12 @@ class _LoginState extends State<Login> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     await _autenServico.logarUsuarios(
-                      email: emailController.text,
-                      senha: passwordController.text);
-                  botaoPrincipalClicado();
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => const RoteadorTela()));
+                        email: emailController.text,
+                        senha: passwordController.text);
+                    botaoPrincipalClicado();
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const RoteadorTela()));
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -146,5 +147,13 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
+  }
+
+  botaoPrincipalClicado() {
+    if (_formKey.currentState!.validate()) {
+      print("Valido");
+    } else {
+      print("Invalido");
+    }
   }
 }
