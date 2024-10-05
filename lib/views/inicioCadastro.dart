@@ -48,7 +48,7 @@ class InicioCadastro extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 icon: Image.asset(
-                  'assets/images/google_logo.png',
+                  'images/google_logo.png',
                   width: 24,
                   height: 24,
                 ),

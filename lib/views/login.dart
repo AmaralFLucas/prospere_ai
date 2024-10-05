@@ -20,32 +20,47 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 30, 163, 132), // Cor de fundo
+      backgroundColor: const Color.fromARGB(255, 30, 163, 132),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 60.0),
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Botão de voltar
-              Align(
-                alignment: Alignment.topLeft,
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Voltar para a tela anterior
-                  },
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+              Image.asset(
+                'images/novalogo_porco2.png',
+                width: 100,
+                height: 100,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                'Prospere.AI',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(height: 30),
-              // Logo
-              Image.asset(
-                'assets/images/logo_porco.png',
-                width: 200,
-                height: 200,
+              const SizedBox(height: 10),
+              const Text(
+                'Faça login para acessar seu painel financeiro personalizado',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
-              // Formulário de login
+              const SizedBox(height: 32),
               Form(
                 key: _formKey,
                 child: Column(
@@ -70,7 +85,6 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Botão para entrar
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -78,10 +92,6 @@ class _LoginState extends State<Login> {
                       email: emailController.text,
                       senha: passwordController.text,
                     );
-                    // Redirecionar para a página inicial após login bem-sucedido
-                    // Navigator.of(context).push(MaterialPageRoute(builder: (context) => const HomePage()));
-                  } else {
-                    print("Invalido");
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -92,7 +102,6 @@ class _LoginState extends State<Login> {
                 child: const Text('Entrar'),
               ),
               const SizedBox(height: 20),
-              // Botão "Esqueci a senha"
               TextButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
@@ -108,7 +117,6 @@ class _LoginState extends State<Login> {
                 ),
               ),
               const SizedBox(height: 30),
-              // Opção para criar uma nova conta
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

@@ -19,7 +19,7 @@ class _CodigoMudarSenhaState extends State<CodigoMudarSenha> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo_porco.png',
+              'images/novalogo_porco2.png',
               width: 200,
               height: 200,
             ),

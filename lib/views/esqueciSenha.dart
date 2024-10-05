@@ -19,32 +19,38 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 30, 163, 132), // Cor de fundo
+      backgroundColor: const Color.fromARGB(255, 30, 163, 132),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 60.0),
+        padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 20.0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Botão de voltar
               Align(
                 alignment: Alignment.topLeft,
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.white),
                   onPressed: () {
-                    Navigator.of(context).pop(); // Voltar para a tela anterior
+                    Navigator.of(context).pop();
                   },
                 ),
               ),
               const SizedBox(height: 30),
-              // Logo
               Image.asset(
-                'assets/images/logo_porco.png',
+                'images/novalogo_porco2.png',
                 width: 200,
                 height: 200,
               ),
               const SizedBox(height: 16),
-              // Campo de entrada de email
+              const Text(
+                'Digite seu e-mail para redefinir sua senha.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
               SizedBox(
                 width: 300,
                 child: MeuInput(
@@ -53,7 +59,6 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Botão para continuar
               ElevatedButton(
                 onPressed: () async {
                   await _autenServico.redefinirSenha(
@@ -69,7 +74,6 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
                 child: const Text('Continuar'),
               ),
               const SizedBox(height: 20),
-              // Botão para voltar para login
               TextButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -85,7 +89,6 @@ class _EsqueciSenhaState extends State<EsqueciSenha> {
                 ),
               ),
               const SizedBox(height: 30),
-              // Opção para criar uma nova conta
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
