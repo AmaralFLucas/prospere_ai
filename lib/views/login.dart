@@ -74,7 +74,8 @@ class _LoginState extends State<Login> {
               // Botão para entrar
               ElevatedButton(
                 onPressed: () async {
-                  await _autenServico.logarUsuarios(
+                  if (_formKey.currentState!.validate()) {
+                    await _autenServico.logarUsuarios(
                       email: emailController.text,
                       senha: passwordController.text);
                   botaoPrincipalClicado();
@@ -133,13 +134,5 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
-  }
-
-  botaoPrincipalClicado() {
-    if (_formKey.currentState!.validate()) {
-      print("Valido");
-    } else {
-      print("Invalido");
-    }
   }
 }

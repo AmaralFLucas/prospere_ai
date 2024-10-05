@@ -28,6 +28,7 @@ class MeuInput extends StatelessWidget {
           prefixIcon: prefixIcon,
           filled: true,
           fillColor: const Color.fromARGB(166, 0, 0, 0),
+
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.0), // Bordas arredondadas
             borderSide: BorderSide.none, // Remove a borda padrão

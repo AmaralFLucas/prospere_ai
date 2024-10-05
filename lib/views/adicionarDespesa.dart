@@ -247,13 +247,11 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                   decoration: const InputDecoration(
                                       labelText: 'Selecionar Categoria'),
                                   items: [
-                                    'Casa',
-                                    'Educação',
+                                    'Investimento',
+                                    'Presentes',
                                     'Outros',
-                                    'Eletrônicos',
-                                    'Supermercados',
-                                    'Transporte',
-                                    'Viagem',
+                                    'Salário',
+                                    'Prêmio',
                                   ].map((String bank) {
                                     return DropdownMenuItem<String>(
                                       value: bank,
