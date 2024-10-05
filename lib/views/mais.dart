@@ -10,7 +10,7 @@ class Mais extends StatefulWidget {
   State<Mais> createState() => _MaisState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class _MaisState extends State<Mais> {
   @override
@@ -19,7 +19,7 @@ class _MaisState extends State<Mais> {
       appBar: AppBar(
         backgroundColor: myColor,
         automaticallyImplyLeading: false,
-        title: Text('Mais Opções'),
+        title: const Text('Mais Opções'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -35,12 +35,12 @@ class _MaisState extends State<Mais> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
                 width: double.infinity,
-                child: Center(
+                child: const Center(
                   child: Text('Contas'),
                 ),
               ),
@@ -60,12 +60,12 @@ class _MaisState extends State<Mais> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
                 width: double.infinity,
-                child: Center(
+                child: const Center(
                   child: Text('Categorias'),
                 ),
               ),
@@ -77,11 +77,11 @@ class _MaisState extends State<Mais> {
             ),
             Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12)),
               height: 70,
               width: double.infinity,
-              child: Center(
+              child: const Center(
                 child: Text('Modo Viagem'),
               ),
             ),
@@ -101,12 +101,12 @@ class _MaisState extends State<Mais> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
                 width: double.infinity,
-                child: Center(
+                child: const Center(
                   child: Text('Relatório'),
                 ),
               ),

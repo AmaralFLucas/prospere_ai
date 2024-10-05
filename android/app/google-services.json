@@ -12,7 +12,12 @@
           "package_name": "lucas.farias.prospere_ai"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "229392966027-e0ktmec4ags230nlefjmqom7sq4qddtc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDJGnuNFEXpKo7W1cg1GjHxEdjG4cP1ia4"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "229392966027-e0ktmec4ags230nlefjmqom7sq4qddtc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "229392966027-7p2q0j42m5nm9h5a5ei4uk0qpgm0g86b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.prospereAi"
+              }
+            }
+          ]
         }
       }
     }

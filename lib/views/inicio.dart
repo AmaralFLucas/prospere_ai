@@ -25,11 +25,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   double saldoAtual = 0.0;
 
   int initialPosition = 0;
-  bool mostrarSenha = true;
   final Color myColor = const Color.fromARGB(255, 30, 163, 132);
   final Color cardColor = const Color(0xFFF4F4F4);
   final Color textColor = Colors.black87;
-  final Icon eyeIcon = const Icon(Icons.visibility_off);
 
   @override
   void initState() {
@@ -44,25 +42,12 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  void _onTabSelected(int index) {
-    setState(() {
-      initialPosition = index;
-      pageController.jumpToPage(index);
-    });
-  }
-
-  void _onFabPressed() {}
-
   Future<void> _loadData() async {
-    List<Map<String, dynamic>> fetchedReceitas =
-        await getReceitas(widget.userId);
-    List<Map<String, dynamic>> fetchedDespesas =
-        await getDespesas(widget.userId);
+    List<Map<String, dynamic>> fetchedReceitas = await getReceitas(widget.userId);
+    List<Map<String, dynamic>> fetchedDespesas = await getDespesas(widget.userId);
 
-    double receitasSum =
-        fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    double despesasSum =
-        fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double receitasSum = fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double despesasSum = fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
 
     setState(() {
       receitas = fetchedReceitas;
@@ -95,20 +80,13 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.people,
-                            size: 100, color: Colors.white),
+                        const Icon(Icons.people, size: 100, color: Colors.white),
                         IconButton(
-                          padding:
-                              const EdgeInsets.only(left: 135, bottom: 100),
-                          icon: const Icon(
-                            Icons.settings,
-                            size: 25,
-                            color: Colors.white,
-                          ),
+                          padding: const EdgeInsets.only(left: 135, bottom: 100),
+                          icon: const Icon(Icons.settings, size: 25, color: Colors.white),
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => const Configuracoes()),
+                              MaterialPageRoute(builder: (context) => const Configuracoes()),
                             );
                           },
                         ),
@@ -118,21 +96,16 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const MeuCadastro()),
+                        MaterialPageRoute(builder: (context) => const MeuCadastro()),
                       );
                     },
-                    child: const Text(
-                      'Meu Cadastro',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(220, 255, 255, 255),
                       minimumSize: const Size(50, 80),
+                    ),
+                    child: const Text(
+                      'Meu Cadastro',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                   ),
                   ElevatedButton(
@@ -143,21 +116,14 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                       backgroundColor: const Color.fromARGB(220, 255, 255, 255),
                       minimumSize: const Size(50, 80),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: const [
+                      children: [
                         Text(
                           'Sair',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                         ),
-                        Icon(
-                          Icons.exit_to_app,
-                          color: Colors.red,
-                        ),
+                        Icon(Icons.exit_to_app, color: Colors.red),
                       ],
                     ),
                   ),
@@ -181,6 +147,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 20),
                   _buildBalanceCard(),
                   const SizedBox(height: 20),
                   _buildTransactionList(),
@@ -195,11 +162,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
 
   Widget _buildBalanceCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -218,7 +185,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               color: textColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'R\$ ${saldoAtual.toStringAsFixed(2)}',
             style: TextStyle(
@@ -227,19 +194,17 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               color: myColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceDetail(
-                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+              _buildBalanceDetail('Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
-              _buildBalanceDetail(
-                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+              _buildBalanceDetail('Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
           ),
         ],
@@ -252,19 +217,12 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       children: [
         Text(
           value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           title,
-          style: TextStyle(
-            fontSize: 16,
-            color: textColor.withOpacity(0.7),
-          ),
+          style: TextStyle(fontSize: 16, color: textColor.withOpacity(0.7)),
         ),
       ],
     );
@@ -272,11 +230,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
 
   Widget _buildTransactionList() {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -294,6 +252,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   List<Widget> _buildTransactionItems() {
+    despesas.sort((a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+
     List<Widget> transactionItems = [];
 
     transactionItems.addAll(despesas.map((despesa) {
@@ -303,7 +263,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             '${despesa['categoria']}',
             'R\$ ${despesa['valor']}',
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       );
     }).toList());
@@ -317,20 +277,20 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         color: myColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               color: Colors.white,
             ),
           ),
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.red,

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
+import 'package:prospere_ai/views/inicioCadastro.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -11,133 +12,126 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-PageController pageController = PageController();
-int initialPosition = 0;
-bool mostrarSenha = true;
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Icon eyeIcon = Icon(Icons.visibility_off);
-
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  AutenticacaoServico _autenServico = AutenticacaoServico();
+  final AutenticacaoServico _autenServico = AutenticacaoServico();
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(children: [
-        SingleChildScrollView(
+      backgroundColor: const Color.fromARGB(255, 30, 163, 132), // Cor de fundo
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 60.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Botão de voltar
+              Align(
+                alignment: Alignment.topLeft,
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Voltar para a tela anterior
+                  },
+                ),
+              ),
+              const SizedBox(height: 30),
+              // Logo
               Image.asset(
                 'assets/images/logo_porco.png',
                 width: 200,
                 height: 200,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+              // Formulário de login
               Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: 300,
-                        child: Email(
-                          labelText: 'Email',
-                          controller: emailController,
-                        ),
+                key: _formKey,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      child: Email(
+                        labelText: 'Email',
+                        controller: emailController,
                       ),
-                      SizedBox(
-                        width: 300,
-                        child: Senha(
-                          labelText: 'Senha',
-                          obscure: true,
-                          controller: passwordController,
-                        ),
-                      )
-                    ],
-                  )
-
-                  // TextField(
-                  //   decoration: InputDecoration(
-                  //     border: OutlineInputBorder(),
-                  //     labelText: 'Digite a sua Senha',
-                  //     suffixIcon: IconButton(
-                  //       icon: eyeIcon,
-                  //       onPressed: () {
-                  //         setState(() {
-                  //           mostrarSenha = !mostrarSenha;
-                  //           eyeIcon = mostrarSenha
-                  //               ? Icon(Icons.visibility_off)
-                  //               : Icon(Icons.visibility);
-                  //         });
-                  //       },
-                  //     ),
-                  //   ),
-                  //   obscureText: mostrarSenha,
-                  // ),
-                  ),
-              SizedBox(height: 32),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: 300,
+                      child: Senha(
+                        labelText: 'Senha',
+                        obscure: true,
+                        controller: passwordController,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+              // Botão para entrar
               ElevatedButton(
                 onPressed: () async {
                   await _autenServico.logarUsuarios(
                       email: emailController.text,
                       senha: passwordController.text);
                   botaoPrincipalClicado();
-                  // Navigator.of(context).push(
-                  //     MaterialPageRoute(builder: (context) => const HomePage()));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const RoteadorTela()));
                 },
-                child: Text('Entrar'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: myColor,
-                  minimumSize: Size(150, 50),
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color.fromARGB(255, 30, 163, 132),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
+                child: const Text('Entrar'),
               ),
-              SizedBox(height: 68),
-              ElevatedButton(
+              const SizedBox(height: 20),
+              // Botão "Esqueci a senha"
+              TextButton(
                 onPressed: () {
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) => const EsqueciSenha()));
                 },
-                child: Text('Esqueci a Senha'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: myColor,
-                  minimumSize: Size(150, 50),
+                child: const Text(
+                  'Esqueci minha senha',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
-              SizedBox(height: 30),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-                SizedBox(width: 15),
-                Text('OU'),
-                SizedBox(width: 15),
-                Container(
-                  width: 125,
-                  height: 2,
-                  color: Colors.black,
-                ),
-              ]),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => const Cadastro()));
-                },
-                child: Text('Criar Conta'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: myColor,
-                  minimumSize: Size(150, 50),
-                ),
-              )
+              const SizedBox(height: 30),
+              // Opção para criar uma nova conta
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Não tem uma conta? ',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const InicioCadastro()));
+                    },
+                    child: const Text(
+                      'Criar Conta',
+                      style: TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
-        )
-      ]),
+        ),
+      ),
     );
   }
 

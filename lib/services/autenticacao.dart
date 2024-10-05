@@ -43,5 +43,6 @@ class AutenticacaoServico {
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
+    return null;
   }
 }
