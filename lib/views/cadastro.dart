@@ -36,7 +36,7 @@ class _CadastroState extends State<Cadastro> {
             children: [
               // Logo do app
               Image.asset(
-                'assets/images/logo_porco.png',
+                'images/novalogo_porco2.png',
                 width: 150,
                 height: 150,
               ),
