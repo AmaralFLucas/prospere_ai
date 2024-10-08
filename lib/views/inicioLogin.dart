@@ -38,7 +38,7 @@ class InicioLogin extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 icon: Image.asset(
-                  'images/google_logo.png', 
+                  'assets/images/google_logo.png',
                   width: 24,
                   height: 24,
                 ),

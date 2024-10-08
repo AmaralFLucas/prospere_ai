@@ -45,7 +45,7 @@ class _TelaBoasVindasState extends State<TelaBoasVindas> {
               const SizedBox(height: 30),
               // Logo centralizada
               Image.asset(
-                'assets/images/logo_porco.png',
+                'assets/images/novalogo_porco2.png',
                 width: 150,
                 height: 150,
               ),

@@ -39,7 +39,7 @@ class _LoginState extends State<Login> {
                 ],
               ),
               Image.asset(
-                'images/novalogo_porco2.png',
+                'assets/images/novalogo_porco2.png',
                 width: 100,
                 height: 100,
               ),
