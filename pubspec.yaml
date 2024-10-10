@@ -36,8 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   floating_action_bubble: ^1.1.4
   flutter_widgetz: ^10.1.0
-  avatar_glow: ^2.0.0
+  avatar_glow: ^3.0.1
   speech_to_text: ^7.0.0
+  google_generative_ai: ^0.4.6
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -47,7 +48,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
+  flutter_lints: ^5.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
