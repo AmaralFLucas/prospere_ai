@@ -118,7 +118,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ),
                             const Padding(padding: EdgeInsets.only(left: 10)),
                             const Text(
-                              'Adicionar Despesa',
+                              'Adicionar Receita',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -131,7 +131,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                           children: [
                             Padding(padding: EdgeInsets.only(bottom: 20)),
                             Text(
-                              'Valor total Despesa',
+                              'Valor total Receita',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -198,9 +198,8 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                               onChanged: (bool newValue) {
                                 setState(() {
                                   toggleValue = newValue;
-                                  recebido = toggleValue
-                                      ? "Recebido"
-                                      : "Não Recebido";
+                                  recebido =
+                                      toggleValue ? "Recebido" : "Não Recebido";
                                 });
                               },
                               activeColor: Colors.white,
@@ -227,7 +226,8 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             children: [
                               const Icon(Icons.bookmark_border, size: 40),
                               const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20)),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 20)),
                               Expanded(
                                 child: DropdownButtonFormField<String>(
                                   decoration: const InputDecoration(
