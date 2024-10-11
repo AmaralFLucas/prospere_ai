@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-// import 'package:prospere_ai/views/homePage.dart';
-// import 'package:prospere_ai/views/inicioLogin.dart';
+import 'package:prospere_ai/views/inicioLogin.dart';
 import 'package:prospere_ai/views/login.dart';
 
 class Cadastro extends StatefulWidget {
@@ -27,22 +26,19 @@ class _CadastroState extends State<Cadastro> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor, // Fundo do aplicativo
+      backgroundColor: primaryColor,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 60.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Logo do app
               Image.asset(
-                'assets/images/logo_porco.png',
+                'images/novalogo_porco2.png',
                 width: 150,
                 height: 150,
               ),
               const SizedBox(height: 20),
-
-              // Nome do App em destaque
               Text(
                 'Prospere.AI',
                 style: TextStyle(
@@ -53,8 +49,6 @@ class _CadastroState extends State<Cadastro> {
                 ),
               ),
               const SizedBox(height: 10),
-
-              // Slogan ou frase promocional
               Text(
                 'Crie sua conta para começar a gerenciar suas finanças',
                 style: TextStyle(
@@ -64,8 +58,6 @@ class _CadastroState extends State<Cadastro> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 30),
-
-              // Campos de entrada
               SizedBox(
                 width: 300,
                 child: MeuInput(
@@ -107,8 +99,6 @@ class _CadastroState extends State<Cadastro> {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Botão "Cadastrar"
               ElevatedButton(
                 onPressed: () async {
                   await _autenServico
@@ -135,8 +125,8 @@ class _CadastroState extends State<Cadastro> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: accentColor, // Fundo branco
-                  foregroundColor: primaryColor, // Texto verde
+                  backgroundColor: accentColor,
+                  foregroundColor: primaryColor,
                   minimumSize: const Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -145,20 +135,19 @@ class _CadastroState extends State<Cadastro> {
                 child: Text('Cadastrar'),
               ),
               const SizedBox(height: 20),
-
-              // Link "Já tenho cadastro!"
               GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login()),
+                    MaterialPageRoute(
+                        builder: (context) => const InicioLogin()),
                   );
                 },
                 child: Text(
                   'Já tenho cadastro!',
                   style: TextStyle(
-                    color: accentColor, // Cor do texto
+                    color: accentColor,
                     fontSize: 16,
-                    decoration: TextDecoration.underline, // Sublinhado
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),

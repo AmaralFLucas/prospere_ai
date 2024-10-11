@@ -25,20 +25,18 @@ class _NovaSenhaState extends State<NovaSenha> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo_porco.png',
+              'images/novalogo_porco2.png',
               width: 200,
               height: 200,
             ),
             const SizedBox(height: 16),
             const SizedBox(
-              width: 300,
-              child: MeuInput(labelText: 'Digite uma nova senha')
-            ),
+                width: 300,
+                child: MeuInput(labelText: 'Digite uma nova senha')),
             const SizedBox(height: 16),
             const SizedBox(
-              width: 300,
-              child: MeuInput(labelText: 'Digite a senha novamente')
-            ),
+                width: 300,
+                child: MeuInput(labelText: 'Digite a senha novamente')),
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {

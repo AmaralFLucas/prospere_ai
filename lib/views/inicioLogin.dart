@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/cadastro.dart';
-import 'package:prospere_ai/views/inicioCadastro.dart'; 
+import 'package:prospere_ai/views/inicioCadastro.dart';
 import 'package:prospere_ai/views/login.dart';
-import 'package:prospere_ai/views/termos_de_uso.dart'; 
+import 'package:prospere_ai/views/termos_de_uso.dart';
 import 'package:prospere_ai/views/politica_de_privacidade.dart';
 
 class InicioLogin extends StatelessWidget {
@@ -31,15 +31,14 @@ class InicioLogin extends StatelessWidget {
               const SizedBox(height: 10),
               // Opção para logar com Google
               ElevatedButton.icon(
-                onPressed: (){},
-
+                onPressed: () {},
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: const Color.fromARGB(255, 30, 163, 132),
                   minimumSize: const Size(double.infinity, 50),
                 ),
                 icon: Image.asset(
-                  'assets/images/google_logo.png', // A logo do Google
+                  'assets/images/google_logo.png',
                   width: 24,
                   height: 24,
                 ),

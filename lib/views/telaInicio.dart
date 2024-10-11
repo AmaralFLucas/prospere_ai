@@ -47,7 +47,7 @@ class _TelaInicioState extends State<TelaInicio> {
               const SizedBox(height: 30),
               // Logo centralizada
               Image.asset(
-                'assets/images/logo_porco.png',
+                'images/novalogo_porco2.png',
                 width: 150,
                 height: 150,
               ),

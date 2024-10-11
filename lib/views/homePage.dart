@@ -123,20 +123,27 @@ class _HomePageState extends State<HomePage>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AvatarGlow(
-                endRadius: 75.0,
-                animate: isListening,
-                glowColor: myColor,
-                child: CircleAvatar(
-                  backgroundColor: myColor,
-                  radius: 35,
-                  child: const Icon(Icons.mic, size: 50, color: Colors.white),
+          content: SizedBox(
+            width: 300,
+            height: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: AvatarGlow(
+                    animate: isListening,
+                    glowColor: myColor,
+                    child: CircleAvatar(
+                      backgroundColor: myColor,
+                      radius: 35,
+                      child:
+                          const Icon(Icons.mic, size: 50, color: Colors.white),
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
