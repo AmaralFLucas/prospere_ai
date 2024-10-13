@@ -1,47 +1,113 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/categoriasDespesas.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 
-class CategoriaReceita extends StatefulWidget {
-  final String userId; // Receber o userId para buscar as categorias
-  const CategoriaReceita({super.key, required this.userId});
+class Categoria extends StatefulWidget {
+  final String userId;
+  const Categoria({super.key, required this.userId});
 
   @override
-  State<CategoriaReceita> createState() => _CategoriaReceitaState();
+  State<Categoria> createState() => _CategoriaState();
 }
 
-Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color receitaColor = const Color.fromARGB(255, 30, 163, 132);
+Color despesaColor = const Color.fromARGB(255, 178, 0, 0);
 
-class _CategoriaReceitaState extends State<CategoriaReceita> {
+class _CategoriaState extends State<Categoria> {
+  String categoriaAtual = 'receita';
   late Future<List<Map<String, dynamic>>> categorias;
+  IconData? selectedIcon;
 
   @override
   void initState() {
     super.initState();
-    categorias = getCategorias(widget.userId, 'receita'); // Carregar categorias ao iniciar
+    categorias = getCategorias(widget.userId, categoriaAtual);
   }
 
-  Future<List<Map<String, dynamic>>> getCategorias(String userId, String tipo) async {
-    CollectionReference categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasReceitas');
+  void mudarCategoria(String novaCategoria) {
+    setState(() {
+      categoriaAtual = novaCategoria;
+      categorias = getCategorias(widget.userId, categoriaAtual);
+    });
+  }
 
-    QuerySnapshot snapshot = await categorias.get();
-    return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  Future<void> _showAddCategoriaDialog() async {
+    String? nomeCategoria;
+    IconData? iconeCategoria;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Adicionar Categoria'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<IconData>(
+                decoration: const InputDecoration(labelText: 'Selecionar Ícone'),
+                items: [
+                  Icons.home,
+                  Icons.shopping_cart,
+                  Icons.computer,
+                  Icons.menu_book_sharp,
+                  Icons.more_horiz,
+                ].map((IconData icon) {
+                  return DropdownMenuItem<IconData>(
+                    value: icon,
+                    child: Row(
+                      children: [
+                        Icon(icon),
+                        const SizedBox(width: 10),
+                        Text(icon.toString()),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (IconData? newIcon) {
+                  iconeCategoria = newIcon;
+                },
+              ),
+              TextField(
+                decoration: const InputDecoration(labelText: 'Nome da Categoria'),
+                onChanged: (String value) {
+                  nomeCategoria = value;
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop(); 
+              },
+            ),
+            TextButton(
+              child: const Text('Adicionar'),
+              onPressed: () async {
+                if (iconeCategoria != null && nomeCategoria != null) {
+                  await addCategoria(widget.userId, nomeCategoria!, iconeCategoria!, categoriaAtual);
+
+                  setState(() {
+                    categorias = getCategorias(widget.userId, categoriaAtual);
+                  });
+                }
+                Navigator.of(context).pop(); 
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: myColor,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        title: const Text(
-          'Categorias de Receitas',
-          style: TextStyle(
+        backgroundColor: categoriaAtual == 'receita' ? receitaColor : despesaColor,
+        title: Text(
+          'Categorias de ${categoriaAtual == 'receita' ? 'Receitas' : 'Despesas'}',
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -62,7 +128,6 @@ class _CategoriaReceitaState extends State<CategoriaReceita> {
 
           return SingleChildScrollView(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
                 Container(
@@ -77,42 +142,51 @@ class _CategoriaReceitaState extends State<CategoriaReceita> {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {}, // Ação para adicionar nova categoria
+                          onPressed: () {
+                            mudarCategoria('receita');
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: myColor,
+                            backgroundColor: categoriaAtual == 'receita'
+                                ? receitaColor
+                                : const Color.fromARGB(255, 197, 197, 197),
                             minimumSize: const Size(150, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(55),
                             ),
                           ),
-                          child: const Text('Receitas', style: TextStyle(color: Colors.white)),
+                          child: Text('Receitas',
+                              style: TextStyle(
+                                  color: categoriaAtual == 'receita'
+                                      ? Colors.white
+                                      : Colors.black)),
                         ),
                       ),
                       const SizedBox(width: 3),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => const categoriaDespesas(),
-                              ),
-                            );
+                            mudarCategoria('despesa');
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 197, 197, 197),
+                            backgroundColor: categoriaAtual == 'despesa'
+                                ? despesaColor
+                                : const Color.fromARGB(255, 197, 197, 197),
                             minimumSize: const Size(150, 50),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(55),
                             ),
                           ),
-                          child: const Text('Despesas', style: TextStyle(color: Colors.black)),
+                          child: Text('Despesas',
+                              style: TextStyle(
+                                  color: categoriaAtual == 'despesa'
+                                      ? Colors.white
+                                      : Colors.black)),
                         ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 50),
-                // Exibe as categorias carregadas do banco de dados
                 ...categorias.map((categoria) {
                   return _buildCategoryItem(IconData(categoria['icone'], fontFamily: 'MaterialIcons'), categoria['nome']);
                 }).toList(),
@@ -120,6 +194,11 @@ class _CategoriaReceitaState extends State<CategoriaReceita> {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddCategoriaDialog,
+        child: const Icon(Icons.add),
+        backgroundColor: categoriaAtual == 'receita' ? receitaColor : despesaColor,
       ),
     );
   }

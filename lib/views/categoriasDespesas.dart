@@ -78,7 +78,7 @@ class _categoriaDespesasState extends State<categoriaDespesas> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => CategoriaReceita(userId: uid,),
+                    builder: (context) => Categoria(userId: uid,),
                   ),
                 );
               },

@@ -59,7 +59,7 @@ class _MaisState extends State<Mais> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => CategoriaReceita(userId: uid)),
+                      builder: (context) => Categoria(userId: uid)),
                 );
               },
               child: Container(
