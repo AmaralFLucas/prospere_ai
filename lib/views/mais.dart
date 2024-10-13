@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/services/gemini.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
 import 'package:prospere_ai/views/contas.dart';
 import 'package:prospere_ai/views/relatorio.dart';
@@ -13,6 +15,8 @@ class Mais extends StatefulWidget {
 Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class _MaisState extends State<Mais> {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +59,7 @@ class _MaisState extends State<Mais> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const categoriaReceita()),
+                      builder: (context) => CategoriaReceita(userId: uid)),
                 );
               },
               child: Container(
@@ -116,6 +120,13 @@ class _MaisState extends State<Mais> {
               height: 2,
               width: double.infinity,
             ),
+            ElevatedButton(onPressed: (){
+              setState(() {
+                generateResponseDB();
+              });
+            }, child: Text(
+              'Gemini'
+            ))
           ],
         ),
       ),

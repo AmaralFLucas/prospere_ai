@@ -39,6 +39,7 @@ dependencies:
   avatar_glow: ^3.0.1
   speech_to_text: ^7.0.0
   google_generative_ai: ^0.4.6
+  intl: ^0.19.0
 
 
   # The following adds the Cupertino Icons font to your application.

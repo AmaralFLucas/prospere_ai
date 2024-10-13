@@ -19,11 +19,30 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
+  List<String> categorias = [];
 
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _carregarCategorias(); // Carregar categorias do Firestore
+  }
+
+  Future<void> _carregarCategorias() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('categoriasReceitas')
+        .get();
+
+    setState(() {
+      categorias = snapshot.docs.map((doc) => doc['nome'] as String).toList(); // Preencher a lista de categorias
+    });
+  }
 
   Widget _buildDateSelection() {
     if (_dataSelecionada != null) {
@@ -232,21 +251,26 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                 child: DropdownButtonFormField<String>(
                                   decoration: const InputDecoration(
                                       labelText: 'Selecionar Categoria'),
-                                  items: [
-                                    'Investimento',
-                                    'Presentes',
-                                    'Outros',
-                                    'Salário',
-                                    'Prêmio',
-                                  ].map((String categoria) {
-                                    return DropdownMenuItem<String>(
-                                      value: categoria,
-                                      child: Text(categoria),
-                                    );
-                                  }).toList(),
+                                  items: categorias.isNotEmpty
+                                      ? categorias.map((String categoria) {
+                                          return DropdownMenuItem<String>(
+                                            value: categoria,
+                                            child: Text(categoria),
+                                          );
+                                        }).toList()
+                                      : [
+                                          const DropdownMenuItem<String>(
+                                            value: null,
+                                            child: Text('Nenhuma categoria disponível'),
+                                          ),
+                                        ],
                                   onChanged: (String? newValue) {
-                                    _categoriaController.text = newValue!;
+                                    setState(() {
+                                      _categoriaController.text = newValue!;
+                                      categoria = newValue; // Armazenar a categoria selecionada
+                                    });
                                   },
+                                  value: categoria, // Setar valor selecionado
                                 ),
                               ),
                             ],
@@ -301,7 +325,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                               width: 150,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  _salvarDespesa();
+                                  _salvarReceita();
                                   Navigator.of(context).pop();
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -347,7 +371,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     }
   }
 
-  void _salvarDespesa() {
+  void _salvarReceita() {
     double? valor = double.tryParse(_valorController.text);
     String categoria = _categoriaController.text;
     Timestamp data = _dataSelecionada ?? Timestamp.now();

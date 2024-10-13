@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 
 class AutenticacaoServico {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -13,6 +14,7 @@ class AutenticacaoServico {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: senha);
       await userCredential.user!.updateDisplayName(nome);
+      await addCategoriasPadrao(userCredential.user!.uid);
       return null;
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
