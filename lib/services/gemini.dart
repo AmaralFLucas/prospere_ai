@@ -8,24 +8,30 @@ import 'package:intl/intl.dart';
 const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
 
 generateResponse(audio) async {
-  final model = GenerativeModel(
+  var model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
     apiKey: apiKey,
   );
 
-  final prompt =
-      'A seguir está uma transcrição de um áudio. Identifique se o áudio refere-se a uma receita ou despesa, extraia o valor, a categoria e gere um JSON com os campos: tipo (receita ou despesa) e valor: ${audio}';
-  final content = [Content.text(prompt)];
-  final response = await model.generateContent(content);
-
-  // final jsonResponse = jsonDecode(prompt);
-
-  // final String tipo = jsonResponse['tipo'];
-  // final double valor = jsonResponse['valor'];
-
-  print(response.text);
-  // print(tipo);
-  // print(valor);
+  var prompt = """Considere o texto ${audio}, 
+  Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
+  {
+  "data": {
+    "tipo": (receita ou despesa), 
+    "categoria": , 
+    "valor": 
+    }
+  }""";
+  var content = [Content.text(prompt)];
+  var response = await model.generateContent(content);
+  var teste = jsonDecode(response.text.toString());
+  var valor = teste['data']['valor'];
+  var tipo = teste['data']['tipo'];
+  var categoria = teste['data']['categoria'];
+  print(teste);
+  print(tipo);
+  print(categoria);
+  print(valor);
 }
 
 generateResponseDB() async {
@@ -95,4 +101,3 @@ generateResponseDB() async {
 
   print(response.text);
 }
-
