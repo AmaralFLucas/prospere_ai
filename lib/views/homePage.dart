@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage>
             text = result.recognizedWords;
           });
           if (result.finalResult) {
-            await generateResponse(text);
+            await generateResponse(context, text);
           }
         },
         pauseFor: const Duration(seconds: 3),

@@ -2,17 +2,18 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:intl/intl.dart';
+import 'package:prospere_ai/views/adicionarDespesa.dart';
 
 const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
 
-generateResponse(audio) async {
+generateResponse(BuildContext context, audio) async {
   var model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
     apiKey: apiKey,
   );
-
   var prompt = """Considere o texto ${audio}, 
   Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
   {
@@ -22,12 +23,26 @@ generateResponse(audio) async {
     "valor": 
     }
   }""";
+
   var content = [Content.text(prompt)];
   var response = await model.generateContent(content);
   var teste = jsonDecode(response.text.toString());
   var valor = teste['data']['valor'];
   var tipo = teste['data']['tipo'];
   var categoria = teste['data']['categoria'];
+
+  try {
+    if (tipo == 'despesa') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => const AdicionarDespesa()),
+      );
+    }
+  } catch (e) {
+    print(e);
+  }
+
   print(teste);
   print(tipo);
   print(categoria);

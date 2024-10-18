@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/inicioCadastro.dart';
 import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/termos_de_uso.dart';
