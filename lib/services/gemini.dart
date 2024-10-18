@@ -1,11 +1,12 @@
 import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:intl/intl.dart';
+import 'package:prospere_ai/components/textFormatter.dart';
 import 'package:prospere_ai/views/adicionarDespesa.dart';
+import 'package:prospere_ai/views/adicionarReceita.dart';
 
 const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
 
@@ -14,7 +15,8 @@ generateResponse(BuildContext context, audio) async {
     model: 'gemini-1.5-flash-latest',
     apiKey: apiKey,
   );
-  var prompt = """Considere o texto ${audio}, 
+  try {
+    var prompt = """Considere o texto ${audio}, 
   Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
   {
   "data": {
@@ -24,29 +26,48 @@ generateResponse(BuildContext context, audio) async {
     }
   }""";
 
-  var content = [Content.text(prompt)];
-  var response = await model.generateContent(content);
-  var teste = jsonDecode(response.text.toString());
-  var valor = teste['data']['valor'];
-  var tipo = teste['data']['tipo'];
-  var categoria = teste['data']['categoria'];
+    var content = [Content.text(prompt)];
+    var response = await model.generateContent(content);
+    var teste = jsonDecode(response.text.toString());
+    var valor = teste['data']['valor'];
+    var tipo = teste['data']['tipo'];
+    var categoria = teste['data']['categoria'];
 
-  try {
+    print(teste);
+    print(tipo);
+    print(categoria);
+    print(valor);
+    double valorDouble =
+        double.tryParse(valor.toString().replaceAll('.', '.')) ??
+            0.0; // Converte para double
+
+    // Formata o valor como String com vírgula como separador decimal
+    String valorFormatado = CurrencyTextInputFormatter()
+        .formatToCurrency(valorDouble.toString().replaceAll('.', ','));
+    print(valorFormatado); // Formata o valor
     if (tipo == 'despesa') {
+      // Passa o valor formatado para a tela
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (BuildContext context) => const AdicionarDespesa()),
+          builder: (BuildContext context) => AdicionarDespesa(
+              valorDespesa: valorDouble,
+              valorFormatado:
+                  valorFormatado), // Passa o valor como double e formatado
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => AdicionarReceita(
+              valorReceita: valorDouble, valorFormatado: valorFormatado),
+        ),
       );
     }
   } catch (e) {
     print(e);
   }
-
-  print(teste);
-  print(tipo);
-  print(categoria);
-  print(valor);
 }
 
 generateResponseDB() async {
