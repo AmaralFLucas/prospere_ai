@@ -13,8 +13,8 @@ class NovaSenha extends StatefulWidget {
 PageController pageController = PageController();
 int initialPosition = 0;
 bool mostrarSenha = true;
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Icon eyeIcon = Icon(Icons.visibility_off);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Icon eyeIcon = const Icon(Icons.visibility_off);
 
 class _NovaSenhaState extends State<NovaSenha> {
   @override
@@ -25,71 +25,69 @@ class _NovaSenhaState extends State<NovaSenha> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo_porco.png',
+              'images/novalogo_porco2.png',
               width: 200,
               height: 200,
             ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: MeuInput(labelText: 'Digite uma nova senha')
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: MeuInput(labelText: 'Digite a senha novamente')
-            ),
-            SizedBox(height: 32),
+            const SizedBox(height: 16),
+            const SizedBox(
+                width: 300,
+                child: MeuInput(labelText: 'Digite uma nova senha')),
+            const SizedBox(height: 16),
+            const SizedBox(
+                width: 300,
+                child: MeuInput(labelText: 'Digite a senha novamente')),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Login()));
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: myColor,
+                minimumSize: const Size(150, 50),
+              ),
               child: Text('Enviar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
             ),
-            SizedBox(height: 68),
+            const SizedBox(height: 68),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Login()));
               },
-              child: Text('Voltar para Login'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+                minimumSize: const Size(150, 50),
               ),
+              child: Text('Voltar para Login'),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               Container(
                 width: 125,
                 height: 2,
                 color: Colors.black,
               ),
-              SizedBox(width: 15),
-              Text('OU'),
-              SizedBox(width: 15),
+              const SizedBox(width: 15),
+              const Text('OU'),
+              const SizedBox(width: 15),
               Container(
                 width: 125,
                 height: 2,
                 color: Colors.black,
               ),
             ]),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => const Cadastro()));
               },
-              child: Text('Criar Conta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+                minimumSize: const Size(150, 50),
               ),
+              child: Text('Criar Conta'),
             )
           ],
         ),

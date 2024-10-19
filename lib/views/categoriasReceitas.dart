@@ -1,102 +1,212 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/categoriasDespesas.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 
-
-class categoriaReceita extends StatefulWidget {
-  const categoriaReceita({super.key});
+class Categoria extends StatefulWidget {
+  final String userId;
+  const Categoria({super.key, required this.userId});
 
   @override
-  State<categoriaReceita> createState() => _categoriaReceitaState();
+  State<Categoria> createState() => _CategoriaState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color receitaColor = const Color.fromARGB(255, 30, 163, 132);
+Color despesaColor = const Color.fromARGB(255, 178, 0, 0);
 
-class _categoriaReceitaState extends State<categoriaReceita> {
+class _CategoriaState extends State<Categoria> {
+  String categoriaAtual = 'receita';
+  late Future<List<Map<String, dynamic>>> categorias;
+  IconData? selectedIcon;
+
+  @override
+  void initState() {
+    super.initState();
+    categorias = getCategorias(widget.userId, categoriaAtual);
+  }
+
+  void mudarCategoria(String novaCategoria) {
+    setState(() {
+      categoriaAtual = novaCategoria;
+      categorias = getCategorias(widget.userId, categoriaAtual);
+    });
+  }
+
+  Future<void> _showAddCategoriaDialog() async {
+    String? nomeCategoria;
+    IconData? iconeCategoria;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Adicionar Categoria'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<IconData>(
+                decoration:
+                    const InputDecoration(labelText: 'Selecionar Ícone'),
+                items: [
+                  Icons.home,
+                  Icons.shopping_cart,
+                  Icons.computer,
+                  Icons.menu_book_sharp,
+                  Icons.auto_awesome,
+                  Icons.more,
+                ].map((IconData icon) {
+                  return DropdownMenuItem<IconData>(
+                    value: icon,
+                    child: Row(
+                      children: [
+                        Icon(icon),
+                        const SizedBox(width: 10),
+                        Text(icon.toString()),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (IconData? newIcon) {
+                  iconeCategoria = newIcon;
+                },
+              ),
+              TextField(
+                decoration:
+                    const InputDecoration(labelText: 'Nome da Categoria'),
+                onChanged: (String value) {
+                  nomeCategoria = value;
+                },
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Adicionar'),
+              onPressed: () async {
+                if (iconeCategoria != null && nomeCategoria != null) {
+                  await addCategoria(widget.userId, nomeCategoria!,
+                      iconeCategoria!, categoriaAtual);
+
+                  setState(() {
+                    categorias = getCategorias(widget.userId, categoriaAtual);
+                  });
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: myColor,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        backgroundColor:
+            categoriaAtual == 'receita' ? receitaColor : despesaColor,
         title: Text(
-          'Categorias',
-          style: TextStyle(
+          'Categorias de ${categoriaAtual == 'receita' ? 'Receitas' : 'Despesas'}',
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Container(
-              margin: EdgeInsets.only(right: 10),
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 221, 221, 221),
-                borderRadius: BorderRadius.circular(55),
-              ),
-              height: 60,
-              width: 310,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text('Receita',
-                          style: TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: myColor,
-                        minimumSize: Size(150, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(55),
-                        ),
-                      ),
-                    ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: categorias,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text('Erro: ${snapshot.error}'));
+          }
+
+          final categorias = snapshot.data!;
+
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Container(
+                  margin: const EdgeInsets.only(right: 10),
+                  decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 221, 221, 221),
+                    borderRadius: BorderRadius.circular(55),
                   ),
-                  SizedBox(width: 3),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => categoriaDespesas(),
+                  height: 60,
+                  width: 310,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            mudarCategoria('receita');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: categoriaAtual == 'receita'
+                                ? receitaColor
+                                : const Color.fromARGB(255, 197, 197, 197),
+                            minimumSize: const Size(150, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(55),
+                            ),
                           ),
-                        );
-                      },
-                      child: Text('Despesas',
-                          style: TextStyle(color: Colors.black)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromARGB(255, 197, 197, 197),
-                        minimumSize: Size(150, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(55),
+                          child: Text('Receitas',
+                              style: TextStyle(
+                                  color: categoriaAtual == 'receita'
+                                      ? Colors.white
+                                      : Colors.black)),
                         ),
                       ),
-                    ),
+                      const SizedBox(width: 3),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            mudarCategoria('despesa');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: categoriaAtual == 'despesa'
+                                ? despesaColor
+                                : const Color.fromARGB(255, 197, 197, 197),
+                            minimumSize: const Size(150, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(55),
+                            ),
+                          ),
+                          child: Text('Despesas',
+                              style: TextStyle(
+                                  color: categoriaAtual == 'despesa'
+                                      ? Colors.white
+                                      : Colors.black)),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 50),
+                ...categorias.map((categoria) {
+                  return _buildCategoryItem(
+                      IconData(categoria['icone'], fontFamily: 'MaterialIcons'),
+                      categoria['nome']);
+                }).toList(),
+              ],
             ),
-            SizedBox(height: 50),
-            _buildCategoryItem(Icons.trending_up_sharp, 'Investimento'),
-            SizedBox(height: 20),
-            _buildCategoryItem(Icons.card_giftcard, 'Presentes'),
-            SizedBox(height: 20),
-            _buildCategoryItem(Icons.more_horiz, 'Outros'),
-            SizedBox(height: 20),
-            _buildCategoryItem(Icons.monetization_on_outlined, 'Salário'),
-            SizedBox(height: 20),
-            _buildCategoryItem(Icons.workspace_premium, 'Prêmio'),
-          ],
-        ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddCategoriaDialog,
+        child: const Icon(Icons.add),
+        backgroundColor:
+            categoriaAtual == 'receita' ? receitaColor : despesaColor,
       ),
     );
   }
@@ -106,10 +216,10 @@ class _categoriaReceitaState extends State<categoriaReceita> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(icon, size: 60),
-        SizedBox(width: 50),
+        const SizedBox(width: 50),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,

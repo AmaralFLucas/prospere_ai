@@ -14,7 +14,6 @@ class CustomBottomAppBar extends StatelessWidget {
     required this.onFabPressed,
   });
 
-  // Método auxiliar para construir um item de nav bar
   Widget buildNavBarItem(IconData icon, String label, int index) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -40,14 +39,14 @@ class CustomBottomAppBar extends StatelessWidget {
     return BottomAppBar(
       height: 60,
       notchMargin: 5,
-      shape: CircularNotchedRectangle(),
-      color: Color.fromARGB(255, 230, 234, 236),
+      shape: const CircularNotchedRectangle(),
+      color: const Color.fromARGB(255, 230, 234, 236),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           buildNavBarItem(Icons.home, 'Inicio', 0),
           buildNavBarItem(Icons.currency_exchange, 'Transações', 1),
-          SizedBox(width: 48), // Espaço para o FAB
+          const SizedBox(width: 48), // Espaço para o FAB
           buildNavBarItem(Icons.flag, 'Planejamento', 2),
           buildNavBarItem(Icons.more_horiz, 'Mais', 3),
         ],

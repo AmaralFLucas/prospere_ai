@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class Contas extends StatefulWidget {
   const Contas({super.key});
@@ -19,13 +19,13 @@ class _ContasState extends State<Contas> {
       appBar: AppBar(
         backgroundColor: myColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context)
                 .pop(); 
           },
         ),
-        title: Text('Contas'),
+        title: const Text('Contas'),
       ),
       body: ListView.builder(
         itemCount: contas.length,
@@ -41,7 +41,7 @@ class _ContasState extends State<Contas> {
           _showAddAccountDialog(context);
         },
         backgroundColor: myColor,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -53,12 +53,12 @@ class _ContasState extends State<Contas> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Adicionar Conta'),
+          title: const Text('Adicionar Conta'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Selecionar Banco'),
+                decoration: const InputDecoration(labelText: 'Selecionar Banco'),
                 items: [
                   '033 - Banco Santander (Brasil) S.A.',
                   '341 - Banco Itaú Unibanco S.A.',
@@ -87,7 +87,7 @@ class _ContasState extends State<Contas> {
                 },
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Saldo'),
+                decoration: const InputDecoration(labelText: 'Saldo'),
                 keyboardType: TextInputType.number,
                 onChanged: (String value) {
                   balance = value;
@@ -97,13 +97,13 @@ class _ContasState extends State<Contas> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop(); 
               },
             ),
             TextButton(
-              child: Text('Adicionar'),
+              child: const Text('Adicionar'),
               onPressed: () {
                 if (selectedBank != null && balance != null) {
                   setState(() {

@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/views/login.dart';
-import 'package:prospere_ai/views/cadastro.dart';
-import 'package:prospere_ai/views/novaSenha.dart';
-
 
 class CodigoMudarSenha extends StatefulWidget {
   const CodigoMudarSenha({super.key});
@@ -12,85 +8,49 @@ class CodigoMudarSenha extends StatefulWidget {
   State<CodigoMudarSenha> createState() => _CodigoMudarSenhaState();
 }
 
-PageController pageController = PageController();
-int initialPosition = 0;
-bool mostrarSenha = true;
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Icon eyeIcon = Icon(Icons.visibility_off);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class _CodigoMudarSenhaState extends State<CodigoMudarSenha> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(children: [
-        Column(
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo_porco.png',
+              'images/novalogo_porco2.png',
               width: 200,
               height: 200,
             ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: MeuInput(labelText: 'Digite o Código enviado para o seu e-mail'),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 32.0),
+              child: Text(
+                'Um e-mail foi enviado para o endereço informado com as instruções para reset de senha. Por favor, verifique sua caixa de entrada.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black54,
+                ),
+              ),
             ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const NovaSenha())
+                  MaterialPageRoute(builder: (context) => const Login()),
                 );
               },
-              child: Text('Enviar'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+                minimumSize: const Size(150, 50),
               ),
+              child: const Text('Voltar para Login'),
             ),
-            SizedBox(height: 68),
-            ElevatedButton(
-              onPressed: () {Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Login())
-                  );},
-              child: Text('Voltar para Login'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
-            ),
-            SizedBox(height: 30),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
-              ),
-              SizedBox(width: 15),
-              Text('OU'),
-              SizedBox(width: 15),
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
-              ),
-            ]),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const Cadastro())
-                    );},
-              child: Text('Criar Conta'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
-              ),
-            )
           ],
         ),
-      ]),
+      ),
     );
   }
 }

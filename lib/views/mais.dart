@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/services/gemini.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
 import 'package:prospere_ai/views/contas.dart';
 import 'package:prospere_ai/views/relatorio.dart';
@@ -10,16 +12,18 @@ class Mais extends StatefulWidget {
   State<Mais> createState() => _MaisState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class _MaisState extends State<Mais> {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: myColor,
         automaticallyImplyLeading: false,
-        title: Text('Mais Opções'),
+        title: const Text('Mais Opções'),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -35,12 +39,12 @@ class _MaisState extends State<Mais> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
                 width: double.infinity,
-                child: Center(
+                child: const Center(
                   child: Text('Contas'),
                 ),
               ),
@@ -55,17 +59,17 @@ class _MaisState extends State<Mais> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const categoriaReceita()),
+                      builder: (context) => Categoria(userId: uid)),
                 );
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
                 width: double.infinity,
-                child: Center(
+                child: const Center(
                   child: Text('Categorias'),
                 ),
               ),
@@ -77,11 +81,11 @@ class _MaisState extends State<Mais> {
             ),
             Container(
               decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12)),
               height: 70,
               width: double.infinity,
-              child: Center(
+              child: const Center(
                 child: Text('Modo Viagem'),
               ),
             ),
@@ -101,12 +105,12 @@ class _MaisState extends State<Mais> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(220, 255, 255, 255),
+                  color: const Color.fromARGB(220, 255, 255, 255),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 height: 70,
                 width: double.infinity,
-                child: Center(
+                child: const Center(
                   child: Text('Relatório'),
                 ),
               ),
@@ -116,6 +120,13 @@ class _MaisState extends State<Mais> {
               height: 2,
               width: double.infinity,
             ),
+            ElevatedButton(onPressed: (){
+              setState(() {
+                generateResponseDB();
+              });
+            }, child: Text(
+              'Gemini'
+            ))
           ],
         ),
       ),

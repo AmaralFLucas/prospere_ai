@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
 class Preferencias extends StatelessWidget {
   const Preferencias({super.key});
@@ -11,15 +11,15 @@ class Preferencias extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: myColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text('Preferências'),
+        title: const Text('Preferências'),
       ),
       body: ListView(
-        children: [
+        children: const [
           ListTile(
             title: Text('Idioma'),
             subtitle: Text('Escolha o idioma'),

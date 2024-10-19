@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
-import 'package:prospere_ai/views/homePage.dart';
+import 'package:prospere_ai/views/inicioCadastro.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -12,121 +12,148 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
-PageController pageController = PageController();
-int initialPosition = 0;
-bool mostrarSenha = true;
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Icon eyeIcon = Icon(Icons.visibility_off);
-
 class _LoginState extends State<Login> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  AutenticacaoServico _autenServico = AutenticacaoServico();
+  final AutenticacaoServico _autenServico = AutenticacaoServico();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logo_porco.png',
-              width: 200,
-              height: 200,
-            ),
-            SizedBox(height: 16),
-            SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Email',
-                controller: emailController,
+      backgroundColor: const Color.fromARGB(255, 30, 163, 132),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
               ),
-            ),
-            SizedBox(
-              width: 300,
-              child: MeuInput(
-                labelText: 'Senha',
-                obscure: true,
-                controller: passwordController,
+              Image.asset(
+                'assets/images/novalogo_porco2.png',
+                width: 100,
+                height: 100,
               ),
-              // TextField(
-              //   decoration: InputDecoration(
-              //     border: OutlineInputBorder(),
-              //     labelText: 'Digite a sua Senha',
-              //     suffixIcon: IconButton(
-              //       icon: eyeIcon,
-              //       onPressed: () {
-              //         setState(() {
-              //           mostrarSenha = !mostrarSenha;
-              //           eyeIcon = mostrarSenha
-              //               ? Icon(Icons.visibility_off)
-              //               : Icon(Icons.visibility);
-              //         });
-              //       },
-              //     ),
-              //   ),
-              //   obscureText: mostrarSenha,
-              // ),
-            ),
-            SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () async {
-                await _autenServico.logarUsuarios(
-                    email: emailController.text,
-                    senha: passwordController.text);
-                // Navigator.of(context).push(
-                //     MaterialPageRoute(builder: (context) => const HomePage()));
-              },
-              child: Text('Entrar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+              const SizedBox(height: 10),
+              const Text(
+                'Prospere.AI',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            SizedBox(height: 68),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const EsqueciSenha()));
-              },
-              child: Text('Esqueci a Senha'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+              const SizedBox(height: 10),
+              const Text(
+                'Faça login para acessar seu painel financeiro personalizado',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white70,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-            SizedBox(height: 30),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
+              const SizedBox(height: 32),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    SizedBox(
+                      width: 300,
+                      child: Email(
+                        labelText: 'Email',
+                        controller: emailController,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: 300,
+                      child: Senha(
+                        labelText: 'Senha',
+                        obscure: true,
+                        controller: passwordController,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(width: 15),
-              Text('OU'),
-              SizedBox(width: 15),
-              Container(
-                width: 125,
-                height: 2,
-                color: Colors.black,
+              const SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    await _autenServico.logarUsuarios(
+                        email: emailController.text,
+                        senha: passwordController.text);
+                    botaoPrincipalClicado();
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                        builder: (context) => const RoteadorTela()));
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: const Color.fromARGB(255, 30, 163, 132),
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                child: const Text('Entrar'),
               ),
-            ]),
-            SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const Cadastro()));
-              },
-              child: Text('Criar Conta'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const EsqueciSenha()));
+                },
+                child: const Text(
+                  'Esqueci minha senha',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
               ),
-            )
-          ],
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Não tem uma conta? ',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const InicioCadastro()));
+                    },
+                    child: const Text(
+                      'Criar Conta',
+                      style: TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ]),
+      ),
     );
+  }
+
+  botaoPrincipalClicado() {
+    if (_formKey.currentState!.validate()) {
+      print("Valido");
+    } else {
+      print("Invalido");
+    }
   }
 }

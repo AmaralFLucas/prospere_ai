@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
 
@@ -9,21 +10,23 @@ class categoriaDespesas extends StatefulWidget {
   State<categoriaDespesas> createState() => _categoriaDespesasState();
 }
 
-Color myColor = Color.fromARGB(255, 178, 0, 0);
+Color myColor = const Color.fromARGB(255, 178, 0, 0);
 
 class _categoriaDespesasState extends State<categoriaDespesas> {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: myColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        title: Text(
+        title: const Text(
           'Categorias',
           style: TextStyle(
             fontSize: 20,
@@ -36,23 +39,23 @@ class _categoriaDespesasState extends State<categoriaDespesas> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryButtons(),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
             _buildCategoryItem(Icons.home, 'Casa'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.menu_book_sharp, 'Educação'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.more_horiz, 'Outros'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.computer, 'Eletrônicos'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.shopping_cart, 'Supermercados'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.directions_car, 'Transporte'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCategoryItem(Icons.shopping_bag_rounded, 'Viagem'),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -61,9 +64,9 @@ class _categoriaDespesasState extends State<categoriaDespesas> {
 
   Widget _buildCategoryButtons() {
     return Container(
-      margin: EdgeInsets.only(right: 10),
+      margin: const EdgeInsets.only(right: 10),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 221, 221, 221),
+        color: const Color.fromARGB(255, 221, 221, 221),
         borderRadius: BorderRadius.circular(55),
       ),
       height: 60,
@@ -75,32 +78,32 @@ class _categoriaDespesasState extends State<categoriaDespesas> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const categoriaReceita(),
+                    builder: (context) => Categoria(userId: uid,),
                   ),
                 );
               },
-              child: Text('Receita', style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 197, 197, 197),
-                minimumSize: Size(150, 50),
+                backgroundColor: const Color.fromARGB(255, 197, 197, 197),
+                minimumSize: const Size(150, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(55),
                 ),
               ),
+              child: Text('Receita', style: TextStyle(color: Colors.white)),
             ),
           ),
-          SizedBox(width: 3),
+          const SizedBox(width: 3),
           Expanded(
             child: ElevatedButton(
               onPressed: () {},
-              child: Text('Despesas', style: TextStyle(color: Colors.black)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: myColor,
-                minimumSize: Size(150, 50),
+                minimumSize: const Size(150, 50),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(55),
                 ),
               ),
+              child: Text('Despesas', style: TextStyle(color: Colors.black)),
             ),
           ),
         ],
@@ -113,10 +116,10 @@ class _categoriaDespesasState extends State<categoriaDespesas> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(icon, size: 60),
-        SizedBox(width: 50),
+        const SizedBox(width: 50),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.black,

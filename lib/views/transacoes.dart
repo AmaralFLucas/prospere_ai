@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/adicionarDespesa.dart';
 import 'package:prospere_ai/views/adicionarReceita.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Transacoes extends StatefulWidget {
-  Transacoes({Key? key, this.title, required this.userId}) : super(key: key);
+  const Transacoes({Key? key, this.title, required this.userId})
+      : super(key: key);
   final String? title;
   final String userId;
 
@@ -13,53 +16,43 @@ class Transacoes extends StatefulWidget {
   State<Transacoes> createState() => _TransacoesState();
 }
 
-Color myColor = Color.fromARGB(255, 30, 163, 132);
-Color cardColor = Color(0xFFF4F4F4);
+Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color myColor2 = const Color.fromARGB(255, 178, 0, 0);
+Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
-class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateMixin {
+class _TransacoesState extends State<Transacoes>
+    with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-
-  List<Map<String, dynamic>> receitas = [];
-  List<Map<String, dynamic>> despesas = [];
 
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
   double saldoAtual = 0.0;
 
+  List<Map<String, dynamic>> categoriasReceitas = [];
+  List<Map<String, dynamic>> categoriasDespesas = [];
+
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 260),
+      duration: const Duration(milliseconds: 260),
     );
 
-    final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    // Buscar dados do banco de dados
-    _loadData();
+    // Carregar categorias de receitas e despesas
+    loadCategorias();
   }
 
-  Future<void> _loadData() async {
-    List<Map<String, dynamic>> fetchedReceitas = await getReceitas(widget.userId);
-    List<Map<String, dynamic>> fetchedDespesas = await getDespesas(widget.userId);
-
-    // Somar receitas e despesas
-    double receitasSum = fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    double despesasSum = fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    
-    // Atualizar o estado com os valores calculados
-    setState(() {
-      receitas = fetchedReceitas;
-      despesas = fetchedDespesas;
-      totalReceitas = receitasSum;
-      totalDespesas = despesasSum;
-      saldoAtual = totalReceitas - totalDespesas;
-    });
+  Future<void> loadCategorias() async {
+    categoriasReceitas = await getCategorias(widget.userId, 'receita');
+    categoriasDespesas = await getCategorias(widget.userId, 'despesa');
   }
 
   @override
@@ -68,7 +61,7 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
       appBar: AppBar(
         backgroundColor: myColor,
         automaticallyImplyLeading: false,
-        title: Text(
+        title: const Text(
           'Transações',
           style: TextStyle(
             fontSize: 24,
@@ -77,19 +70,62 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            _buildBalanceCard(),
-            SizedBox(height: 20),
-            _buildTransactionList(),
-          ],
-        ),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userId)
+            .collection('receitas')
+            .snapshots(),
+        builder: (context, receitasSnapshot) {
+          if (!receitasSnapshot.hasData)
+            return Center(child: CircularProgressIndicator());
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(widget.userId)
+                .collection('despesas')
+                .snapshots(),
+            builder: (context, despesasSnapshot) {
+              if (!despesasSnapshot.hasData)
+                return Center(child: CircularProgressIndicator());
+
+              List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
+                  .map((doc) => doc.data() as Map<String, dynamic>)
+                  .toList();
+              List<Map<String, dynamic>> despesas = despesasSnapshot.data!.docs
+                  .map((doc) => doc.data() as Map<String, dynamic>)
+                  .toList();
+
+              totalReceitas = receitas.fold(
+                  0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+              totalDespesas = despesas.fold(
+                  0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+              saldoAtual = totalReceitas - totalDespesas;
+
+              List<Map<String, dynamic>> transacoes = [];
+              transacoes.addAll(receitas.map((r) => {...r, 'tipo': 'receita'}));
+              transacoes.addAll(despesas.map((d) => {...d, 'tipo': 'despesa'}));
+
+              transacoes.sort((a, b) =>
+                  (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _buildBalanceCard(),
+                    const SizedBox(height: 20),
+                    _buildTransactionList(transacoes),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: Container(
-        margin: EdgeInsets.all(10),
+        margin: const EdgeInsets.all(10),
         child: FloatingActionBubble(
           items: <Bubble>[
             Bubble(
@@ -97,11 +133,13 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               iconColor: Colors.white,
               bubbleColor: myColor,
               icon: Icons.trending_up,
-              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AdicionarReceita()),
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          const AdicionarReceita()),
                 );
                 _animationController.reverse();
               },
@@ -109,13 +147,15 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
             Bubble(
               title: "Adicionar Despesa",
               iconColor: Colors.white,
-              bubbleColor: myColor,
+              bubbleColor: myColor2,
               icon: Icons.trending_down,
-              titleStyle: TextStyle(fontSize: 16, color: Colors.white),
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (BuildContext context) => AdicionarDespesa()),
+                  MaterialPageRoute(
+                      builder: (BuildContext context) =>
+                          const AdicionarDespesa()),
                 );
                 _animationController.reverse();
               },
@@ -136,11 +176,11 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
 
   Widget _buildBalanceCard() {
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -159,7 +199,7 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               color: textColor,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             'R\$ ${saldoAtual.toStringAsFixed(2)}',
             style: TextStyle(
@@ -168,17 +208,19 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
               color: myColor,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceDetail('Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
-              _buildBalanceDetail('Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
           ),
         ],
@@ -197,7 +239,7 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
             color: textColor,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           title,
           style: TextStyle(
@@ -209,13 +251,14 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildTransactionList() {
+  Widget _buildTransactionList(List<Map<String, dynamic>> transacoes) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: Colors.black12,
             blurRadius: 8,
@@ -226,39 +269,43 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ..._buildTransactionItems(),
+          ..._buildTransactionItems(transacoes),
         ],
       ),
     );
   }
 
-  List<Widget> _buildTransactionItems() {
+  List<Widget> _buildTransactionItems(List<Map<String, dynamic>> transacoes) {
     List<Widget> transactionItems = [];
 
-    // Adicionar as receitas
-    transactionItems.addAll(receitas.map((receita) {
-      return Column(
-        children: [
-          _buildTransactionItem(
-            'Receita: ${receita['categoria']}', 
-            'R\$ ${receita['valor']}', 
-            Colors.white, // Texto das receitas permanece branco
-          ),
-          SizedBox(height: 10),
-        ],
-      );
-    }).toList());
+    transactionItems.addAll(transacoes.map((transacao) {
+      Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
+      Timestamp timestamp = transacao['data'] as Timestamp;
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
-    // Adicionar as despesas
-    transactionItems.addAll(despesas.map((despesa) {
+      // Obter o ícone correspondente à categoria
+      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+          ? categoriasReceitas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint})
+          : categoriasDespesas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint});
+
+      IconData iconeCategoria =
+          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+
       return Column(
         children: [
           _buildTransactionItem(
-            'Despesa: ${despesa['categoria']}', 
-            'R\$ ${despesa['valor']}', 
-            Colors.red, // Texto das despesas será vermelho
+            '${transacao['tipo'] == 'receita' ? 'Receita' : 'Despesa'}: ${transacao['categoria']}',
+            'R\$ ${transacao['valor']}',
+            'Data: $formattedDate',
+            cor,
+            iconeCategoria, // Passar o ícone da categoria
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
         ],
       );
     }).toList());
@@ -266,52 +313,47 @@ class _TransacoesState extends State<Transacoes> with SingleTickerProviderStateM
     return transactionItems;
   }
 
-  Widget _buildTransactionItem(String title, String value, Color textColor) {
+  Widget _buildTransactionItem(String title, String value, String data,
+      Color textColor, IconData icone) {
     return Container(
       decoration: BoxDecoration(
-        color: myColor,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              color: textColor,
-            ),
+          Row(
+            children: [
+              Icon(icone, color: textColor), // Exibir o ícone aqui
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+              Spacer(),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 5),
           Text(
-            value,
+            data,
             style: TextStyle(
-              fontSize: 16,
-              color: textColor,
+              fontSize: 14,
+              color: const Color.fromARGB(255, 105, 105, 105),
             ),
           ),
         ],
       ),
     );
   }
-}
-
-Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('receitas')
-      .get();
-  
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-}
-
-Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('despesas')
-      .get();
-  
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 }
