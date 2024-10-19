@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
 
@@ -12,6 +13,8 @@ class categoriaDespesas extends StatefulWidget {
 Color myColor = const Color.fromARGB(255, 178, 0, 0);
 
 class _categoriaDespesasState extends State<categoriaDespesas> {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,7 +78,7 @@ class _categoriaDespesasState extends State<categoriaDespesas> {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => const categoriaReceita(),
+                    builder: (context) => Categoria(userId: uid,),
                   ),
                 );
               },

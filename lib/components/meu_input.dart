@@ -67,7 +67,7 @@ class Email extends StatelessWidget {
       labelText: labelText,
       controller: controller,
       prefixIcon: const Icon(Icons.email,
-          color: Color.fromARGB(255, 30, 163, 132)), // Ícone de e-mail
+          color: Color.fromARGB(255, 30, 163, 132)),
     );
   }
 }
@@ -88,7 +88,7 @@ class Senha extends StatelessWidget {
       controller: controller,
       obscure: obscure ?? true,
       prefixIcon: const Icon(Icons.lock,
-          color: Color.fromARGB(255, 30, 163, 132)), // Ícone de senha
+          color: Color.fromARGB(255, 30, 163, 132)),
     );
   }
 }
