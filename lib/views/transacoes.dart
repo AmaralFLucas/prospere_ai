@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/adicionarDespesa.dart';
 import 'package:prospere_ai/views/adicionarReceita.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Transacoes extends StatefulWidget {
   const Transacoes({Key? key, this.title, required this.userId})
@@ -28,6 +30,9 @@ class _TransacoesState extends State<Transacoes>
   double totalDespesas = 0.0;
   double saldoAtual = 0.0;
 
+  List<Map<String, dynamic>> categoriasReceitas = [];
+  List<Map<String, dynamic>> categoriasDespesas = [];
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +45,14 @@ class _TransacoesState extends State<Transacoes>
     final curvedAnimation =
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
+    // Carregar categorias de receitas e despesas
+    loadCategorias();
+  }
+
+  Future<void> loadCategorias() async {
+    categoriasReceitas = await getCategorias(widget.userId, 'receita');
+    categoriasDespesas = await getCategorias(widget.userId, 'despesa');
   }
 
   @override
@@ -64,7 +77,8 @@ class _TransacoesState extends State<Transacoes>
             .collection('receitas')
             .snapshots(),
         builder: (context, receitasSnapshot) {
-          if (!receitasSnapshot.hasData) return Center(child: CircularProgressIndicator());
+          if (!receitasSnapshot.hasData)
+            return Center(child: CircularProgressIndicator());
           return StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('users')
@@ -72,20 +86,28 @@ class _TransacoesState extends State<Transacoes>
                 .collection('despesas')
                 .snapshots(),
             builder: (context, despesasSnapshot) {
-              if (!despesasSnapshot.hasData) return Center(child: CircularProgressIndicator());
+              if (!despesasSnapshot.hasData)
+                return Center(child: CircularProgressIndicator());
 
-              List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-              List<Map<String, dynamic>> despesas = despesasSnapshot.data!.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+              List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
+                  .map((doc) => doc.data() as Map<String, dynamic>)
+                  .toList();
+              List<Map<String, dynamic>> despesas = despesasSnapshot.data!.docs
+                  .map((doc) => doc.data() as Map<String, dynamic>)
+                  .toList();
 
-              totalReceitas = receitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-              totalDespesas = despesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+              totalReceitas = receitas.fold(
+                  0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+              totalDespesas = despesas.fold(
+                  0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
               saldoAtual = totalReceitas - totalDespesas;
 
               List<Map<String, dynamic>> transacoes = [];
               transacoes.addAll(receitas.map((r) => {...r, 'tipo': 'receita'}));
               transacoes.addAll(despesas.map((d) => {...d, 'tipo': 'despesa'}));
 
-              transacoes.sort((a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+              transacoes.sort((a, b) =>
+                  (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
 
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -190,13 +212,15 @@ class _TransacoesState extends State<Transacoes>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceDetail('Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
-              _buildBalanceDetail('Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
           ),
         ],
@@ -256,12 +280,30 @@ class _TransacoesState extends State<Transacoes>
 
     transactionItems.addAll(transacoes.map((transacao) {
       Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
+      Timestamp timestamp = transacao['data'] as Timestamp;
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+
+      // Obter o ícone correspondente à categoria
+      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+          ? categoriasReceitas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint})
+          : categoriasDespesas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint});
+
+      IconData iconeCategoria =
+          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+
       return Column(
         children: [
           _buildTransactionItem(
             '${transacao['tipo'] == 'receita' ? 'Receita' : 'Despesa'}: ${transacao['categoria']}',
             'R\$ ${transacao['valor']}',
+            'Data: $formattedDate',
             cor,
+            iconeCategoria, // Passar o ícone da categoria
           ),
           const SizedBox(height: 10),
         ],
@@ -271,27 +313,43 @@ class _TransacoesState extends State<Transacoes>
     return transactionItems;
   }
 
-  Widget _buildTransactionItem(String title, String value, Color textColor) {
+  Widget _buildTransactionItem(String title, String value, String data,
+      Color textColor, IconData icone) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              color: textColor,
-            ),
+          Row(
+            children: [
+              Icon(icone, color: textColor), // Exibir o ícone aqui
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+              Spacer(),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 5),
           Text(
-            value,
+            data,
             style: TextStyle(
-              fontSize: 16,
-              color: textColor,
+              fontSize: 14,
+              color: const Color.fromARGB(255, 105, 105, 105),
             ),
           ),
         ],

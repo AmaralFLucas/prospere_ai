@@ -1,9 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:prospere_ai/components/textFormatter.dart';
 
 class AdicionarReceita extends StatefulWidget {
-  const AdicionarReceita({super.key});
+  final double? valorReceita;
+  final String? valorFormatado;
+  final String? categoriaAudio;
+
+  const AdicionarReceita(
+      {super.key, this.valorReceita, this.valorFormatado, this.categoriaAudio});
 
   @override
   State<AdicionarReceita> createState() => _AdicionarReceitaState();
@@ -19,14 +26,72 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
+  List<String> categorias = [];
 
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _carregarCategorias();
+
+    // Atribuir valor formatado do áudio à caixa de texto de valor
+    if (widget.valorFormatado != null) {
+      _valorController.text = widget.valorFormatado!;
+    } else if (widget.valorReceita != null) {
+      _valorController.text =
+          widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+  }
+
+  Future<void> _carregarCategorias() async {
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('categoriasReceitas')
+        .get();
+
+    setState(() {
+      categorias = snapshot.docs.map((doc) => doc['nome'] as String).toList();
+
+      // Verificar se a categoria do áudio está na lista de categorias carregadas
+      if (widget.categoriaAudio != null && widget.categoriaAudio!.isNotEmpty) {
+        String categoriaAudioNormalizada =
+            widget.categoriaAudio!.toLowerCase().trim();
+
+        // Usar similaridade para encontrar a melhor correspondência
+        String? categoriaCorrespondente;
+        double melhorSimilaridade = 0.0;
+
+        for (String categoria in categorias) {
+          // Normalizar a categoria do banco de dados
+          String categoriaNormalizada = categoria.toLowerCase().trim();
+
+          // Calcular similaridade
+          double similaridade =
+              categoriaAudioNormalizada.similarityTo(categoriaNormalizada);
+
+          if (similaridade > melhorSimilaridade) {
+            melhorSimilaridade = similaridade;
+            categoriaCorrespondente = categoria;
+          }
+        }
+
+        // Se a similaridade for maior que um certo limiar, seleciona a categoria correspondente
+        if (melhorSimilaridade > 0.8) {
+          // Ajuste o limiar conforme necessário
+          categoria = categoriaCorrespondente;
+          _categoriaController.text = categoria!;
+        }
+      }
+    });
+  }
+
   Widget _buildDateSelection() {
-    if (_dataSelecionada != null) {
+    if (outrosSelecionado && _dataSelecionada != null) {
       return ElevatedButton(
         onPressed: () {
           _selectDate(context);
@@ -49,16 +114,15 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
           for (int i = 0; i < isSelected.length; i++) {
             isSelected[i] = i == index;
           }
-
           if (index == 2) {
             _selectDate(context);
           } else {
-            outrosSelecionado = false;
             _dataSelecionada = index == 0
                 ? Timestamp.fromDate(DateTime.now())
                 : Timestamp.fromDate(
                     DateTime.now().subtract(const Duration(days: 1)),
                   );
+            outrosSelecionado = false;
           }
         });
       },
@@ -75,7 +139,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
       children: const <Widget>[
         Text('Hoje'),
         Text('Ontem'),
-        Text('Outros'),
+        Text('Outra Data'),
       ],
     );
   }
@@ -87,8 +151,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
         children: [
           Scaffold(
             body: SingleChildScrollView(
+              // child: Padding(
+              // padding: const EdgeInsets.all(20.0),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(15),
@@ -106,6 +172,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                     ),
                     height: 150,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
                           children: [
@@ -118,7 +185,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ),
                             const Padding(padding: EdgeInsets.only(left: 10)),
                             const Text(
-                              'Adicionar Despesa',
+                              'Adicionar Receita',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -127,37 +194,30 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ),
                           ],
                         ),
-                        const Row(
-                          children: [
-                            Padding(padding: EdgeInsets.only(bottom: 20)),
-                            Text(
-                              'Valor total Despesa',
+                        const Padding(
+                            padding: EdgeInsets.only(top: 5),
+                            child: Text(
+                              'Valor total Receita',
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
                               ),
-                            ),
-                          ],
-                        ),
+                            )),
                         Row(
                           children: [
                             Expanded(
                               child: TextField(
                                 controller: _valorController,
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.numberWithOptions(
+                                    decimal: true),
+                                inputFormatters: [CurrencyTextInputFormatter()],
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
                                 decoration: const InputDecoration(
-                                  prefixText: "R\$ ",
-                                  prefixStyle: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
                                   hintText: "0,00",
                                   hintStyle: TextStyle(color: Colors.white70),
                                   border: InputBorder.none,
@@ -169,38 +229,38 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                       ],
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 0),
-                    padding: const EdgeInsets.only(top: 20),
-                    width: double.infinity,
+                  const SizedBox(height: 20),
+                  Center(
                     child: Column(
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(
-                              Icons.check_circle_outline_outlined,
-                              size: 40,
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.check_circle_outline_outlined,
+                                  size: 40,
+                                ),
+                                Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 5)),
+                                Text(
+                                  recebido,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 10)),
-                            Text(
-                              recebido,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 30)),
                             Switch(
                               value: toggleValue,
                               onChanged: (bool newValue) {
                                 setState(() {
                                   toggleValue = newValue;
-                                  recebido = toggleValue
-                                      ? "Recebido"
-                                      : "Não Recebido";
+                                  recebido =
+                                      toggleValue ? "Recebido" : "Não Recebido";
                                 });
                               },
                               activeColor: Colors.white,
@@ -212,110 +272,95 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             ),
                           ],
                         ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10)),
-                        Container(
-                          height: 2,
-                          color: myColorGray,
-                        ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10)),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.bookmark_border, size: 40),
-                              const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 20)),
-                              Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                      labelText: 'Selecionar Categoria'),
-                                  items: [
-                                    'Investimento',
-                                    'Presentes',
-                                    'Outros',
-                                    'Salário',
-                                    'Prêmio',
-                                  ].map((String categoria) {
-                                    return DropdownMenuItem<String>(
-                                      value: categoria,
-                                      child: Text(categoria),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    _categoriaController.text = newValue!;
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10)),
-                        Container(
-                          height: 2,
-                          color: myColorGray,
-                        ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Divider(color: Colors.grey),
+                        const SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.date_range_outlined, size: 40),
-                            const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 20)),
-                            _buildDateSelection(),
+                            const Icon(Icons.bookmark_border, size: 40),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: DropdownButtonFormField<String>(
+                                decoration: const InputDecoration(
+                                    labelText: 'Selecionar Categoria'),
+                                items: categorias.isNotEmpty
+                                    ? categorias.map((String categoria) {
+                                        return DropdownMenuItem<String>(
+                                          value: categoria,
+                                          child: Text(categoria),
+                                        );
+                                      }).toList()
+                                    : [
+                                        const DropdownMenuItem<String>(
+                                          value: null,
+                                          child: Text(
+                                              'Nenhuma categoria disponível'),
+                                        ),
+                                      ],
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _categoriaController.text = newValue!;
+                                    categoria = newValue;
+                                  });
+                                },
+                                value:
+                                    categoria, // Aqui usamos a categoria já selecionada
+                              ),
+                            ),
                           ],
                         ),
-                        const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10)),
+                        const Divider(color: Colors.grey),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Icon(Icons.date_range_outlined, size: 40),
+                            _buildDateSelection(),
+                            SizedBox(
+                              width: 50,
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 20),
-                              height: 50,
-                              width: 150,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(55),
-                                  ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                fixedSize: Size(150, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
-                                child: const Text(
-                                  'Cancelar',
-                                  style: TextStyle(color: Colors.black),
-                                ),
+                              ),
+                              child: Text(
+                                'Cancelar',
+                                style: TextStyle(
+                                    color: Colors.black, fontSize: 15),
                               ),
                             ),
                             const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 15)),
-                            SizedBox(
-                              height: 50,
-                              width: 150,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  _salvarDespesa();
-                                  Navigator.of(context).pop();
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: myColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(55),
-                                  ),
+                            ElevatedButton(
+                              onPressed: () {
+                                _salvarReceita();
+                                Navigator.of(context).pop();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: myColor,
+                                fixedSize: Size(150, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(50),
                                 ),
-                                child: const Text(
-                                  'Adicionar',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    // fontWeight: FontWeight.bold,
-                                  ),
+                              ),
+                              child: Text(
+                                'Adicionar',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
                                 ),
                               ),
                             ),
@@ -328,6 +373,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
               ),
             ),
           ),
+          // ),
         ],
       ),
     );
@@ -340,15 +386,26 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
     );
-    if (picked != null && picked != _dataSelecionada?.toDate()) {
+
+    if (picked != null) {
       setState(() {
         _dataSelecionada = Timestamp.fromDate(picked);
+        outrosSelecionado = true;
       });
     }
   }
 
-  void _salvarDespesa() {
-    double? valor = double.tryParse(_valorController.text);
+  void _salvarReceita() {
+    // Remove R$ e formata o valor corretamente
+    String valorInserido = _valorController.text.replaceAll(
+        RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
+    valorInserido = valorInserido.replaceAll(
+        ',', '.'); // Troca vírgula por ponto para conversão
+
+    // Converte o valor para double
+    double? valor = double.tryParse(valorInserido);
+
+    // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
     String categoria = _categoriaController.text;
     Timestamp data = _dataSelecionada ?? Timestamp.now();
 
@@ -372,12 +429,5 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     } else {
       print("Por favor, insira todos os campos corretamente.");
     }
-  }
-
-  void toggleButton() {
-    setState(() {
-      toggleValue = !toggleValue;
-      recebido = toggleValue ? "Recebido" : "Não Recebido";
-    });
   }
 }
