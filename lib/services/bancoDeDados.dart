@@ -105,6 +105,55 @@ Future<void> addCategoria(
   });
 }
 
+Future<void> criarMeta(String userId, String tipoMeta, String descricao, double valorMeta, DateTime? dataLimite) async {
+  CollectionReference metas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras');
+
+  await metas.add({
+    'tipoMeta': tipoMeta,
+    'descricao': descricao,
+    'valorMeta': valorMeta,
+    'valorAtual': 0.0,
+    'dataCriacao': DateTime.now(),
+    'dataLimite': dataLimite ?? null,
+  });
+}
+
+Future<void> atualizarMeta(String userId, String metaId, double valorAtualizado) async {
+  DocumentReference meta = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras')
+      .doc(metaId);
+
+  await meta.update({'valorAtual': valorAtualizado});
+}
+
+Future<void> editarMeta(String userId, String metaId, String descricao, double valorMeta, DateTime? dataLimite) async {
+  DocumentReference meta = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras')
+      .doc(metaId);
+
+  await meta.update({
+    'descricao': descricao,
+    'valorMeta': valorMeta,
+    'dataLimite': dataLimite ?? null,
+  });
+}
+
+Stream<QuerySnapshot> getMetas(String userId, String tipoMeta) {
+  return FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras')
+      .where('tipoMeta', isEqualTo: tipoMeta)
+      .snapshots();
+}
+
 Future<List<Map<String, dynamic>>> getCategorias(
     String userId, String tipo) async {
   CollectionReference categorias;
