@@ -8,6 +8,12 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:32.2.0') // ou a versão mais recente
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.android.gms:play-services-auth:21.2.0' // Para o Google Login
+}
+
 android {
     namespace = "com.example.prospere_ai"
     compileSdk = flutter.compileSdkVersion
@@ -46,3 +52,4 @@ android {
 flutter {
     source = "../.."
 }
+apply plugin: 'com.google.gms.google-services'
