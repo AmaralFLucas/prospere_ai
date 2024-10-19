@@ -14,9 +14,13 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
-Future<void> addReceita(String userId, double valor, String categoria, Timestamp data, String tipo) async {
-  CollectionReference receitas = FirebaseFirestore.instance.collection('users').doc(userId).collection('receitas');
-  
+Future<void> addReceita(String userId, double valor, String categoria,
+    Timestamp data, String tipo) async {
+  CollectionReference receitas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('receitas');
+
   await receitas.add({
     'valor': valor,
     'categoria': categoria,
@@ -25,9 +29,13 @@ Future<void> addReceita(String userId, double valor, String categoria, Timestamp
   });
 }
 
-Future<void> addDespesa(String userId, double valor, String categoria, Timestamp data, String tipo) async {
-  CollectionReference despesas = FirebaseFirestore.instance.collection('users').doc(userId).collection('despesas');
-  
+Future<void> addDespesa(String userId, double valor, String categoria,
+    Timestamp data, String tipo) async {
+  CollectionReference despesas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas');
+
   await despesas.add({
     'valor': valor,
     'categoria': categoria,
@@ -37,9 +45,15 @@ Future<void> addDespesa(String userId, double valor, String categoria, Timestamp
 }
 
 Future<void> addCategoriasPadrao(String userId) async {
-  CollectionReference categoriasReceitas = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasReceitas');
-  CollectionReference categoriasDespesas = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasDespesas');
-  
+  CollectionReference categoriasReceitas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('categoriasReceitas');
+  CollectionReference categoriasDespesas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('categoriasDespesas');
+
   // Categorias padrão de receitas
   List<Map<String, dynamic>> categoriasReceitasPadrao = [
     {'nome': 'Salário', 'icone': Icons.monetization_on_outlined.codePoint},
@@ -69,32 +83,48 @@ Future<void> addCategoriasPadrao(String userId) async {
   }
 }
 
-Future<void> addCategoria(String userId, String nomeCategoria, IconData icone, String tipo) async {
+Future<void> addCategoria(
+    String userId, String nomeCategoria, IconData icone, String tipo) async {
   CollectionReference categorias;
-  
+
   if (tipo == 'receita') {
-    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasReceitas');
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasReceitas');
   } else {
-    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasDespesas');
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasDespesas');
   }
-  
+
   await categorias.add({
     'nome': nomeCategoria,
     'icone': icone.codePoint, // Armazena o código do ícone
   });
 }
 
-Future<List<Map<String, dynamic>>> getCategorias(String userId, String tipo) async {
+Future<List<Map<String, dynamic>>> getCategorias(
+    String userId, String tipo) async {
   CollectionReference categorias;
-  
+
   if (tipo == 'receita') {
-    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasReceitas');
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasReceitas');
   } else {
-    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasDespesas');
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasDespesas');
   }
-  
+
   QuerySnapshot snapshot = await categorias.get();
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
 }
 
 Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
@@ -103,8 +133,10 @@ Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
       .doc(userId)
       .collection('receitas')
       .get();
-  
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
 }
 
 Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
@@ -113,8 +145,10 @@ Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
       .doc(userId)
       .collection('despesas')
       .get();
-  
-  return snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
 }
 
 Future<void> updateMeta(String userId, String metaId, double valorAtual) async {
@@ -123,13 +157,21 @@ Future<void> updateMeta(String userId, String metaId, double valorAtual) async {
       .doc(userId)
       .collection('metasFinanceiras')
       .doc(metaId);
-  
+
   await meta.update({'valorAtual': valorAtual});
 }
 
-Future<void> addFluxoDeCaixa(String userId, double receitaPrevista, double despesaPrevista, double receitaRealizada, double despesaRealizada) async {
-  CollectionReference fluxoDeCaixa = FirebaseFirestore.instance.collection('users').doc(userId).collection('fluxoDeCaixa');
-  
+Future<void> addFluxoDeCaixa(
+    String userId,
+    double receitaPrevista,
+    double despesaPrevista,
+    double receitaRealizada,
+    double despesaRealizada) async {
+  CollectionReference fluxoDeCaixa = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('fluxoDeCaixa');
+
   await fluxoDeCaixa.add({
     'receitaPrevista': receitaPrevista,
     'despesaPrevista': despesaPrevista,

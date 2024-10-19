@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prospere_ai/components/textFormatter.dart';
@@ -6,8 +7,10 @@ import 'package:prospere_ai/components/textFormatter.dart';
 class AdicionarReceita extends StatefulWidget {
   final double? valorReceita;
   final String? valorFormatado;
+  final String? categoriaAudio;
 
-  const AdicionarReceita({super.key, this.valorReceita, this.valorFormatado});
+  const AdicionarReceita(
+      {super.key, this.valorReceita, this.valorFormatado, this.categoriaAudio});
 
   @override
   State<AdicionarReceita> createState() => _AdicionarReceitaState();
@@ -34,11 +37,14 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   void initState() {
     super.initState();
     _carregarCategorias();
+
+    // Atribuir valor formatado do áudio à caixa de texto de valor
     if (widget.valorFormatado != null) {
-    _valorController.text = widget.valorFormatado!; // Atribua o valor formatado ao controlador
-  } else if (widget.valorReceita != null) {
-    _valorController.text = widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
-  }
+      _valorController.text = widget.valorFormatado!;
+    } else if (widget.valorReceita != null) {
+      _valorController.text =
+          widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
+    }
   }
 
   Future<void> _carregarCategorias() async {
@@ -50,6 +56,37 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
 
     setState(() {
       categorias = snapshot.docs.map((doc) => doc['nome'] as String).toList();
+
+      // Verificar se a categoria do áudio está na lista de categorias carregadas
+      if (widget.categoriaAudio != null && widget.categoriaAudio!.isNotEmpty) {
+        String categoriaAudioNormalizada =
+            widget.categoriaAudio!.toLowerCase().trim();
+
+        // Usar similaridade para encontrar a melhor correspondência
+        String? categoriaCorrespondente;
+        double melhorSimilaridade = 0.0;
+
+        for (String categoria in categorias) {
+          // Normalizar a categoria do banco de dados
+          String categoriaNormalizada = categoria.toLowerCase().trim();
+
+          // Calcular similaridade
+          double similaridade =
+              categoriaAudioNormalizada.similarityTo(categoriaNormalizada);
+
+          if (similaridade > melhorSimilaridade) {
+            melhorSimilaridade = similaridade;
+            categoriaCorrespondente = categoria;
+          }
+        }
+
+        // Se a similaridade for maior que um certo limiar, seleciona a categoria correspondente
+        if (melhorSimilaridade > 0.8) {
+          // Ajuste o limiar conforme necessário
+          categoria = categoriaCorrespondente;
+          _categoriaController.text = categoria!;
+        }
+      }
     });
   }
 
@@ -102,7 +139,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
       children: const <Widget>[
         Text('Hoje'),
         Text('Ontem'),
-        Text('Outros'),
+        Text('Outra Data'),
       ],
     );
   }
@@ -266,7 +303,8 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     categoria = newValue;
                                   });
                                 },
-                                value: categoria,
+                                value:
+                                    categoria, // Aqui usamos a categoria já selecionada
                               ),
                             ),
                           ],
@@ -278,7 +316,9 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                           children: [
                             const Icon(Icons.date_range_outlined, size: 40),
                             _buildDateSelection(),
-                            SizedBox(width: 50,)
+                            SizedBox(
+                              width: 50,
+                            )
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -357,18 +397,20 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
 
   void _salvarReceita() {
     // Remove R$ e formata o valor corretamente
-  String valorInserido = _valorController.text.replaceAll(RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
-  valorInserido = valorInserido.replaceAll(',', '.'); // Troca vírgula por ponto para conversão
+    String valorInserido = _valorController.text.replaceAll(
+        RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
+    valorInserido = valorInserido.replaceAll(
+        ',', '.'); // Troca vírgula por ponto para conversão
 
-  // Converte o valor para double
-  double? valor = double.tryParse(valorInserido);
+    // Converte o valor para double
+    double? valor = double.tryParse(valorInserido);
 
-  // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
-  String categoria = _categoriaController.text;
-  Timestamp data = _dataSelecionada ?? Timestamp.now();
+    // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
+    String categoria = _categoriaController.text;
+    Timestamp data = _dataSelecionada ?? Timestamp.now();
 
-  if (valor != null && categoria.isNotEmpty) {
-    String userId = uid;
+    if (valor != null && categoria.isNotEmpty) {
+      String userId = uid;
 
       FirebaseFirestore.instance
           .collection('users')

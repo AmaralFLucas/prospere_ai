@@ -43,13 +43,15 @@ class _CategoriaState extends State<Categoria> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<IconData>(
-                decoration: const InputDecoration(labelText: 'Selecionar Ícone'),
+                decoration:
+                    const InputDecoration(labelText: 'Selecionar Ícone'),
                 items: [
                   Icons.home,
                   Icons.shopping_cart,
                   Icons.computer,
                   Icons.menu_book_sharp,
-                  Icons.more_horiz,
+                  Icons.auto_awesome,
+                  Icons.more,
                 ].map((IconData icon) {
                   return DropdownMenuItem<IconData>(
                     value: icon,
@@ -67,7 +69,8 @@ class _CategoriaState extends State<Categoria> {
                 },
               ),
               TextField(
-                decoration: const InputDecoration(labelText: 'Nome da Categoria'),
+                decoration:
+                    const InputDecoration(labelText: 'Nome da Categoria'),
                 onChanged: (String value) {
                   nomeCategoria = value;
                 },
@@ -78,20 +81,21 @@ class _CategoriaState extends State<Categoria> {
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () {
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: const Text('Adicionar'),
               onPressed: () async {
                 if (iconeCategoria != null && nomeCategoria != null) {
-                  await addCategoria(widget.userId, nomeCategoria!, iconeCategoria!, categoriaAtual);
+                  await addCategoria(widget.userId, nomeCategoria!,
+                      iconeCategoria!, categoriaAtual);
 
                   setState(() {
                     categorias = getCategorias(widget.userId, categoriaAtual);
                   });
                 }
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -104,7 +108,8 @@ class _CategoriaState extends State<Categoria> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: categoriaAtual == 'receita' ? receitaColor : despesaColor,
+        backgroundColor:
+            categoriaAtual == 'receita' ? receitaColor : despesaColor,
         title: Text(
           'Categorias de ${categoriaAtual == 'receita' ? 'Receitas' : 'Despesas'}',
           style: const TextStyle(
@@ -188,7 +193,9 @@ class _CategoriaState extends State<Categoria> {
                 ),
                 const SizedBox(height: 50),
                 ...categorias.map((categoria) {
-                  return _buildCategoryItem(IconData(categoria['icone'], fontFamily: 'MaterialIcons'), categoria['nome']);
+                  return _buildCategoryItem(
+                      IconData(categoria['icone'], fontFamily: 'MaterialIcons'),
+                      categoria['nome']);
                 }).toList(),
               ],
             ),
@@ -198,7 +205,8 @@ class _CategoriaState extends State<Categoria> {
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddCategoriaDialog,
         child: const Icon(Icons.add),
-        backgroundColor: categoriaAtual == 'receita' ? receitaColor : despesaColor,
+        backgroundColor:
+            categoriaAtual == 'receita' ? receitaColor : despesaColor,
       ),
     );
   }

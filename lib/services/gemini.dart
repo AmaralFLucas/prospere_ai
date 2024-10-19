@@ -21,7 +21,7 @@ generateResponse(BuildContext context, audio) async {
   {
   "data": {
     "tipo": (receita ou despesa), 
-    "categoria": , 
+    "categoria": ,
     "valor": 
     }
   }""";
@@ -38,7 +38,7 @@ generateResponse(BuildContext context, audio) async {
     print(categoria);
     print(valor);
     double valorDouble =
-        double.tryParse(valor.toString().replaceAll('.', '.')) ??
+        double.tryParse(valor.toString().replaceAll(',', '.')) ??
             0.0; // Converte para double
 
     // Formata o valor como String com vírgula como separador decimal
@@ -61,7 +61,10 @@ generateResponse(BuildContext context, audio) async {
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarReceita(
-              valorReceita: valorDouble, valorFormatado: valorFormatado),
+            valorReceita: valorDouble,
+            valorFormatado: valorFormatado,
+            categoriaAudio: categoria,
+          ),
         ),
       );
     }

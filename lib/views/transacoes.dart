@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/adicionarDespesa.dart';
 import 'package:prospere_ai/views/adicionarReceita.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
@@ -29,6 +30,9 @@ class _TransacoesState extends State<Transacoes>
   double totalDespesas = 0.0;
   double saldoAtual = 0.0;
 
+  List<Map<String, dynamic>> categoriasReceitas = [];
+  List<Map<String, dynamic>> categoriasDespesas = [];
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +45,14 @@ class _TransacoesState extends State<Transacoes>
     final curvedAnimation =
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
+    // Carregar categorias de receitas e despesas
+    loadCategorias();
+  }
+
+  Future<void> loadCategorias() async {
+    categoriasReceitas = await getCategorias(widget.userId, 'receita');
+    categoriasDespesas = await getCategorias(widget.userId, 'despesa');
   }
 
   @override
@@ -272,6 +284,18 @@ class _TransacoesState extends State<Transacoes>
       DateTime dateTime = timestamp.toDate();
       String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
+      // Obter o ícone correspondente à categoria
+      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+          ? categoriasReceitas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint})
+          : categoriasDespesas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint});
+
+      IconData iconeCategoria =
+          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+
       return Column(
         children: [
           _buildTransactionItem(
@@ -279,6 +303,7 @@ class _TransacoesState extends State<Transacoes>
             'R\$ ${transacao['valor']}',
             'Data: $formattedDate',
             cor,
+            iconeCategoria, // Passar o ícone da categoria
           ),
           const SizedBox(height: 10),
         ],
@@ -288,20 +313,20 @@ class _TransacoesState extends State<Transacoes>
     return transactionItems;
   }
 
-  Widget _buildTransactionItem(
-      String title, String value, String data, Color textColor) {
+  Widget _buildTransactionItem(String title, String value, String data,
+      Color textColor, IconData icone) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
-        // Alterado de Row para Column
-        crossAxisAlignment: CrossAxisAlignment.start, // Alinhamento à esquerda
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Icon(icone, color: textColor), // Exibir o ícone aqui
+              const SizedBox(width: 10),
               Text(
                 title,
                 style: TextStyle(
@@ -309,6 +334,7 @@ class _TransacoesState extends State<Transacoes>
                   color: textColor,
                 ),
               ),
+              Spacer(),
               Text(
                 value,
                 style: TextStyle(
@@ -318,12 +344,12 @@ class _TransacoesState extends State<Transacoes>
               ),
             ],
           ),
-          const SizedBox(height: 5), // Espaço entre o valor e a data
+          const SizedBox(height: 5),
           Text(
-            data, // Aqui será exibida a data formatada
+            data,
             style: TextStyle(
               fontSize: 14,
-              color: const Color.fromARGB(255, 105, 105, 105), // Definindo a cor da data como cinza
+              color: const Color.fromARGB(255, 105, 105, 105),
             ),
           ),
         ],

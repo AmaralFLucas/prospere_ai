@@ -7,12 +7,14 @@ class AdicionarDespesa extends StatefulWidget {
   final double? valorDespesa;
   final String? valorFormatado; // Adicione esta linha
 
-  const AdicionarDespesa({super.key, this.valorDespesa, this.valorFormatado}); // Adicione valorFormatado
+  const AdicionarDespesa(
+      {super.key,
+      this.valorDespesa,
+      this.valorFormatado}); // Adicione valorFormatado
 
   @override
   State<AdicionarDespesa> createState() => _AdicionarDespesaState();
 }
-
 
 Color myColor = const Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = const Color.fromARGB(255, 121, 108, 108);
@@ -31,20 +33,20 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
 
- @override
-void initState() {
-  super.initState();
-  _carregarCategorias();
-  
-  // Verifique se o valor formatado não é nulo e atribua ao controlador
-  if (widget.valorFormatado != null) {
-    _valorController.text = widget.valorFormatado!; // Atribua o valor formatado ao controlador
-  } else if (widget.valorDespesa != null) {
-    _valorController.text = widget.valorDespesa!.toStringAsFixed(2).replaceAll('.', ',');
+  @override
+  void initState() {
+    super.initState();
+    _carregarCategorias();
+
+    // Verifique se o valor formatado não é nulo e atribua ao controlador
+    if (widget.valorFormatado != null) {
+      _valorController.text =
+          widget.valorFormatado!; // Atribua o valor formatado ao controlador
+    } else if (widget.valorDespesa != null) {
+      _valorController.text =
+          widget.valorDespesa!.toStringAsFixed(2).replaceAll('.', ',');
+    }
   }
-}
-
-
 
   Future<void> _carregarCategorias() async {
     final snapshot = await FirebaseFirestore.instance
@@ -59,59 +61,59 @@ void initState() {
   }
 
   Widget _buildDateSelection() {
-  if (outrosSelecionado && _dataSelecionada != null) {
-    return ElevatedButton(
-      onPressed: () {
-        _selectDate(context);
+    if (outrosSelecionado && _dataSelecionada != null) {
+      return ElevatedButton(
+        onPressed: () {
+          _selectDate(context);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: myColor,
+        ),
+        child: Text(
+          '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
+          style: const TextStyle(fontSize: 16, color: Colors.black),
+        ),
+      );
+    }
+
+    return ToggleButtons(
+      direction: vertical ? Axis.vertical : Axis.horizontal,
+      onPressed: (int index) {
+        setState(() {
+          for (int i = 0; i < isSelected.length; i++) {
+            isSelected[i] = i == index;
+          }
+
+          if (index == 2) {
+            _selectDate(context);
+          } else {
+            _dataSelecionada = index == 0
+                ? Timestamp.fromDate(DateTime.now())
+                : Timestamp.fromDate(
+                    DateTime.now().subtract(const Duration(days: 1)),
+                  );
+            outrosSelecionado = false;
+          }
+        });
       },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
-        foregroundColor: myColor,
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
+      selectedBorderColor: Colors.black,
+      selectedColor: Colors.white,
+      fillColor: myColor,
+      color: Colors.black,
+      constraints: const BoxConstraints(
+        minHeight: 40.0,
+        minWidth: 80.0,
       ),
-      child: Text(
-        '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
-        style: const TextStyle(fontSize: 16, color: Colors.black),
-      ),
+      isSelected: isSelected,
+      children: const <Widget>[
+        Text('Hoje'),
+        Text('Ontem'),
+        Text('Outra Data'),
+      ],
     );
   }
-
-  return ToggleButtons(
-    direction: vertical ? Axis.vertical : Axis.horizontal,
-    onPressed: (int index) {
-      setState(() {
-        for (int i = 0; i < isSelected.length; i++) {
-          isSelected[i] = i == index;
-        }
-
-        if (index == 2) {
-          _selectDate(context);
-        } else {
-          _dataSelecionada = index == 0
-              ? Timestamp.fromDate(DateTime.now())
-              : Timestamp.fromDate(
-                  DateTime.now().subtract(const Duration(days: 1)),
-                );
-          outrosSelecionado = false;
-        }
-      });
-    },
-    borderRadius: const BorderRadius.all(Radius.circular(8)),
-    selectedBorderColor: Colors.black,
-    selectedColor: Colors.white,
-    fillColor: myColor,
-    color: Colors.black,
-    constraints: const BoxConstraints(
-      minHeight: 40.0,
-      minWidth: 80.0,
-    ),
-    isSelected: isSelected,
-    children: const <Widget>[
-      Text('Hoje'),
-      Text('Ontem'),
-      Text('Outros'),
-    ],
-  );
-}
 
   @override
   Widget build(BuildContext context) {
@@ -226,8 +228,7 @@ void initState() {
                               onChanged: (bool newValue) {
                                 setState(() {
                                   toggleValue = newValue;
-                                  pago =
-                                      toggleValue ? "Pago" : "Não Pago";
+                                  pago = toggleValue ? "Pago" : "Não Pago";
                                 });
                               },
                               activeColor: Colors.white,
@@ -282,7 +283,9 @@ void initState() {
                           children: [
                             const Icon(Icons.date_range_outlined, size: 40),
                             _buildDateSelection(),
-                            SizedBox(width: 50,)
+                            SizedBox(
+                              width: 50,
+                            )
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -343,54 +346,56 @@ void initState() {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-  final DateTime? picked = await showDatePicker(
-    context: context,
-    initialDate: DateTime.now(),
-    firstDate: DateTime(2000),
-    lastDate: DateTime(2101),
-  );
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
 
-  if (picked != null) {
-    setState(() {
-      _dataSelecionada = Timestamp.fromDate(picked);
-      outrosSelecionado = true;
-    });
+    if (picked != null) {
+      setState(() {
+        _dataSelecionada = Timestamp.fromDate(picked);
+        outrosSelecionado = true;
+      });
+    }
   }
-}
 
-void _salvarDespesa() {
-  // Remove R$ e formata o valor corretamente
-  String valorInserido = _valorController.text.replaceAll(RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
-  valorInserido = valorInserido.replaceAll(',', '.'); // Troca vírgula por ponto para conversão
+  void _salvarDespesa() {
+    // Remove R$ e formata o valor corretamente
+    String valorInserido = _valorController.text.replaceAll(
+        RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
+    valorInserido = valorInserido.replaceAll(
+        ',', '.'); // Troca vírgula por ponto para conversão
 
-  // Converte o valor para double
-  double? valor = double.tryParse(valorInserido);
+    // Converte o valor para double
+    double? valor = double.tryParse(valorInserido);
 
-  // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
-  String categoria = _categoriaController.text;
-  Timestamp data = _dataSelecionada ?? Timestamp.now();
+    // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
+    String categoria = _categoriaController.text;
+    Timestamp data = _dataSelecionada ?? Timestamp.now();
 
-  if (valor != null && categoria.isNotEmpty) {
-    String userId = uid;
+    if (valor != null && categoria.isNotEmpty) {
+      String userId = uid;
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .collection('despesas')
-        .add({
-      'valor': valor, // Salva o valor como double
-      'categoria': categoria,
-      'data': data,
-      'tipo': toggleValue ? "Pago" : "Não Pago",
-    }).then((_) {
-      print("despesa adicionada com sucesso");
-    }).catchError((error) {
-      print("Falha ao adicionar despesa: $error");
-    });
-  } else {
-    print("Por favor, insira todos os campos corretamente.");
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('despesas')
+          .add({
+        'valor': valor, // Salva o valor como double
+        'categoria': categoria,
+        'data': data,
+        'tipo': toggleValue ? "Pago" : "Não Pago",
+      }).then((_) {
+        print("despesa adicionada com sucesso");
+      }).catchError((error) {
+        print("Falha ao adicionar despesa: $error");
+      });
+    } else {
+      print("Por favor, insira todos os campos corretamente.");
+    }
   }
-}
 
   void toggleButton() {
     setState(() {
