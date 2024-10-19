@@ -42,6 +42,24 @@ Future<void> addDespesa(String userId, double valor, String categoria,
     'data': data,
     'tipo': tipo,
   });
+
+  QuerySnapshot metasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras')
+      .where('tipoMeta', isEqualTo: 'gastoMensal')
+      .where('categoria', isEqualTo: categoria)
+      .get();
+
+  if (metasSnapshot.docs.isNotEmpty) {
+    for (var metaDoc in metasSnapshot.docs) {
+      var metaData = metaDoc.data() as Map<String, dynamic>;
+      double valorAtual = metaData['valorAtual'] ?? 0.0;
+      double novoValorAtual = valorAtual + valor;
+
+      await metaDoc.reference.update({'valorAtual': novoValorAtual});
+    }
+  }
 }
 
 Future<void> addCategoriasPadrao(String userId) async {
@@ -116,6 +134,39 @@ Future<void> criarMeta(String userId, String tipoMeta, String descricao, double 
     'descricao': descricao,
     'valorMeta': valorMeta,
     'valorAtual': 0.0,
+    'dataCriacao': DateTime.now(),
+    'dataLimite': dataLimite ?? null,
+  });
+}
+
+Future<void> criarMetaGastoMensal(String userId, String descricao, double valorMeta, String categoria, DateTime? dataLimite) async {
+  CollectionReference metas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras');
+
+  // Buscar todas as despesas já registradas na categoria
+  QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas')
+      .where('categoria', isEqualTo: categoria)
+      .get();
+
+  // Calcular o valor total das despesas anteriores
+  double totalDespesasAnteriores = 0.0;
+  for (var doc in despesasSnapshot.docs) {
+    var despesaData = doc.data() as Map<String, dynamic>;
+    totalDespesasAnteriores += despesaData['valor'];
+  }
+
+  // Criar a meta já considerando as movimentações anteriores
+  await metas.add({
+    'tipoMeta': 'gastoMensal',
+    'descricao': descricao,
+    'valorMeta': valorMeta,
+    'valorAtual': totalDespesasAnteriores, // Valor inicial da meta é ajustado
+    'categoria': categoria,
     'dataCriacao': DateTime.now(),
     'dataLimite': dataLimite ?? null,
   });
