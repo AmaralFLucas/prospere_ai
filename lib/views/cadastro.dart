@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart'; // Importando o pacote de máscara
 import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
@@ -18,10 +20,84 @@ Color accentColor = Colors.white;
 class _CadastroState extends State<Cadastro> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   TextEditingController cpfController = TextEditingController();
   TextEditingController nomeController = TextEditingController();
 
   final AutenticacaoServico _autenServico = AutenticacaoServico();
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
+
+  final MaskTextInputFormatter cpfMaskFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {
+      "#": RegExp(r'[0-9]'),
+    },
+  );
+
+  void togglePasswordVisibility() {
+    setState(() {
+      obscurePassword = !obscurePassword;
+    });
+  }
+
+  void toggleConfirmPasswordVisibility() {
+    setState(() {
+      obscureConfirmPassword = !obscureConfirmPassword;
+    });
+  }
+
+  bool validateEmail(String email) {
+    return email.contains('@') && email.contains('.');
+  }
+
+  bool validateCPF(String cpf) {
+    // Remove caracteres não numéricos
+    String numericCpf = cpf.replaceAll(RegExp(r'\D'), '');
+
+    // Verifica se tem 11 dígitos
+    return numericCpf.length == 11 && RegExp(r'^\d{11}$').hasMatch(numericCpf);
+  }
+
+  bool validateInputs() {
+    if (nomeController.text.isEmpty) {
+      mostrarSnackBar(context: context, texto: "O nome é obrigatório.");
+      return false;
+    }
+    if (emailController.text.isEmpty) {
+      mostrarSnackBar(context: context, texto: "O E-mail é obrigatório.");
+      return false;
+    }
+    if (!validateEmail(emailController.text)) {
+      mostrarSnackBar(context: context, texto: "Informe um e-mail válido.");
+      return false;
+    }
+    if (cpfController.text.isEmpty) {
+      mostrarSnackBar(context: context, texto: "O CPF é obrigatório.");
+      return false;
+    }
+    if (!validateCPF(cpfController.text)) {
+      mostrarSnackBar(
+          context: context,
+          texto:
+              "O CPF deve estar no formato xxx.xxx.xxx-xx e conter 11 dígitos.");
+      return false;
+    }
+    if (passwordController.text.isEmpty) {
+      mostrarSnackBar(context: context, texto: "A senha é obrigatória.");
+      return false;
+    }
+    if (confirmPasswordController.text.isEmpty) {
+      mostrarSnackBar(
+          context: context, texto: "A confirmação da senha é obrigatória.");
+      return false;
+    }
+    if (passwordController.text != confirmPasswordController.text) {
+      mostrarSnackBar(context: context, texto: "As senhas não correspondem.");
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,6 +155,8 @@ class _CadastroState extends State<Cadastro> {
                 child: MeuInput(
                   labelText: 'Digite o seu CPF',
                   controller: cpfController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [cpfMaskFormatter], // Aplica a máscara
                 ),
               ),
               const SizedBox(height: 16),
@@ -86,43 +164,63 @@ class _CadastroState extends State<Cadastro> {
                 width: 300,
                 child: MeuInput(
                   labelText: 'Digite a sua Senha',
-                  obscure: true,
+                  obscure: obscurePassword,
                   controller: passwordController,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      color: accentColor,
+                    ),
+                    onPressed: togglePasswordVisibility,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
-              const SizedBox(
+              SizedBox(
                 width: 300,
                 child: MeuInput(
                   labelText: 'Confirme a sua Senha',
-                  obscure: true,
+                  obscure: obscureConfirmPassword,
+                  controller: confirmPasswordController,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscureConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                      color: accentColor,
+                    ),
+                    onPressed: toggleConfirmPasswordVisibility,
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {
-                  await _autenServico
-                      .cadastrarUsuario(
-                    email: emailController.text,
-                    senha: passwordController.text,
-                    cpf: cpfController.text,
-                    nome: nomeController.text,
-                  )
-                      .then((String? erro) {
-                    if (erro != null) {
-                      mostrarSnackBar(context: context, texto: erro);
-                    } else {
-                      mostrarSnackBar(
-                        context: context,
-                        texto: "Cadastro efetuado com sucesso",
-                        isErro: false,
-                      );
-                      _autenServico.deslogarUsuario();
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (context) => const Login()),
-                      );
-                    }
-                  });
+                  if (validateInputs()) {
+                    await _autenServico
+                        .cadastrarUsuario(
+                      email: emailController.text,
+                      senha: passwordController.text,
+                      cpf: cpfController.text,
+                      nome: nomeController.text,
+                    )
+                        .then((String? erro) {
+                      if (erro != null) {
+                        mostrarSnackBar(context: context, texto: erro);
+                      } else {
+                        mostrarSnackBar(
+                          context: context,
+                          texto: "Cadastro efetuado com sucesso",
+                          isErro: false,
+                        );
+                        _autenServico.deslogarUsuario();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const Login()),
+                        );
+                      }
+                    });
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accentColor,

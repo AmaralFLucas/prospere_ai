@@ -78,7 +78,6 @@ class _LoginState extends State<Login> {
                       width: 300,
                       child: Senha(
                         labelText: 'Senha',
-                        obscure: true,
                         controller: passwordController,
                       ),
                     ),
