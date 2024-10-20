@@ -1,23 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:prospere_ai/views/inicioCadastro.dart';
 import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/termos_de_uso.dart';
 import 'package:prospere_ai/views/politica_de_privacidade.dart';
 
-class InicioLogin extends StatelessWidget {
+class InicioLogin extends StatefulWidget {
   const InicioLogin({super.key});
+
+  @override
+  State<InicioLogin> createState() => _InicioLoginState();
+}
+
+class _InicioLoginState extends State<InicioLogin> {
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  // Função para realizar o login com o Google
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final GoogleSignInAccount? account = await _googleSignIn.signIn();
+      if (account != null) {
+        print("Usuário logado: ${account.email}");
+        // Aqui você pode redirecionar o usuário para a tela principal ou salvar o login
+      }
+    } catch (error) {
+      print("Erro ao fazer login com o Google: $error");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 30, 163, 132), // Cor de fundo
+      backgroundColor: const Color.fromARGB(255, 30, 163, 132),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 60.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Mensagem de boas-vindas
               const Text(
                 'Bem-vindo de volta!',
                 style: TextStyle(
@@ -28,9 +48,8 @@ class InicioLogin extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),
-              // Opção para logar com Google
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: _handleGoogleSignIn,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: const Color.fromARGB(255, 30, 163, 132),
@@ -44,7 +63,6 @@ class InicioLogin extends StatelessWidget {
                 label: const Text('Continuar com Google'),
               ),
               const SizedBox(height: 20),
-              // Opção para continuar com e-mail e senha
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).push(
@@ -59,12 +77,12 @@ class InicioLogin extends StatelessWidget {
                 child: const Text('Continuar com E-mail e Senha'),
               ),
               const SizedBox(height: 30),
-              // Opção para se cadastrar
               TextButton(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) => const InicioCadastro()),
+                      builder: (context) => const InicioCadastro(),
+                    ),
                   );
                 },
                 child: const Text(
@@ -78,7 +96,6 @@ class InicioLogin extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 50),
-              // Termos de uso e política de privacidade
               const Text(
                 'Ao continuar, estou de acordo com os termos de uso e política de privacidade do Prospere.AI',
                 textAlign: TextAlign.center,
@@ -95,7 +112,8 @@ class InicioLogin extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (context) => const TermosDeUso()),
+                          builder: (context) => const TermosDeUso(),
+                        ),
                       );
                     },
                     child: const Text(
@@ -111,8 +129,8 @@ class InicioLogin extends StatelessWidget {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const PoliticaDePrivacidade()),
+                          builder: (context) => const PoliticaDePrivacidade(),
+                        ),
                       );
                     },
                     child: const Text(
