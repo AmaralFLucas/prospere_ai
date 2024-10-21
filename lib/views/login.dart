@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart'; // Importando o pacote de máscara
 import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
+import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/views/homePage.dart';
+import 'package:prospere_ai/views/esqueciSenha.dart';
 import 'package:prospere_ai/views/inicioCadastro.dart';
 
 class Login extends StatefulWidget {
@@ -133,7 +134,7 @@ class _LoginState extends State<Login> {
                         );
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                              builder: (context) => const HomePage()),
+                              builder: (context) => const RoteadorTela()),
                         );
                       } else {
                         mostrarSnackBar(
@@ -159,7 +160,8 @@ class _LoginState extends State<Login> {
               const SizedBox(height: 20),
               TextButton(
                 onPressed: () {
-                  // Implementação para esqueci senha
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => const EsqueciSenha()));
                 },
                 child: const Text(
                   'Esqueci minha senha',

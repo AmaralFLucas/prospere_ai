@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/inicio.dart';
 import 'package:prospere_ai/views/inicioCadastro.dart';
@@ -25,10 +26,7 @@ class _InicioLoginState extends State<InicioLogin> {
         print("Usuário logado: ${user.email}");
         // Redireciona para a página de início após o login bem-sucedido
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-              builder: (context) => const Inicio(
-                    userId: '',
-                  )),
+          MaterialPageRoute(builder: (context) => const RoteadorTela()),
         );
       }
     } catch (error) {
