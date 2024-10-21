@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 
@@ -29,6 +33,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   final Color cardColor = const Color(0xFFF4F4F4);
   final Color textColor = Colors.black87;
 
+  String? profileImageUrl;
+
   @override
   void initState() {
     super.initState();
@@ -43,11 +49,15 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _loadData() async {
-    List<Map<String, dynamic>> fetchedReceitas = await getReceitas(widget.userId);
-    List<Map<String, dynamic>> fetchedDespesas = await getDespesas(widget.userId);
+    List<Map<String, dynamic>> fetchedReceitas =
+        await getReceitas(widget.userId);
+    List<Map<String, dynamic>> fetchedDespesas =
+        await getDespesas(widget.userId);
 
-    double receitasSum = fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    double despesasSum = fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double receitasSum =
+        fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double despesasSum =
+        fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
 
     setState(() {
       receitas = fetchedReceitas;
@@ -56,6 +66,33 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       totalDespesas = despesasSum;
       saldoAtual = totalReceitas - totalDespesas;
     });
+  }
+
+  Future<void> _chooseImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      String url = await _uploadImageToFirebase(image.path);
+      setState(() {
+        profileImageUrl = url;
+      });
+    }
+  }
+
+  Future<String> _uploadImageToFirebase(String filePath) async {
+    File file = File(filePath);
+    String fileName = 'profile_${widget.userId}.jpg';
+    Reference storageRef =
+        FirebaseStorage.instance.ref().child('profile_images/$fileName');
+    await storageRef.putFile(file);
+    String downloadUrl = await storageRef.getDownloadURL();
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .update({'profileImageUrl': downloadUrl});
+    return downloadUrl;
   }
 
   @override
@@ -77,18 +114,22 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     decoration: const BoxDecoration(
                       color: Colors.blue,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: Column(
                       children: [
-                        const Icon(Icons.people, size: 100, color: Colors.white),
-                        IconButton(
-                          padding: const EdgeInsets.only(left: 135, bottom: 100),
-                          icon: const Icon(Icons.settings, size: 25, color: Colors.white),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const Configuracoes()),
-                            );
-                          },
+                        GestureDetector(
+                          onTap: _chooseImage,
+                          child: CircleAvatar(
+                            radius: 50,
+                            backgroundImage: profileImageUrl != null
+                                ? NetworkImage(profileImageUrl!)
+                                : const AssetImage(
+                                    'assets/default_profile.png'),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Nome do Usuário', // Substitua pelo nome do usuário
+                          style: TextStyle(color: Colors.white, fontSize: 20),
                         ),
                       ],
                     ),
@@ -96,7 +137,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const MeuCadastro()),
+                        MaterialPageRoute(
+                          builder: (context) => const MeuCadastro(),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -105,7 +148,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     ),
                     child: const Text(
                       'Meu Cadastro',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                   ElevatedButton(
@@ -121,7 +168,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                       children: [
                         Text(
                           'Sair',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                         Icon(Icons.exit_to_app, color: Colors.red),
                       ],
@@ -198,13 +249,15 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceDetail('Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
-              _buildBalanceDetail('Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
           ),
         ],
@@ -217,7 +270,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       children: [
         Text(
           value,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
@@ -252,7 +309,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   List<Widget> _buildTransactionItems() {
-    despesas.sort((a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+    despesas.sort(
+        (a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
 
     List<Widget> transactionItems = [];
 
@@ -275,7 +333,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     return Container(
       decoration: BoxDecoration(
         color: myColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -284,44 +342,19 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           Text(
             title,
             style: const TextStyle(
-              fontSize: 16,
               color: Colors.white,
+              fontSize: 16,
             ),
           ),
           Text(
             value,
             style: const TextStyle(
+              color: Colors.white,
               fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.red,
             ),
           ),
         ],
       ),
     );
   }
-}
-
-Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('receitas')
-      .get();
-
-  return snapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
-}
-
-Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
-  QuerySnapshot snapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('despesas')
-      .get();
-
-  return snapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
 }

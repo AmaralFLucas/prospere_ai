@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:prospere_ai/views/cadastro.dart';
+import 'package:prospere_ai/views/inicio.dart';
 import 'package:prospere_ai/views/inicioCadastro.dart';
 import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/termos_de_uso.dart';
 import 'package:prospere_ai/views/politica_de_privacidade.dart';
+import 'package:prospere_ai/services/autenticacao.dart';
 
 class InicioLogin extends StatefulWidget {
   const InicioLogin({super.key});
@@ -14,15 +15,21 @@ class InicioLogin extends StatefulWidget {
 }
 
 class _InicioLoginState extends State<InicioLogin> {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  final AutenticacaoServico _autenticacaoGoogle = AutenticacaoServico();
 
   // Função para realizar o login com o Google
   Future<void> _handleGoogleSignIn() async {
     try {
-      final GoogleSignInAccount? account = await _googleSignIn.signIn();
-      if (account != null) {
-        print("Usuário logado: ${account.email}");
-        // Aqui você pode redirecionar o usuário para a tela principal ou salvar o login
+      final user = await _autenticacaoGoogle.signInWithGoogle();
+      if (user != null) {
+        print("Usuário logado: ${user.email}");
+        // Redireciona para a página de início após o login bem-sucedido
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (context) => const Inicio(
+                    userId: '',
+                  )),
+        );
       }
     } catch (error) {
       print("Erro ao fazer login com o Google: $error");
