@@ -1,10 +1,6 @@
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 
@@ -32,8 +28,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   final Color myColor = const Color.fromARGB(255, 30, 163, 132);
   final Color cardColor = const Color(0xFFF4F4F4);
   final Color textColor = Colors.black87;
-
-  String? profileImageUrl;
 
   @override
   void initState() {
@@ -68,33 +62,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     });
   }
 
-  Future<void> _chooseImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
-
-    if (image != null) {
-      String url = await _uploadImageToFirebase(image.path);
-      setState(() {
-        profileImageUrl = url;
-      });
-    }
-  }
-
-  Future<String> _uploadImageToFirebase(String filePath) async {
-    File file = File(filePath);
-    String fileName = 'profile_${widget.userId}.jpg';
-    Reference storageRef =
-        FirebaseStorage.instance.ref().child('profile_images/$fileName');
-    await storageRef.putFile(file);
-    String downloadUrl = await storageRef.getDownloadURL();
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .update({'profileImageUrl': downloadUrl});
-    return downloadUrl;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,22 +81,22 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     decoration: const BoxDecoration(
                       color: Colors.blue,
                     ),
-                    child: Column(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        GestureDetector(
-                          onTap: _chooseImage,
-                          child: CircleAvatar(
-                            radius: 50,
-                            backgroundImage: profileImageUrl != null
-                                ? NetworkImage(profileImageUrl!)
-                                : const AssetImage(
-                                    'assets/default_profile.png'),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Nome do Usuário', // Substitua pelo nome do usuário
-                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        const Icon(Icons.people,
+                            size: 100, color: Colors.white),
+                        IconButton(
+                          padding:
+                              const EdgeInsets.only(left: 135, bottom: 100),
+                          icon: const Icon(Icons.settings,
+                              size: 25, color: Colors.white),
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => const Configuracoes()),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -138,8 +105,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const MeuCadastro(),
-                        ),
+                            builder: (context) => const MeuCadastro()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -149,10 +115,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     child: const Text(
                       'Meu Cadastro',
                       style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                   ),
                   ElevatedButton(
@@ -169,10 +134,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                         Text(
                           'Sair',
                           style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
                         Icon(Icons.exit_to_app, color: Colors.red),
                       ],
@@ -271,10 +235,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         Text(
           value,
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
+              fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
         ),
         const SizedBox(height: 10),
         Text(
@@ -333,7 +294,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     return Container(
       decoration: BoxDecoration(
         color: myColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -342,19 +303,44 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           Text(
             title,
             style: const TextStyle(
-              color: Colors.white,
               fontSize: 16,
+              color: Colors.white,
             ),
           ),
           Text(
             value,
             style: const TextStyle(
-              color: Colors.white,
               fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
             ),
           ),
         ],
       ),
     );
   }
+}
+
+Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
+  QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('receitas')
+      .get();
+
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
+}
+
+Future<List<Map<String, dynamic>>> getDespesas(String userId) async {
+  QuerySnapshot snapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas')
+      .get();
+
+  return snapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .toList();
 }
