@@ -21,6 +21,15 @@ Future<void> addReceita(String userId, double valor, String categoria,
       .doc(userId)
       .collection('receitas');
 
+Future<void> updateProfileImage(String userId, String imageUrl) async {
+  DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(userId);
+  await userRef.update({
+    'profileImageUrl': imageUrl, // Atualiza a URL da imagem do perfil
+  });
+}
+
+Future<void> addReceita(String userId, double valor, String categoria, Timestamp data, String tipo) async {
+  CollectionReference receitas = FirebaseFirestore.instance.collection('users').doc(userId).collection('receitas');
   await receitas.add({
     'valor': valor,
     'categoria': categoria,
