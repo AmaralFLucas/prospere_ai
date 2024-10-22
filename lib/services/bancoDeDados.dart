@@ -14,13 +14,20 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
+Future<void> updateProfileImage(String userId, String imageUrl) async {
+  DocumentReference userRef =
+      FirebaseFirestore.instance.collection('users').doc(userId);
+  await userRef.update({
+    'profileImageUrl': imageUrl, // Atualiza a URL da imagem do perfil
+  });
+}
+
 Future<void> addReceita(String userId, double valor, String categoria,
     Timestamp data, String tipo) async {
   CollectionReference receitas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
       .collection('receitas');
-
   await receitas.add({
     'valor': valor,
     'categoria': categoria,
@@ -105,7 +112,8 @@ Future<void> addCategoria(
   });
 }
 
-Future<void> criarMeta(String userId, String tipoMeta, String descricao, double valorMeta, DateTime? dataLimite) async {
+Future<void> criarMeta(String userId, String tipoMeta, String descricao,
+    double valorMeta, DateTime? dataLimite) async {
   CollectionReference metas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -121,7 +129,8 @@ Future<void> criarMeta(String userId, String tipoMeta, String descricao, double 
   });
 }
 
-Future<void> atualizarMeta(String userId, String metaId, double valorAtualizado) async {
+Future<void> atualizarMeta(
+    String userId, String metaId, double valorAtualizado) async {
   DocumentReference meta = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -131,7 +140,8 @@ Future<void> atualizarMeta(String userId, String metaId, double valorAtualizado)
   await meta.update({'valorAtual': valorAtualizado});
 }
 
-Future<void> editarMeta(String userId, String metaId, String descricao, double valorMeta, DateTime? dataLimite) async {
+Future<void> editarMeta(String userId, String metaId, String descricao,
+    double valorMeta, DateTime? dataLimite) async {
   DocumentReference meta = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)

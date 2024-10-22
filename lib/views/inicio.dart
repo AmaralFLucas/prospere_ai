@@ -43,11 +43,15 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Future<void> _loadData() async {
-    List<Map<String, dynamic>> fetchedReceitas = await getReceitas(widget.userId);
-    List<Map<String, dynamic>> fetchedDespesas = await getDespesas(widget.userId);
+    List<Map<String, dynamic>> fetchedReceitas =
+        await getReceitas(widget.userId);
+    List<Map<String, dynamic>> fetchedDespesas =
+        await getDespesas(widget.userId);
 
-    double receitasSum = fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    double despesasSum = fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double receitasSum =
+        fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+    double despesasSum =
+        fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
 
     setState(() {
       receitas = fetchedReceitas;
@@ -80,13 +84,17 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.people, size: 100, color: Colors.white),
+                        const Icon(Icons.people,
+                            size: 100, color: Colors.white),
                         IconButton(
-                          padding: const EdgeInsets.only(left: 135, bottom: 100),
-                          icon: const Icon(Icons.settings, size: 25, color: Colors.white),
+                          padding:
+                              const EdgeInsets.only(left: 135, bottom: 100),
+                          icon: const Icon(Icons.settings,
+                              size: 25, color: Colors.white),
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const Configuracoes()),
+                              MaterialPageRoute(
+                                  builder: (context) => const Configuracoes()),
                             );
                           },
                         ),
@@ -96,7 +104,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => const MeuCadastro()),
+                        MaterialPageRoute(
+                            builder: (context) => const MeuCadastro()),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -105,7 +114,10 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     ),
                     child: const Text(
                       'Meu Cadastro',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                   ),
                   ElevatedButton(
@@ -121,7 +133,10 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                       children: [
                         Text(
                           'Sair',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black),
                         ),
                         Icon(Icons.exit_to_app, color: Colors.red),
                       ],
@@ -198,13 +213,15 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildBalanceDetail('Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
-              _buildBalanceDetail('Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+              _buildBalanceDetail(
+                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
           ),
         ],
@@ -217,7 +234,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       children: [
         Text(
           value,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
         ),
         const SizedBox(height: 10),
         Text(
@@ -252,7 +270,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   List<Widget> _buildTransactionItems() {
-    despesas.sort((a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+    despesas.sort(
+        (a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
 
     List<Widget> transactionItems = [];
 
