@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/inicioLogin.dart';
-import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/termos_de_uso.dart';
 import 'package:prospere_ai/views/politica_de_privacidade.dart';
 

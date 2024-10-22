@@ -2,6 +2,7 @@ import 'package:avatar_glow/avatar_glow.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/components/customBottomAppBar.dart';
+import 'package:prospere_ai/services/gemini.dart';
 import 'package:prospere_ai/views/inicio.dart';
 import 'package:prospere_ai/views/mais.dart';
 import 'package:prospere_ai/views/planejamento.dart';
@@ -108,10 +109,13 @@ class _HomePageState extends State<HomePage>
       });
 
       speechToText.listen(
-        onResult: (result) {
+        onResult: (result) async {
           setState(() {
             text = result.recognizedWords;
           });
+          if (result.finalResult) {
+            await generateResponse(context, text);
+          }
         },
         pauseFor: const Duration(seconds: 3),
         localeId: 'pt_BR',
