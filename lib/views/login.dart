@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart'; // Importando o pacote de máscara
 import 'package:prospere_ai/components/meu_input.dart';
+import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
@@ -17,6 +19,32 @@ class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
   final AutenticacaoServico _autenServico = AutenticacaoServico();
   final _formKey = GlobalKey<FormState>();
+
+  // Máscara de email (não convencional, mas pode ser aplicada se necessário)
+  final MaskTextInputFormatter emailMaskFormatter = MaskTextInputFormatter(
+    mask: '############################', // Limite de caracteres para e-mail
+    filter: {"#": RegExp(r'[a-zA-Z0-9@.]')},
+  );
+
+  bool validateEmail(String email) {
+    return email.contains('@') && email.contains('.');
+  }
+
+  bool validateInputs() {
+    if (emailController.text.isEmpty) {
+      mostrarSnackBar(context: context, texto: "O E-mail é obrigatório.");
+      return false;
+    }
+    if (!validateEmail(emailController.text)) {
+      mostrarSnackBar(context: context, texto: "Informe um e-mail válido.");
+      return false;
+    }
+    if (passwordController.text.isEmpty) {
+      mostrarSnackBar(context: context, texto: "A senha é obrigatória.");
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,18 +96,21 @@ class _LoginState extends State<Login> {
                   children: [
                     SizedBox(
                       width: 300,
-                      child: Email(
+                      child: MeuInput(
                         labelText: 'Email',
                         controller: emailController,
+                        inputFormatters: [
+                          emailMaskFormatter
+                        ], // Aplicando máscara de e-mail
                       ),
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
                       width: 300,
-                      child: Senha(
+                      child: MeuInput(
                         labelText: 'Senha',
-                        obscure: true,
                         controller: passwordController,
+                        obscure: true,
                       ),
                     ),
                   ],
@@ -88,13 +119,35 @@ class _LoginState extends State<Login> {
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    await _autenServico.logarUsuarios(
+                  if (validateInputs()) {
+                    try {
+                      bool loginValido = await _autenServico.logarUsuarios(
                         email: emailController.text,
-                        senha: passwordController.text);
-                    botaoPrincipalClicado();
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(
-                        builder: (context) => const RoteadorTela()));
+                        senha: passwordController.text,
+                      );
+
+                      if (loginValido) {
+                        mostrarSnackBar(
+                          context: context,
+                          texto: "Login realizado com sucesso",
+                          isErro: false,
+                        );
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const RoteadorTela()),
+                        );
+                      } else {
+                        mostrarSnackBar(
+                          context: context,
+                          texto: "Falha no login. Verifique suas credenciais.",
+                        );
+                      }
+                    } catch (erro) {
+                      mostrarSnackBar(
+                        context: context,
+                        texto: "Erro ao realizar login: $erro",
+                      );
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -129,8 +182,10 @@ class _LoginState extends State<Login> {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const InicioCadastro()));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const InicioCadastro()),
+                      );
                     },
                     child: const Text(
                       'Criar Conta',
@@ -147,13 +202,5 @@ class _LoginState extends State<Login> {
         ),
       ),
     );
-  }
-
-  botaoPrincipalClicado() {
-    if (_formKey.currentState!.validate()) {
-      print("Valido");
-    } else {
-      print("Invalido");
-    }
   }
 }
