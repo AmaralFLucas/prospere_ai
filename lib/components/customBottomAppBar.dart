@@ -48,6 +48,7 @@ class CustomBottomAppBar extends StatelessWidget {
           buildNavBarItem(Icons.currency_exchange, 'Transações', 1),
           const SizedBox(width: 48), // Espaço para o FAB
           buildNavBarItem(Icons.flag, 'Planejamento', 2),
+
           buildNavBarItem(Icons.more_horiz, 'Mais', 3),
         ],
       ),

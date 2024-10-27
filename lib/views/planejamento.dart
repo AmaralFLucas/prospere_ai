@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class Planejamento extends StatefulWidget {
   const Planejamento({super.key});
 
   @override
-  State<Planejamento> createState() => _PlanejamentoState();
+  _PlanejamentoState createState() => _PlanejamentoState();
 }
 
 Color myColor = const Color.fromARGB(255, 30, 163, 132);
@@ -13,10 +14,14 @@ Color textColor = Colors.black87;
 
 class _PlanejamentoState extends State<Planejamento> {
   List<Map<String, dynamic>> planList = [];
-  int? selectedPlanIndex;
+  double totalGasto = 0;
+  double totalPlanejado = 0;
 
   @override
   Widget build(BuildContext context) {
+    totalPlanejado = planList.fold(0, (sum, item) => sum + item['value']);
+    totalGasto = planList.fold(0, (sum, item) => sum + item['spent']);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: myColor,
@@ -30,27 +35,74 @@ class _PlanejamentoState extends State<Planejamento> {
           ),
         ),
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            _buildBalanceCard(),
-            const SizedBox(height: 20),
-            _buildChartCard(),
-            const SizedBox(height: 20),
-            _buildAddPlanButton(),
-            const SizedBox(height: 20),
-            _buildPlanList(),
+            _buildTotalChart(),
+            const SizedBox(height: 16),
+            Expanded(child: _buildPlanGrid()), // Plano em GridView
           ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddPlanDialog(context);
+        },
+        backgroundColor: myColor,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  Widget _buildTotalChart() {
+    return GestureDetector(
+      onTap: _showEditOrDeleteDialog,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        height: 200,
+        child: PieChart(
+          PieChartData(
+            sections: [
+              PieChartSectionData(
+                color: Colors.green,
+                value: totalPlanejado - totalGasto,
+                radius: 60,
+              ),
+              PieChartSectionData(
+                color: Colors.red,
+                value: totalGasto,
+                radius: 60,
+              ),
+            ],
+            borderData: FlBorderData(show: false),
+            sectionsSpace: 0,
+            centerSpaceRadius: 50,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildBalanceCard() {
+  Widget _buildPlanGrid() {
+    return GridView.builder(
+      itemCount: planList.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 3 / 4,
+      ),
+      itemBuilder: (context, index) {
+        return _buildPlanCard(planList[index]);
+      },
+    );
+  }
+
+  Widget _buildPlanCard(Map<String, dynamic> plan) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
@@ -63,174 +115,52 @@ class _PlanejamentoState extends State<Planejamento> {
         ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Saldo Atual',
-            style: TextStyle(
-              fontSize: 22,
+            plan['name'],
+            style: const TextStyle(
+              fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: textColor,
+              color: Colors.black,
             ),
           ),
-          const SizedBox(height: 10),
-          Text(
-            'R\$ 433,15',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: myColor,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildBalanceDetail('Receitas', 'R\$ 1.958,15'),
-              Container(
-                height: 40,
-                width: 1,
-                color: Colors.black26,
-              ),
-              _buildBalanceDetail('Despesas', 'R\$ 1.525,00'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBalanceDetail(String title, String value) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            color: textColor.withOpacity(0.7),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildChartCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      height: 250,
-      child: Center(
-        child: Text(
-          'Gráfico',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: textColor,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAddPlanButton() {
-    return ElevatedButton(
-      onPressed: () {
-        _showAddPlanDialog(context);
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: myColor,
-        minimumSize: const Size(double.infinity, 60),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-      ),
-      child: Text(
-        'Adicionar Planejamento',
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlanList() {
-    return Container(
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        shrinkWrap: true,
-        itemCount: planList.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedPlanIndex = index;
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: selectedPlanIndex == index ? myColor : cardColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    planList[index]['name'],
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color:
-                          selectedPlanIndex == index ? Colors.white : textColor,
-                    ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value: plan['value'] - plan['spent'],
+                    radius: 30,
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'R\$: ${planList[index]['value']}',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: selectedPlanIndex == index
-                          ? Colors.white70
-                          : textColor.withOpacity(0.7),
-                    ),
+                  PieChartSectionData(
+                    color: Colors.red,
+                    value: plan['spent'],
+                    radius: 30,
                   ),
                 ],
               ),
             ),
-          );
-        },
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Valor: R\$: ${plan['value'].toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Gasto: R\$: ${plan['spent'].toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -238,6 +168,7 @@ class _PlanejamentoState extends State<Planejamento> {
   void _showAddPlanDialog(BuildContext context) {
     String planName = '';
     String planValue = '';
+    String selectedCategory = 'Casa';
 
     showDialog(
       context: context,
@@ -261,7 +192,7 @@ class _PlanejamentoState extends State<Planejamento> {
               ),
               TextField(
                 decoration: InputDecoration(
-                  labelText: 'Valor',
+                  labelText: 'Valor Planejado',
                   labelStyle: TextStyle(color: textColor),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: myColor),
@@ -270,6 +201,28 @@ class _PlanejamentoState extends State<Planejamento> {
                 keyboardType: TextInputType.number,
                 onChanged: (value) {
                   planValue = value;
+                },
+              ),
+              DropdownButton<String>(
+                value: selectedCategory,
+                items: <String>[
+                  'Casa',
+                  'Educação',
+                  'Outros',
+                  'Eletrônicos',
+                  'Supermercado',
+                  'Transporte',
+                  'Viagem'
+                ].map((String category) {
+                  return DropdownMenuItem<String>(
+                    value: category,
+                    child: Text(category),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedCategory = newValue!;
+                  });
                 },
               ),
             ],
@@ -291,8 +244,12 @@ class _PlanejamentoState extends State<Planejamento> {
               ),
               onPressed: () {
                 setState(() {
-                  planList.add({'name': planName, 'value': planValue});
-                  selectedPlanIndex = planList.length - 1;
+                  planList.add({
+                    'name': planName,
+                    'value': double.parse(planValue),
+                    'spent': 0,
+                    'category': selectedCategory
+                  });
                 });
                 Navigator.of(context).pop();
               },
@@ -301,5 +258,38 @@ class _PlanejamentoState extends State<Planejamento> {
         );
       },
     );
+  }
+
+  void _showEditOrDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Editar ou Excluir Planejamento'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _editPlan();
+              },
+              child: const Text('Editar'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  planList.clear();
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _editPlan() {
+    // Lógica para editar o planejamento
   }
 }

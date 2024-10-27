@@ -28,7 +28,7 @@ class RoteadorTela extends StatelessWidget {
           if (snapshot.hasData) {
             // return const HomePage();
 
-            return const HomePage();
+            return HomePage();
           } else {
             return TelaBoasVindas();
           }
