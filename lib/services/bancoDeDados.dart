@@ -14,22 +14,20 @@ import 'package:flutter/material.dart';
 //   }
 // }
 
+Future<void> updateProfileImage(String userId, String imageUrl) async {
+  DocumentReference userRef =
+      FirebaseFirestore.instance.collection('users').doc(userId);
+  await userRef.update({
+    'profileImageUrl': imageUrl, // Atualiza a URL da imagem do perfil
+  });
+}
+
 Future<void> addReceita(String userId, double valor, String categoria,
     Timestamp data, String tipo) async {
   CollectionReference receitas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
       .collection('receitas');
-
-Future<void> updateProfileImage(String userId, String imageUrl) async {
-  DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(userId);
-  await userRef.update({
-    'profileImageUrl': imageUrl, // Atualiza a URL da imagem do perfil
-  });
-}
-
-Future<void> addReceita(String userId, double valor, String categoria, Timestamp data, String tipo) async {
-  CollectionReference receitas = FirebaseFirestore.instance.collection('users').doc(userId).collection('receitas');
   await receitas.add({
     'valor': valor,
     'categoria': categoria,
@@ -51,6 +49,24 @@ Future<void> addDespesa(String userId, double valor, String categoria,
     'data': data,
     'tipo': tipo,
   });
+
+  QuerySnapshot metasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras')
+      .where('tipoMeta', isEqualTo: 'gastoMensal')
+      .where('categoria', isEqualTo: categoria)
+      .get();
+
+  if (metasSnapshot.docs.isNotEmpty) {
+    for (var metaDoc in metasSnapshot.docs) {
+      var metaData = metaDoc.data() as Map<String, dynamic>;
+      double valorAtual = metaData['valorAtual'] ?? 0.0;
+      double novoValorAtual = valorAtual + valor;
+
+      await metaDoc.reference.update({'valorAtual': novoValorAtual});
+    }
+  }
 }
 
 Future<void> addCategoriasPadrao(String userId) async {
@@ -114,7 +130,8 @@ Future<void> addCategoria(
   });
 }
 
-Future<void> criarMeta(String userId, String tipoMeta, String descricao, double valorMeta, DateTime? dataLimite) async {
+Future<void> criarMeta(String userId, String tipoMeta, String descricao,
+    double valorMeta, DateTime? dataLimite) async {
   CollectionReference metas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -130,7 +147,41 @@ Future<void> criarMeta(String userId, String tipoMeta, String descricao, double 
   });
 }
 
-Future<void> atualizarMeta(String userId, String metaId, double valorAtualizado) async {
+Future<void> criarMetaGastoMensal(String userId, String descricao, double valorMeta, String categoria, DateTime? dataLimite) async {
+  CollectionReference metas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras');
+
+  // Buscar todas as despesas já registradas na categoria
+  QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas')
+      .where('categoria', isEqualTo: categoria)
+      .get();
+
+  // Calcular o valor total das despesas anteriores
+  double totalDespesasAnteriores = 0.0;
+  for (var doc in despesasSnapshot.docs) {
+    var despesaData = doc.data() as Map<String, dynamic>;
+    totalDespesasAnteriores += despesaData['valor'];
+  }
+
+  // Criar a meta já considerando as movimentações anteriores
+  await metas.add({
+    'tipoMeta': 'gastoMensal',
+    'descricao': descricao,
+    'valorMeta': valorMeta,
+    'valorAtual': totalDespesasAnteriores, // Valor inicial da meta é ajustado
+    'categoria': categoria,
+    'dataCriacao': DateTime.now(),
+    'dataLimite': dataLimite ?? null,
+  });
+}
+
+Future<void> atualizarMeta(
+    String userId, String metaId, double valorAtualizado) async {
   DocumentReference meta = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -140,7 +191,8 @@ Future<void> atualizarMeta(String userId, String metaId, double valorAtualizado)
   await meta.update({'valorAtual': valorAtualizado});
 }
 
-Future<void> editarMeta(String userId, String metaId, String descricao, double valorMeta, DateTime? dataLimite) async {
+Future<void> editarMeta(String userId, String metaId, String descricao,
+    double valorMeta, DateTime? dataLimite) async {
   DocumentReference meta = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
