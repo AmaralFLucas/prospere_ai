@@ -5,12 +5,11 @@ import 'package:prospere_ai/components/textFormatter.dart';
 
 class AdicionarDespesa extends StatefulWidget {
   final double? valorDespesa;
-  final String? valorFormatado; // Adicione esta linha
+  final String? valorFormatado;
+  final Timestamp? data;
 
   const AdicionarDespesa(
-      {super.key,
-      this.valorDespesa,
-      this.valorFormatado}); // Adicione valorFormatado
+      {super.key, this.valorDespesa, this.valorFormatado, this.data});
 
   @override
   State<AdicionarDespesa> createState() => _AdicionarDespesaState();
@@ -38,13 +37,32 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
     super.initState();
     _carregarCategorias();
 
-    // Verifique se o valor formatado não é nulo e atribua ao controlador
     if (widget.valorFormatado != null) {
-      _valorController.text =
-          widget.valorFormatado!; // Atribua o valor formatado ao controlador
+      _valorController.text = widget.valorFormatado!;
     } else if (widget.valorDespesa != null) {
       _valorController.text =
           widget.valorDespesa!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+    DateTime hoje = DateTime.now();
+    DateTime ontem = hoje.subtract(Duration(days: 1));
+
+    if (widget.data != null) {
+      DateTime dataAudio = widget.data!.toDate();
+      if (dataAudio.year == hoje.year &&
+          dataAudio.month == hoje.month &&
+          dataAudio.day == hoje.day) {
+        isSelected = [true, false, false];
+        _dataSelecionada = Timestamp.fromDate(hoje);
+      } else if (dataAudio.year == ontem.year &&
+          dataAudio.month == ontem.month &&
+          dataAudio.day == ontem.day) {
+        isSelected = [false, true, false];
+        _dataSelecionada = Timestamp.fromDate(ontem);
+      } else {
+        isSelected = [false, false, true];
+        _dataSelecionada = Timestamp.fromDate(dataAudio);
+        outrosSelecionado = true;
+      }
     }
   }
 
@@ -61,6 +79,23 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   }
 
   Widget _buildDateSelection() {
+    String getDataSelecionadaLabel(DateTime dataSelecionada) {
+      DateTime hoje = DateTime.now();
+      DateTime ontem = hoje.subtract(Duration(days: 1));
+
+      if (dataSelecionada.year == hoje.year &&
+          dataSelecionada.month == hoje.month &&
+          dataSelecionada.day == hoje.day) {
+        return 'index0';
+      } else if (dataSelecionada.year == ontem.year &&
+          dataSelecionada.month == ontem.month &&
+          dataSelecionada.day == ontem.day) {
+        return 'index1';
+      } else {
+        return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
+      }
+    }
+
     if (outrosSelecionado && _dataSelecionada != null) {
       return ElevatedButton(
         onPressed: () {
@@ -71,7 +106,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
           foregroundColor: myColor,
         ),
         child: Text(
-          '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
+          getDataSelecionadaLabel(_dataSelecionada!.toDate()),
           style: const TextStyle(fontSize: 16, color: Colors.black),
         ),
       );
@@ -84,7 +119,6 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
           for (int i = 0; i < isSelected.length; i++) {
             isSelected[i] = i == index;
           }
-
           if (index == 2) {
             _selectDate(context);
           } else {
@@ -362,16 +396,12 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   }
 
   void _salvarDespesa() {
-    // Remove R$ e formata o valor corretamente
-    String valorInserido = _valorController.text.replaceAll(
-        RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
-    valorInserido = valorInserido.replaceAll(
-        ',', '.'); // Troca vírgula por ponto para conversão
+    String valorInserido =
+        _valorController.text.replaceAll(RegExp(r'[^\d,]'), '');
+    valorInserido = valorInserido.replaceAll(',', '.');
 
-    // Converte o valor para double
     double? valor = double.tryParse(valorInserido);
 
-    // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
     String categoria = _categoriaController.text;
     Timestamp data = _dataSelecionada ?? Timestamp.now();
 
@@ -383,7 +413,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
           .doc(userId)
           .collection('despesas')
           .add({
-        'valor': valor, // Salva o valor como double
+        'valor': valor,
         'categoria': categoria,
         'data': data,
         'tipo': toggleValue ? "Pago" : "Não Pago",
