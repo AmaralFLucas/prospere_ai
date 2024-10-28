@@ -15,45 +15,69 @@ generateResponse(BuildContext context, audio) async {
     model: 'gemini-1.5-flash-latest',
     apiKey: apiKey,
   );
+
   try {
-    var prompt = """Considere o texto ${audio}, 
-  Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
-  {
+    var prompt =
+        """Considere o texto '${audio}' e interprete as datas que são faladas como 'hoje', 'ontem', ou como uma data específica. 
+Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json":
+{
   "data": {
     "tipo": (receita ou despesa), 
     "categoria": ,
-    "valor": 
+    "valor": ,
+    "data": (hoje, ontem, ou a data no formato 'dd/MM/yyyy')
     }
   }""";
 
     var content = [Content.text(prompt)];
     var response = await model.generateContent(content);
     var teste = jsonDecode(response.text.toString());
+
     var valor = teste['data']['valor'];
     var tipo = teste['data']['tipo'];
     var categoria = teste['data']['categoria'];
+    var dataTexto = teste['data']['data']; // data retornada como texto
 
     print(teste);
     print(tipo);
     print(categoria);
     print(valor);
-    double valorDouble =
-        double.tryParse(valor.toString().replaceAll(',', '.')) ??
-            0.0; // Converte para double
+    print(dataTexto);
 
-    // Formata o valor como String com vírgula como separador decimal
+    // Converte valor para double
+    double valorDouble =
+        double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
+    // Formata o valor como String com vírgula
     String valorFormatado = CurrencyTextInputFormatter()
         .formatToCurrency(valorDouble.toString().replaceAll('.', ','));
-    print(valorFormatado); // Formata o valor
+
+    DateTime now = DateTime.now();
+    String mesAnoAtual = DateFormat('MM/yyyy').format(now);
+
+    // Verifica data e converte para Timestamp
+    Timestamp dataSelecionada;
+    if (dataTexto.toLowerCase() == 'hoje') {
+      dataSelecionada = Timestamp.fromDate(DateTime.now());
+    } else if (dataTexto.toLowerCase() == 'ontem') {
+      dataSelecionada =
+          Timestamp.fromDate(DateTime.now().subtract(Duration(days: 1)));
+    } else {
+      String dataComMesAno =
+          "${dataTexto.split('/')[0]}/$mesAnoAtual"; // '20/10/2024'
+      DateTime dataConvertida = DateFormat('dd/MM/yyyy').parse(dataComMesAno);
+      dataSelecionada = Timestamp.fromDate(dataConvertida);
+    }
+
+    // Navega para a tela apropriada com os valores e data processados
     if (tipo == 'despesa') {
-      // Passa o valor formatado para a tela
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarDespesa(
-              valorDespesa: valorDouble,
-              valorFormatado:
-                  valorFormatado), // Passa o valor como double e formatado
+            valorDespesa: valorDouble,
+            valorFormatado: valorFormatado,
+            data: dataSelecionada,
+          ),
         ),
       );
     } else {
@@ -64,6 +88,7 @@ generateResponse(BuildContext context, audio) async {
             valorReceita: valorDouble,
             valorFormatado: valorFormatado,
             categoriaAudio: categoria,
+            data: dataSelecionada,
           ),
         ),
       );
@@ -73,7 +98,7 @@ generateResponse(BuildContext context, audio) async {
   }
 }
 
-generateResponseDB() async {
+generateResponseDB(String selectedDateLabel) async {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
@@ -128,7 +153,7 @@ generateResponseDB() async {
   });
 
   final prompt =
-      'Transforme em um Json: Receitas: ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após transformar em json analise os dados e faça algumas orientações em relação a saúde financeira do usuário.';
+      'Data selecionada: $selectedDateLabel. Transforme em um Json: Receitas: ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após transformar em json analise os dados e faça algumas orientações em relação à saúde financeira do usuário.';
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
