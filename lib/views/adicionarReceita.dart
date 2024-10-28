@@ -8,9 +8,14 @@ class AdicionarReceita extends StatefulWidget {
   final double? valorReceita;
   final String? valorFormatado;
   final String? categoriaAudio;
+  final Timestamp? data;
 
   const AdicionarReceita(
-      {super.key, this.valorReceita, this.valorFormatado, this.categoriaAudio});
+      {super.key,
+      this.valorReceita,
+      this.valorFormatado,
+      this.categoriaAudio,
+      this.data});
 
   @override
   State<AdicionarReceita> createState() => _AdicionarReceitaState();
@@ -38,12 +43,32 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     super.initState();
     _carregarCategorias();
 
-    // Atribuir valor formatado do áudio à caixa de texto de valor
     if (widget.valorFormatado != null) {
       _valorController.text = widget.valorFormatado!;
     } else if (widget.valorReceita != null) {
       _valorController.text =
           widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+    DateTime hoje = DateTime.now();
+    DateTime ontem = hoje.subtract(Duration(days: 1));
+
+    if (widget.data != null) {
+      DateTime dataAudio = widget.data!.toDate();
+      if (dataAudio.year == hoje.year &&
+          dataAudio.month == hoje.month &&
+          dataAudio.day == hoje.day) {
+        isSelected = [true, false, false];
+        _dataSelecionada = Timestamp.fromDate(hoje);
+      } else if (dataAudio.year == ontem.year &&
+          dataAudio.month == ontem.month &&
+          dataAudio.day == ontem.day) {
+        isSelected = [false, true, false];
+        _dataSelecionada = Timestamp.fromDate(ontem);
+      } else {
+        isSelected = [false, false, true];
+        _dataSelecionada = Timestamp.fromDate(dataAudio);
+        outrosSelecionado = true;
+      }
     }
   }
 
@@ -56,21 +81,14 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
 
     setState(() {
       categorias = snapshot.docs.map((doc) => doc['nome'] as String).toList();
-
-      // Verificar se a categoria do áudio está na lista de categorias carregadas
       if (widget.categoriaAudio != null && widget.categoriaAudio!.isNotEmpty) {
         String categoriaAudioNormalizada =
             widget.categoriaAudio!.toLowerCase().trim();
-
-        // Usar similaridade para encontrar a melhor correspondência
         String? categoriaCorrespondente;
         double melhorSimilaridade = 0.0;
 
         for (String categoria in categorias) {
-          // Normalizar a categoria do banco de dados
           String categoriaNormalizada = categoria.toLowerCase().trim();
-
-          // Calcular similaridade
           double similaridade =
               categoriaAudioNormalizada.similarityTo(categoriaNormalizada);
 
@@ -79,10 +97,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
             categoriaCorrespondente = categoria;
           }
         }
-
-        // Se a similaridade for maior que um certo limiar, seleciona a categoria correspondente
         if (melhorSimilaridade > 0.8) {
-          // Ajuste o limiar conforme necessário
           categoria = categoriaCorrespondente;
           _categoriaController.text = categoria!;
         }
@@ -91,6 +106,23 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   }
 
   Widget _buildDateSelection() {
+    String getDataSelecionadaLabel(DateTime dataSelecionada) {
+      DateTime hoje = DateTime.now();
+      DateTime ontem = hoje.subtract(Duration(days: 1));
+
+      if (dataSelecionada.year == hoje.year &&
+          dataSelecionada.month == hoje.month &&
+          dataSelecionada.day == hoje.day) {
+        return 'index0';
+      } else if (dataSelecionada.year == ontem.year &&
+          dataSelecionada.month == ontem.month &&
+          dataSelecionada.day == ontem.day) {
+        return 'index1';
+      } else {
+        return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
+      }
+    }
+
     if (outrosSelecionado && _dataSelecionada != null) {
       return ElevatedButton(
         onPressed: () {
@@ -101,7 +133,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
           foregroundColor: myColor,
         ),
         child: Text(
-          '${_dataSelecionada!.toDate().day}/${_dataSelecionada!.toDate().month}/${_dataSelecionada!.toDate().year}',
+          getDataSelecionadaLabel(_dataSelecionada!.toDate()),
           style: const TextStyle(fontSize: 16, color: Colors.black),
         ),
       );
@@ -303,8 +335,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     categoria = newValue;
                                   });
                                 },
-                                value:
-                                    categoria, // Aqui usamos a categoria já selecionada
+                                value: categoria,
                               ),
                             ),
                           ],
@@ -396,16 +427,12 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   }
 
   void _salvarReceita() {
-    // Remove R$ e formata o valor corretamente
-    String valorInserido = _valorController.text.replaceAll(
-        RegExp(r'[^\d,]'), ''); // Remove caracteres que não são dígitos
-    valorInserido = valorInserido.replaceAll(
-        ',', '.'); // Troca vírgula por ponto para conversão
+    String valorInserido =
+        _valorController.text.replaceAll(RegExp(r'[^\d,]'), '');
+    valorInserido = valorInserido.replaceAll(',', '.');
 
-    // Converte o valor para double
     double? valor = double.tryParse(valorInserido);
 
-    // Certifique-se de que o valor não seja nulo e que a categoria não esteja vazia
     String categoria = _categoriaController.text;
     Timestamp data = _dataSelecionada ?? Timestamp.now();
 
