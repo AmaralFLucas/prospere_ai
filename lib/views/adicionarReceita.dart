@@ -303,8 +303,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     categoria = newValue;
                                   });
                                 },
-                                value:
-                                    categoria, // Aqui usamos a categoria já selecionada
+                                value: categoria,
                               ),
                             ),
                           ],

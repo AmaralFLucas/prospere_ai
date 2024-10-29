@@ -46,13 +46,15 @@ class _TransacoesState extends State<Transacoes>
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    // Carregar categorias de receitas e despesas
+    // Carregar categorias de receitas e despesas e atualizar o estado
     loadCategorias();
   }
 
   Future<void> loadCategorias() async {
     categoriasReceitas = await getCategorias(widget.userId, 'receita');
     categoriasDespesas = await getCategorias(widget.userId, 'despesa');
+    setState(
+        () {}); // Atualizar o estado para garantir que os ícones sejam carregados
   }
 
   @override
@@ -293,13 +295,18 @@ class _TransacoesState extends State<Transacoes>
               (cat) => cat['nome'] == transacao['categoria'],
               orElse: () => {'icone': Icons.category.codePoint});
 
-      IconData iconeCategoria =
-          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+      IconData iconeCategoria;
+      if (categoria['icone'] != null) {
+        iconeCategoria =
+            IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+      } else {
+        iconeCategoria = Icons.category;
+      }
 
       return Column(
         children: [
           _buildTransactionItem(
-            '${transacao['tipo'] == 'receita' ? 'Receita' : 'Despesa'}: ${transacao['categoria']}',
+            '${transacao['categoria']}',
             'R\$ ${transacao['valor']}',
             'Data: $formattedDate',
             cor,
