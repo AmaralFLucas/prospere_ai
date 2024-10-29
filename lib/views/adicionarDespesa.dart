@@ -2,14 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prospere_ai/components/textFormatter.dart';
+import 'package:string_similarity/string_similarity.dart';
 
 class AdicionarDespesa extends StatefulWidget {
   final double? valorDespesa;
   final String? valorFormatado;
   final Timestamp? data;
-
+  final String? categoriaAudio;
   const AdicionarDespesa(
-      {super.key, this.valorDespesa, this.valorFormatado, this.data});
+      {super.key, this.valorDespesa, this.valorFormatado, this.data, this.categoriaAudio});
 
   @override
   State<AdicionarDespesa> createState() => _AdicionarDespesaState();
@@ -75,6 +76,37 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
 
     setState(() {
       categorias = snapshot.docs.map((doc) => doc['nome'] as String).toList();
+
+      // Verificar se a categoria do áudio está na lista de categorias carregadas
+      if (widget.categoriaAudio != null && widget.categoriaAudio!.isNotEmpty) {
+        String categoriaAudioNormalizada =
+            widget.categoriaAudio!.toLowerCase().trim();
+
+        // Usar similaridade para encontrar a melhor correspondência
+        String? categoriaCorrespondente;
+        double melhorSimilaridade = 0.0;
+
+        for (String categoria in categorias) {
+          // Normalizar a categoria do banco de dados
+          String categoriaNormalizada = categoria.toLowerCase().trim();
+
+          // Calcular similaridade
+          double similaridade =
+              categoriaAudioNormalizada.similarityTo(categoriaNormalizada);
+
+          if (similaridade > melhorSimilaridade) {
+            melhorSimilaridade = similaridade;
+            categoriaCorrespondente = categoria;
+          }
+        }
+
+        // Se a similaridade for maior que um certo limiar, seleciona a categoria correspondente
+        if (melhorSimilaridade > 0.8) {
+          // Ajuste o limiar conforme necessário
+          categoria = categoriaCorrespondente;
+          _categoriaController.text = categoria!;
+        }
+      }
     });
   }
 

@@ -77,7 +77,8 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
             valorDespesa: valorDouble,
             valorFormatado: valorFormatado,
             data: dataSelecionada,
-          ),
+            categoriaAudio: categoria,
+          ), // Passa o valor como double e formatado
         ),
       );
     } else {
