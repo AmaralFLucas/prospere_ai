@@ -51,9 +51,10 @@ generateResponse(BuildContext context, audio) async {
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarDespesa(
-              valorDespesa: valorDouble,
-              valorFormatado:
-                  valorFormatado), // Passa o valor como double e formatado
+            valorDespesa: valorDouble,
+            valorFormatado: valorFormatado,
+            categoriaAudio: categoria,
+          ), // Passa o valor como double e formatado
         ),
       );
     } else {
