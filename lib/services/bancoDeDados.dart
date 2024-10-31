@@ -147,8 +147,6 @@ Future<void> criarMeta(String userId, String tipoMeta, String descricao,
   });
 }
 
-<<<<<<< HEAD
-=======
 Future<void> criarMetaGastoMensal(String userId, String descricao, double valorMeta, String categoria, DateTime? dataLimite) async {
   CollectionReference metas = FirebaseFirestore.instance
       .collection('users')
@@ -182,7 +180,6 @@ Future<void> criarMetaGastoMensal(String userId, String descricao, double valorM
   });
 }
 
->>>>>>> 36eb3a85ea977124daadab5a7444ee6c4e8b2a95
 Future<void> atualizarMeta(
     String userId, String metaId, double valorAtualizado) async {
   DocumentReference meta = FirebaseFirestore.instance

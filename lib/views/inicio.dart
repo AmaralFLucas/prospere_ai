@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
+import 'package:prospere_ai/views/inteligenciaArtificial.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
 
 class Inicio extends StatefulWidget {
@@ -65,6 +67,106 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.people, size: 100, color: Colors.white),
+                  IconButton(
+                    padding: const EdgeInsets.only(left: 135, bottom: 100),
+                    icon: const Icon(Icons.settings,
+                        size: 25, color: Colors.white),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => const Configuracoes()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (context) => const MeuCadastro()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(220, 255, 255, 255),
+                minimumSize: const Size(50, 80),
+              ),
+              child: const Text(
+                'Meu Cadastro',
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await _autenServico.deslogarUsuario();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(220, 255, 255, 255),
+                minimumSize: const Size(50, 80),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Text(
+                    'Sair',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
+                  Icon(Icons.exit_to_app, color: Colors.red),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      appBar: AppBar(
+        backgroundColor: myColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.title ?? 'Inicio',
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  icon: Image.asset(
+                    'images/porcoia2.png',
+                  ), // exemplo de ícone caso queira
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const InteligenciaArtificial(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
       body: PageView(
         controller: pageController,
         onPageChanged: (index) {
@@ -73,103 +175,21 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           });
         },
         children: [
-          Scaffold(
-            drawer: Drawer(
-              child: ListView(
-                children: <Widget>[
-                  DrawerHeader(
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.people,
-                            size: 100, color: Colors.white),
-                        IconButton(
-                          padding:
-                              const EdgeInsets.only(left: 135, bottom: 100),
-                          icon: const Icon(Icons.settings,
-                              size: 25, color: Colors.white),
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => const Configuracoes()),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const MeuCadastro()),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
-                      minimumSize: const Size(50, 80),
-                    ),
-                    child: const Text(
-                      'Meu Cadastro',
-                      style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await _autenServico.deslogarUsuario();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(220, 255, 255, 255),
-                      minimumSize: const Size(50, 80),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          'Sair',
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        Icon(Icons.exit_to_app, color: Colors.red),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            appBar: AppBar(
-              backgroundColor: myColor,
-              leading: Builder(
-                builder: (BuildContext context) {
-                  return IconButton(
-                    icon: const Icon(Icons.person),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
-                  );
-                },
-              ),
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  _buildBalanceCard(),
-                  const SizedBox(height: 20),
-                  _buildTransactionList(),
-                ],
-              ),
-            ),
-          ),
+          _buildInicioContent(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInicioContent() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(height: 20),
+          _buildBalanceCard(),
+          const SizedBox(height: 20),
+          _buildTransactionList(),
         ],
       ),
     );
@@ -195,19 +215,13 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           Text(
             'Saldo Atual',
             style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
+                fontSize: 22, fontWeight: FontWeight.bold, color: textColor),
           ),
           const SizedBox(height: 10),
           Text(
             'R\$ ${saldoAtual.toStringAsFixed(2)}',
             style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: myColor,
-            ),
+                fontSize: 28, fontWeight: FontWeight.bold, color: myColor),
           ),
           const SizedBox(height: 20),
           Row(
@@ -215,11 +229,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             children: [
               _buildBalanceDetail(
                   'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
-              Container(
-                height: 40,
-                width: 1,
-                color: Colors.black26,
-              ),
+              Container(height: 40, width: 1, color: Colors.black26),
               _buildBalanceDetail(
                   'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
             ],
@@ -262,9 +272,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          ..._buildTransactionItems(),
-        ],
+        children: _buildTransactionItems(),
       ),
     );
   }
@@ -273,21 +281,15 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     despesas.sort(
         (a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
 
-    List<Widget> transactionItems = [];
-
-    transactionItems.addAll(despesas.map((despesa) {
+    return despesas.map((despesa) {
       return Column(
         children: [
           _buildTransactionItem(
-            '${despesa['categoria']}',
-            'R\$ ${despesa['valor']}',
-          ),
+              '${despesa['categoria']}', 'R\$ ${despesa['valor']}'),
           const SizedBox(height: 10),
         ],
       );
-    }).toList());
-
-    return transactionItems;
+    }).toList();
   }
 
   Widget _buildTransactionItem(String title, String value) {
@@ -302,18 +304,12 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         children: [
           Text(
             title,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
+            style: const TextStyle(fontSize: 16, color: Colors.white),
           ),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.red,
-            ),
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
           ),
         ],
       ),
