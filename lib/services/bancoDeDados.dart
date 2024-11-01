@@ -215,8 +215,7 @@ Stream<QuerySnapshot> getMetas(String userId, String tipoMeta) {
       .snapshots();
 }
 
-Future<List<Map<String, dynamic>>> getCategorias(
-    String userId, String tipo) async {
+Future<List<Map<String, dynamic>>> getCategorias(String userId, String tipo) async {
   CollectionReference categorias;
 
   if (tipo == 'receita') {
@@ -232,10 +231,21 @@ Future<List<Map<String, dynamic>>> getCategorias(
   }
 
   QuerySnapshot snapshot = await categorias.get();
-  return snapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
+
+  // Debug: Verifique se as categorias foram recuperadas corretamente
+  print("Número de categorias recuperadas: ${snapshot.docs.length}");
+
+  return snapshot.docs.map((doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return {
+      'id': doc.id, // Armazena o ID do documento
+      'nome': data['nome'],
+      'icone': IconData(data['icone'], fontFamily: 'MaterialIcons'), // Converte codePoint para IconData
+    };
+  }).toList();
 }
+
+
 
 Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
   QuerySnapshot snapshot = await FirebaseFirestore.instance
@@ -288,4 +298,31 @@ Future<void> addFluxoDeCaixa(
     'receitaRealizada': receitaRealizada,
     'despesaRealizada': despesaRealizada,
   });
+}
+
+Future<void> editarCategoria(String userId, String categoriaId, String novoNome, IconData novoIcone, String tipo) async {
+  CollectionReference categorias;
+  
+  if (tipo == 'receita') {
+    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasReceitas');
+  } else {
+    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasDespesas');
+  }
+
+  await categorias.doc(categoriaId).update({
+    'nome': novoNome,
+    'icone': novoIcone.codePoint,
+  });
+}
+
+Future<void> deletarCategoria(String userId, String categoriaId, String tipo) async {
+  CollectionReference categorias;
+  
+  if (tipo == 'receita') {
+    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasReceitas');
+  } else {
+    categorias = FirebaseFirestore.instance.collection('users').doc(userId).collection('categoriasDespesas');
+  }
+
+  await categorias.doc(categoriaId).delete();
 }
