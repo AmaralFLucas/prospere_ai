@@ -18,7 +18,7 @@ generateResponse(BuildContext context, audio) async {
 
   try {
     var prompt =
-        """Considere o texto 'ganhei 100 reais da minha mãe como presente dia 31 de outubro de 2024' e interprete as datas que são faladas como 'hoje', 'ontem', ou como uma data específica. 
+        """Considere o texto '${audio}' e interprete as datas que são faladas como 'hoje', 'ontem', ou como uma data específica. 
 Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json":
 {
   "data": {
