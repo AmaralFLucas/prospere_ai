@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
-import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
 import 'package:prospere_ai/views/inteligenciaArtificial.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
@@ -148,12 +147,14 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   fontWeight: FontWeight.bold,
                   color: Colors.white),
             ),
-            Row(
+            Stack(
               children: [
                 IconButton(
+                  iconSize: 45,
+                  splashRadius: 30,
                   icon: Image.asset(
                     'images/porcoia2.png',
-                  ), // exemplo de ícone caso queira
+                  ),
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -162,6 +163,19 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                     );
                   },
                 ),
+                Positioned(
+                  top: 15,
+                  right: 1,
+                  child: CircleAvatar(
+                    child: Text(
+                      "1",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 10, color: Colors.white),
+                    ),
+                    radius: 8,
+                    backgroundColor: Colors.red,
+                  ),
+                )
               ],
             ),
           ],
