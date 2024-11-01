@@ -51,7 +51,15 @@ class _CategoriaState extends State<Categoria> {
                   Icons.computer,
                   Icons.menu_book_sharp,
                   Icons.auto_awesome,
-                  Icons.more,
+                  Icons.more_horiz,
+                  Icons.card_giftcard,
+                  Icons.monetization_on_outlined,
+                  Icons.bar_chart,
+                  Icons.workspace_premium,
+                  Icons.fastfood,
+                  Icons.directions_car,
+                  Icons.local_activity,
+                  Icons.school,
                 ].map((IconData icon) {
                   return DropdownMenuItem<IconData>(
                     value: icon,
@@ -327,7 +335,15 @@ class _CategoriaState extends State<Categoria> {
                   Icons.computer,
                   Icons.menu_book_sharp,
                   Icons.auto_awesome,
-                  Icons.more,
+                  Icons.more_horiz,
+                  Icons.card_giftcard,
+                  Icons.monetization_on_outlined,
+                  Icons.bar_chart,
+                  Icons.workspace_premium,
+                  Icons.fastfood,
+                  Icons.directions_car,
+                  Icons.local_activity,
+                  Icons.school,
                 ].map((IconData icon) {
                   return DropdownMenuItem<IconData>(
                     value: icon,
