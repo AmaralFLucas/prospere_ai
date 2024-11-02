@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Relatorio extends StatefulWidget {
-  const Relatorio({Key? key, this.title}) : super(key: key);
+  const Relatorio({Key? key, this.title, required String userId}) : super(key: key);
   final String? title;
 
   @override
@@ -16,10 +18,9 @@ Color textColor = Colors.black87;
 class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
-  List<Map<String, String>> filtro = [];
-
   String? selectedPeriodo;
   String? selectedTipo;
+  List<Map<String, dynamic>> transactions = [];
 
   @override
   void initState() {
@@ -32,6 +33,50 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
 
     final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+
+    _fetchTransactions();
+  }
+
+  void _fetchTransactions() async {
+    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance.collection('users').doc('userId').collection('receitas').get();
+    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance.collection('users').doc('userId').collection('despesas').get();
+
+    List<Map<String, dynamic>> receitas = receitasSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    List<Map<String, dynamic>> despesas = despesasSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+
+    setState(() {
+      transactions = [
+        ...receitas.map((r) => {...r, 'tipo': 'receita'}),
+        ...despesas.map((d) => {...d, 'tipo': 'despesa'})
+      ];
+    });
+  }
+
+  List<Map<String, dynamic>> _filterTransactions() {
+    DateTime now = DateTime.now();
+    return transactions.where((transaction) {
+      DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
+
+      bool dateMatch = selectedPeriodo == 'Hoje'
+          ? isSameDay(transactionDate, now)
+          : selectedPeriodo == 'Semana'
+              ? transactionDate.isAfter(now.subtract(Duration(days: now.weekday)))
+              : selectedPeriodo == 'Mês'
+                  ? transactionDate.month == now.month && transactionDate.year == now.year
+                  : true;
+
+      bool typeMatch = selectedTipo == 'Receita'
+          ? transaction['tipo'] == 'receita'
+          : selectedTipo == 'Despesa'
+              ? transaction['tipo'] == 'despesa'
+              : true;
+
+      return dateMatch && typeMatch;
+    }).toList();
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -139,7 +184,7 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(backgroundColor: myColor),
-              child: Text('Salvar'),
+              child: const Text('Salvar'),
             ),
           ],
         );
@@ -208,138 +253,89 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
           ],
         ),
       ),
-      floatingActionButton:Container(
+      floatingActionButton: Container(
         margin: const EdgeInsets.all(10),
         child: FloatingActionBubble(
-        items: <Bubble>[
-          Bubble(
-            title: "PDF",
-            iconColor: Colors.white,
-            bubbleColor:const Color.fromARGB(255, 178, 0, 0),
-            icon: Icons.article_outlined,
-            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-            onPress: () {
-              _animationController.reverse();
-            },
-          ),
-          Bubble(
-            title: "EXCEL",
-            iconColor: Colors.white,
-            bubbleColor: myColor,
-            icon: Icons.article_outlined,
-            titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
-            onPress: () {
-              _animationController.reverse();
-            },
-          ),
-        ],
-        animation: _animation,
-        onPress: () => _animationController.isCompleted
-            ? _animationController.reverse()
-            : _animationController.forward(),
-        iconColor: Colors.white,
-        iconData: Icons.download,
-        backGroundColor: myColor,
+          items: <Bubble>[
+            Bubble(
+              title: "PDF",
+              iconColor: Colors.white,
+              bubbleColor: const Color.fromARGB(255, 178, 0, 0),
+              icon: Icons.article_outlined,
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+              onPress: () {
+                _animationController.reverse();
+              },
+            ),
+            Bubble(
+              title: "EXCEL",
+              iconColor: Colors.white,
+              bubbleColor: myColor,
+              icon: Icons.article_outlined,
+              titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
+              onPress: () {
+                _animationController.reverse();
+              },
+            ),
+          ],
+          animation: _animation,
+          onPress: () => _animationController.isCompleted
+              ? _animationController.reverse()
+              : _animationController.forward(),
+          iconColor: Colors.white,
+          iconData: Icons.add,
+          backGroundColor: myColor,
+        ),
       ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 
   Widget _buildBalanceCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      width: 500,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(
-            'Relatório',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Mês',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: myColor,
-            ),
-          ),
-          const SizedBox(height: 10),
-        ],
+    double totalReceitas = transactions.where((t) => t['tipo'] == 'receita').fold(0, (sum, t) => sum + (t['valor'] as num).toDouble());
+    double totalDespesas = transactions.where((t) => t['tipo'] == 'despesa').fold(0, (sum, t) => sum + (t['valor'] as num).toDouble());
+    double saldo = totalReceitas - totalDespesas;
+
+    return Card(
+      color: cardColor,
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            const Text('Saldo', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Text('R\$ ${saldo.toStringAsFixed(2)}', style: TextStyle(fontSize: 20, color: saldo >= 0 ? Colors.green : Colors.red)),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildTransactionList() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _buildTransactionItem('Transação 1', 'R\$ 150,00'),
-          const SizedBox(height: 10),
-          _buildTransactionItem('Transação 2', 'R\$ 200,00'),
-          const SizedBox(height: 10),
-          _buildTransactionItem('Transação 3', 'R\$ 250,00'),
-        ],
-      ),
-    );
-  }
+    List<Map<String, dynamic>> filteredTransactions = _filterTransactions();
 
-  Widget _buildTransactionItem(String title, String value) {
-    return Container(
-      decoration: BoxDecoration(
-        color: myColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
+    if (filteredTransactions.isEmpty) {
+      return const Center(child: Text('Nenhuma transação encontrada.'));
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: filteredTransactions.length,
+      itemBuilder: (context, index) {
+        final transaction = filteredTransactions[index];
+        DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
+
+        return Card(
+          elevation: 4,
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          child: ListTile(
+            title: Text(transaction['descricao'] ?? 'Descrição não disponível'), // Garantindo que a descrição não seja nula
+            subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
+            trailing: Text('R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'), // Garantindo que o valor não seja nulo
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

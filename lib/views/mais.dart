@@ -88,7 +88,7 @@ class _MaisState extends State<Mais> {
           buildNavigationOption('Relatório', Icons.bar_chart, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Relatorio()),
+              MaterialPageRoute(builder: (context) => Relatorio(userId: uid,)),
             );
           }),
         ],
