@@ -36,7 +36,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     var valor = teste['data']['valor'];
     var tipo = teste['data']['tipo'];
     var categoria = teste['data']['categoria'];
-    var dataTexto = teste['data']['data']; // data retornada como texto
+    var dataTexto = teste['data']['data'];
 
     print(teste);
     print(tipo);
@@ -44,17 +44,16 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     print(valor);
     print(dataTexto);
 
-    // Converte valor para double
     double valorDouble =
         double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
-    // Formata o valor como String com vírgula
+
     String valorFormatado = CurrencyTextInputFormatter()
         .formatToCurrency(valorDouble.toString().replaceAll('.', ','));
 
     DateTime now = DateTime.now();
-    String mesAnoAtual = DateFormat('MM/yyyy').format(now);
+    String mesAtual = DateFormat('MM').format(now);
+    String anoAtual = DateFormat('yyyy').format(now);
 
-    // Verifica data e converte para Timestamp
     Timestamp dataSelecionada;
     if (dataTexto.toLowerCase() == 'hoje') {
       dataSelecionada = Timestamp.fromDate(DateTime.now());
@@ -62,13 +61,37 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
       dataSelecionada =
           Timestamp.fromDate(DateTime.now().subtract(Duration(days: 1)));
     } else {
-      String dataComMesAno =
-          "${dataTexto.split('/')[0]}/$mesAnoAtual"; // '20/10/2024'
-      DateTime dataConvertida = DateFormat('dd/MM/yyyy').parse(dataComMesAno);
-      dataSelecionada = Timestamp.fromDate(dataConvertida);
+      List<String> partesData = dataTexto.split('/');
+      String dataComMesAno;
+
+      if (partesData.length == 3) {
+        String dia = partesData[0].padLeft(2, '0');
+        String mes = partesData[1];
+        String ano = partesData[2];
+
+        if (mes == 'MM') {
+          mes = mesAtual;
+        } else {
+          mes = mes.padLeft(2, '0');
+        }
+
+        if (ano == 'yyyy') {
+          ano = anoAtual;
+        }
+        dataComMesAno = "$dia/$mes/$ano";
+      } else {
+        dataComMesAno = dataTexto.replaceAll('yyyy', anoAtual);
+      }
+
+      try {
+        DateTime dataConvertida = DateFormat('dd/MM/yyyy').parse(dataComMesAno);
+        dataSelecionada = Timestamp.fromDate(dataConvertida);
+      } catch (e) {
+        print("Erro ao converter a data: ${e.toString()}");
+        dataSelecionada = Timestamp.fromDate(DateTime.now());
+      }
     }
 
-    // Navega para a tela apropriada com os valores e data processados
     if (tipo == 'despesa') {
       Navigator.push(
         context,
@@ -77,8 +100,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
             valorDespesa: valorDouble,
             valorFormatado: valorFormatado,
             data: dataSelecionada,
-            categoriaAudio: categoria,
-          ), // Passa o valor como double e formatado
+          ),
         ),
       );
     } else {
@@ -154,7 +176,7 @@ generateResponseDB(String selectedDateLabel) async {
   });
 
   final prompt =
-      'Data selecionada: $selectedDateLabel. Transforme em um Json: Receitas: ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após transformar em json analise os dados e faça algumas orientações em relação à saúde financeira do usuário.';
+      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
@@ -165,4 +187,5 @@ generateResponseDB(String selectedDateLabel) async {
   final response = await model.generateContent(content);
 
   print(response.text);
+  return response.text;
 }
