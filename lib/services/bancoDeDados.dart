@@ -82,7 +82,7 @@ Future<void> addCategoriasPadrao(String userId) async {
   // Categorias padrão de receitas
   List<Map<String, dynamic>> categoriasReceitasPadrao = [
     {'nome': 'Salário', 'icone': Icons.monetization_on_outlined.codePoint},
-    {'nome': 'Investimento', 'icone': Icons.trending_up.codePoint},
+    {'nome': 'Investimento', 'icone': Icons.bar_chart.codePoint},
     {'nome': 'Prêmio', 'icone': Icons.workspace_premium.codePoint},
     {'nome': 'Presentes', 'icone': Icons.card_giftcard.codePoint},
     {'nome': 'Outros', 'icone': Icons.more_horiz.codePoint},
@@ -147,7 +147,8 @@ Future<void> criarMeta(String userId, String tipoMeta, String descricao,
   });
 }
 
-Future<void> criarMetaGastoMensal(String userId, String descricao, double valorMeta, String categoria, DateTime? dataLimite) async {
+Future<void> criarMetaGastoMensal(String userId, String descricao,
+    double valorMeta, String categoria, DateTime? dataLimite) async {
   CollectionReference metas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -232,9 +233,19 @@ Future<List<Map<String, dynamic>>> getCategorias(
   }
 
   QuerySnapshot snapshot = await categorias.get();
-  return snapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .toList();
+
+  // Debug: Verifique se as categorias foram recuperadas corretamente
+  print("Número de categorias recuperadas: ${snapshot.docs.length}");
+
+  return snapshot.docs.map((doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return {
+      'id': doc.id, // Armazena o ID do documento
+      'nome': data['nome'],
+      'icone': data['icone'],
+      // Converte codePoint para IconData
+    };
+  }).toList();
 }
 
 Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
@@ -288,4 +299,45 @@ Future<void> addFluxoDeCaixa(
     'receitaRealizada': receitaRealizada,
     'despesaRealizada': despesaRealizada,
   });
+}
+
+Future<void> editarCategoria(String userId, String categoriaId, String novoNome,
+    IconData novoIcone, String tipo) async {
+  CollectionReference categorias;
+
+  if (tipo == 'receita') {
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasReceitas');
+  } else {
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasDespesas');
+  }
+
+  await categorias.doc(categoriaId).update({
+    'nome': novoNome,
+    'icone': novoIcone.codePoint,
+  });
+}
+
+Future<void> deletarCategoria(
+    String userId, String categoriaId, String tipo) async {
+  CollectionReference categorias;
+
+  if (tipo == 'receita') {
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasReceitas');
+  } else {
+    categorias = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('categoriasDespesas');
+  }
+
+  await categorias.doc(categoriaId).delete();
 }

@@ -51,7 +51,15 @@ class _CategoriaState extends State<Categoria> {
                   Icons.computer,
                   Icons.menu_book_sharp,
                   Icons.auto_awesome,
-                  Icons.more,
+                  Icons.more_horiz,
+                  Icons.card_giftcard,
+                  Icons.monetization_on_outlined,
+                  Icons.bar_chart,
+                  Icons.workspace_premium,
+                  Icons.fastfood,
+                  Icons.directions_car,
+                  Icons.local_activity,
+                  Icons.school,
                 ].map((IconData icon) {
                   return DropdownMenuItem<IconData>(
                     value: icon,
@@ -131,6 +139,10 @@ class _CategoriaState extends State<Categoria> {
 
           final categorias = snapshot.data!;
 
+          if (categorias.isEmpty) {
+            return Center(child: Text('Nenhuma categoria disponível.'));
+          }
+
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -192,10 +204,23 @@ class _CategoriaState extends State<Categoria> {
                   ),
                 ),
                 const SizedBox(height: 50),
+                // Substitua o `map` e passe os dados como parâmetros explícitos.
                 ...categorias.map((categoria) {
+                  final String categoriaId = categoria['id'] ?? '';
+                  final String categoriaNome = categoria['nome'] ?? '';
+
+                  // Verifique se os dados essenciais estão presentes
+                  if (categoriaId.isEmpty || categoriaNome.isEmpty) {
+                    return SizedBox
+                        .shrink(); // Retorne um widget vazio se faltar algum dado
+                  }
+
                   return _buildCategoryItem(
-                      IconData(categoria['icone'], fontFamily: 'MaterialIcons'),
-                      categoria['nome']);
+                    IconData(categoria['icone'] ?? Icons.help_outline.codePoint,
+                        fontFamily: 'MaterialIcons'),
+                    categoriaNome,
+                    categoriaId,
+                  );
                 }).toList(),
               ],
             ),
@@ -211,21 +236,164 @@ class _CategoriaState extends State<Categoria> {
     );
   }
 
-  Widget _buildCategoryItem(IconData icon, String title) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(icon, size: 60),
-        const SizedBox(width: 50),
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+  Widget _buildCategoryItem(IconData icon, String title, String categoriaId) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.3),
+            spreadRadius: 2,
+            blurRadius: 6,
+            offset: const Offset(0, 3),
           ),
-        ),
-      ],
+        ],
+      ),
+      child: Row(
+        children: [
+          Icon(icon,
+              color: categoriaAtual == 'receita' ? receitaColor : despesaColor,
+              size: 30),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.edit, color: Colors.grey),
+            onPressed: () {
+              _showEditCategoriaDialog(categoriaId, title, icon.codePoint);
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete, color: Colors.red),
+            onPressed: () async {
+              bool confirmDelete = await showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Confirmação'),
+                    content:
+                        const Text('Deseja realmente excluir esta categoria?'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: const Text('Cancelar'),
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                      TextButton(
+                        child: const Text('Excluir'),
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
+                    ],
+                  );
+                },
+              );
+
+              if (confirmDelete) {
+                await deletarCategoria(
+                    widget.userId, categoriaId, categoriaAtual);
+                setState(() {
+                  categorias = getCategorias(widget.userId, categoriaAtual);
+                });
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showEditCategoriaDialog(
+      String categoriaId, String nomeAtual, int iconeAtual) async {
+    String? novoNomeCategoria = nomeAtual;
+    IconData? novoIconeCategoria =
+        IconData(iconeAtual, fontFamily: 'MaterialIcons');
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Editar Categoria'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButtonFormField<IconData>(
+                decoration:
+                    const InputDecoration(labelText: 'Selecionar Ícone'),
+                items: [
+                  Icons.home,
+                  Icons.shopping_cart,
+                  Icons.computer,
+                  Icons.menu_book_sharp,
+                  Icons.auto_awesome,
+                  Icons.more_horiz,
+                  Icons.card_giftcard,
+                  Icons.monetization_on_outlined,
+                  Icons.bar_chart,
+                  Icons.workspace_premium,
+                  Icons.fastfood,
+                  Icons.directions_car,
+                  Icons.local_activity,
+                  Icons.school,
+                ].map((IconData icon) {
+                  return DropdownMenuItem<IconData>(
+                    value: icon,
+                    child: Row(
+                      children: [
+                        Icon(icon),
+                        const SizedBox(width: 10),
+                        Text(icon.toString()),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (IconData? newIcon) {
+                  novoIconeCategoria = newIcon;
+                },
+                value: novoIconeCategoria, // Valor padrão para o dropdown
+              ),
+              TextField(
+                decoration:
+                    const InputDecoration(labelText: 'Nome da Categoria'),
+                onChanged: (String value) {
+                  novoNomeCategoria = value;
+                },
+                controller: TextEditingController(text: nomeAtual),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Salvar'),
+              onPressed: () async {
+                if (novoIconeCategoria != null && novoNomeCategoria != null) {
+                  await editarCategoria(widget.userId, categoriaId,
+                      novoNomeCategoria!, novoIconeCategoria!, categoriaAtual);
+                  setState(() {
+                    categorias = getCategorias(widget.userId, categoriaAtual);
+                  });
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
