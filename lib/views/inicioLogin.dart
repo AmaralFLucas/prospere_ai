@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:prospere_ai/main.dart';
-import 'package:prospere_ai/views/cadastro.dart';
-import 'package:prospere_ai/views/inicio.dart';
 import 'package:prospere_ai/views/inicioCadastro.dart';
 import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/termos_de_uso.dart';
@@ -17,7 +14,6 @@ class InicioLogin extends StatefulWidget {
 }
 
 class _InicioLoginState extends State<InicioLogin> {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final AutenticacaoServico _autenticacaoGoogle = AutenticacaoServico();
 
   // Função para realizar o login com o Google
