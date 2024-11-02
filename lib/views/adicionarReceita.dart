@@ -113,11 +113,11 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
       if (dataSelecionada.year == hoje.year &&
           dataSelecionada.month == hoje.month &&
           dataSelecionada.day == hoje.day) {
-        return 'index0';
+        return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
       } else if (dataSelecionada.year == ontem.year &&
           dataSelecionada.month == ontem.month &&
           dataSelecionada.day == ontem.day) {
-        return 'index1';
+        return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
       } else {
         return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
       }

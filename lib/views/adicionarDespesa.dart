@@ -10,7 +10,11 @@ class AdicionarDespesa extends StatefulWidget {
   final Timestamp? data;
   final String? categoriaAudio;
   const AdicionarDespesa(
-      {super.key, this.valorDespesa, this.valorFormatado, this.data, this.categoriaAudio});
+      {super.key,
+      this.valorDespesa,
+      this.valorFormatado,
+      this.data,
+      this.categoriaAudio});
 
   @override
   State<AdicionarDespesa> createState() => _AdicionarDespesaState();
@@ -118,11 +122,11 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
       if (dataSelecionada.year == hoje.year &&
           dataSelecionada.month == hoje.month &&
           dataSelecionada.day == hoje.day) {
-        return 'index0';
+        return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
       } else if (dataSelecionada.year == ontem.year &&
           dataSelecionada.month == ontem.month &&
           dataSelecionada.day == ontem.day) {
-        return 'index1';
+        return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
       } else {
         return '${dataSelecionada.day}/${dataSelecionada.month}/${dataSelecionada.year}';
       }
