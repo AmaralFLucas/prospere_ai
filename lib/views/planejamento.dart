@@ -13,7 +13,11 @@ Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
 class _PlanejamentoState extends State<Planejamento> {
-  List<Map<String, dynamic>> planList = [];
+  List<Map<String, dynamic>> planList = [
+    {'name': 'Celular Novo', 'value': 100.0, 'spent': 100.0},
+    {'name': 'PC Novo', 'value': 100.0, 'spent': 60.0},
+    {'name': 'Geladeira Nova', 'value': 100.0, 'spent': 60.0},
+  ];
   double totalGasto = 0;
   double totalPlanejado = 0;
 
@@ -41,7 +45,7 @@ class _PlanejamentoState extends State<Planejamento> {
           children: [
             _buildTotalChart(),
             const SizedBox(height: 16),
-            Expanded(child: _buildPlanGrid()), // Plano em GridView
+            Expanded(child: _buildPlanList()), // Lista de planos com layout de lista
           ],
         ),
       ),
@@ -57,51 +61,45 @@ class _PlanejamentoState extends State<Planejamento> {
   }
 
   Widget _buildTotalChart() {
-    return GestureDetector(
-      onTap: _showEditOrDeleteDialog,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        height: 200,
+    return Center(
+      child: SizedBox(
+        width: 150,
+        height: 150,
         child: PieChart(
           PieChartData(
             sections: [
               PieChartSectionData(
                 color: Colors.green,
                 value: totalPlanejado - totalGasto,
-                radius: 60,
+                radius: 50,
               ),
               PieChartSectionData(
                 color: Colors.red,
                 value: totalGasto,
-                radius: 60,
+                radius: 50,
               ),
             ],
             borderData: FlBorderData(show: false),
             sectionsSpace: 0,
-            centerSpaceRadius: 50,
+            centerSpaceRadius: 40,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildPlanGrid() {
-    return GridView.builder(
+  Widget _buildPlanList() {
+    return ListView.builder(
       itemCount: planList.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 16,
-        mainAxisSpacing: 16,
-        childAspectRatio: 3 / 4,
-      ),
       itemBuilder: (context, index) {
-        return _buildPlanCard(planList[index]);
+        return _buildPlanCard(planList[index], index);
       },
     );
   }
 
-  Widget _buildPlanCard(Map<String, dynamic> plan) {
+  Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: cardColor,
@@ -117,44 +115,75 @@ class _PlanejamentoState extends State<Planejamento> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            plan['name'],
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: PieChart(
-              PieChartData(
-                sections: [
-                  PieChartSectionData(
-                    color: Colors.green,
-                    value: plan['value'] - plan['spent'],
-                    radius: 30,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                plan['name'],
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      // Função para editar
+                      _editPlan(index);
+                    },
                   ),
-                  PieChartSectionData(
-                    color: Colors.red,
-                    value: plan['spent'],
-                    radius: 30,
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      // Função para excluir
+                      setState(() {
+                        planList.removeAt(index);
+                      });
+                    },
                   ),
                 ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: PieChart(
+                PieChartData(
+                  sections: [
+                    PieChartSectionData(
+                      color: Colors.green,
+                      value: plan['value'] - plan['spent'],
+                      radius: 40,
+                    ),
+                    PieChartSectionData(
+                      color: Colors.red,
+                      value: plan['spent'],
+                      radius: 40,
+                    ),
+                  ],
+                  borderData: FlBorderData(show: false),
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 30,
+                ),
               ),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Valor: R\$: ${plan['value'].toStringAsFixed(2)}',
+            'Valor Planejado: R\$: ${plan['value'].toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 4),
           Text(
-            'Gasto: R\$: ${plan['spent'].toStringAsFixed(2)}',
+            'Gasto Atual: R\$: ${plan['spent'].toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
@@ -260,36 +289,7 @@ class _PlanejamentoState extends State<Planejamento> {
     );
   }
 
-  void _showEditOrDeleteDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Editar ou Excluir Planejamento'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _editPlan();
-              },
-              child: const Text('Editar'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  planList.clear();
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Excluir'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _editPlan() {
-    // Lógica para editar o planejamento
+  void _editPlan(int index) {
+    // Função para editar o planejamento
   }
 }
