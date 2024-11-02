@@ -113,128 +113,131 @@ class _CategoriaState extends State<Categoria> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor:
-            categoriaAtual == 'receita' ? receitaColor : despesaColor,
-        title: Text(
-          'Categorias de ${categoriaAtual == 'receita' ? 'Receitas' : 'Despesas'}',
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+  @override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      backgroundColor:
+          categoriaAtual == 'receita' ? receitaColor : despesaColor,
+      title: Text(
+        'Categorias de ${categoriaAtual == 'receita' ? 'Receitas' : 'Despesas'}',
+        style: const TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    ),
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: categorias,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Erro: ${snapshot.error}'));
+        }
+
+        final categorias = snapshot.data!;
+
+        if (categorias.isEmpty) {
+          return Center(child: Text('Nenhuma categoria disponível.'));
+        }
+
+        return ListView(
+          padding: const EdgeInsets.only(bottom: 80), // Adiciona espaço abaixo para o FAB
+          children: [
+            const SizedBox(height: 20),
+            Container(
+  margin: const EdgeInsets.symmetric(horizontal: 16), // Reduzindo a margem inferior
+  decoration: BoxDecoration(
+    color: Colors.grey[300],
+    borderRadius: BorderRadius.circular(30),
+  ),
+  padding: const EdgeInsets.all(6), // Aumentando o padding interno
+  child: Row(
+    children: [
+      Expanded(
+        child: SizedBox(
+          height: 40, // Aumentando a altura dos botões
+          child: ElevatedButton(
+            onPressed: () {
+              mudarCategoria('receita');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: categoriaAtual == 'receita' ? receitaColor : Colors.transparent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+            child: Text(
+              'Receitas',
+              style: TextStyle(
+                fontSize: 16, // Aumentando o tamanho do texto
+                fontWeight: categoriaAtual == 'receita' ? FontWeight.bold : FontWeight.normal, // Negrito se selecionado
+                color: categoriaAtual == 'receita' ? Colors.white : Colors.black54,
+              ),
+            ),
           ),
         ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: categorias,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Erro: ${snapshot.error}'));
-          }
-
-          final categorias = snapshot.data!;
-
-          if (categorias.isEmpty) {
-            return Center(child: Text('Nenhuma categoria disponível.'));
-          }
-
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Container(
-                  margin: const EdgeInsets.only(right: 10),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 221, 221, 221),
-                    borderRadius: BorderRadius.circular(55),
-                  ),
-                  height: 60,
-                  width: 310,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            mudarCategoria('receita');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: categoriaAtual == 'receita'
-                                ? receitaColor
-                                : const Color.fromARGB(255, 197, 197, 197),
-                            minimumSize: const Size(150, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(55),
-                            ),
-                          ),
-                          child: Text('Receitas',
-                              style: TextStyle(
-                                  color: categoriaAtual == 'receita'
-                                      ? Colors.white
-                                      : Colors.black)),
-                        ),
-                      ),
-                      const SizedBox(width: 3),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            mudarCategoria('despesa');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: categoriaAtual == 'despesa'
-                                ? despesaColor
-                                : const Color.fromARGB(255, 197, 197, 197),
-                            minimumSize: const Size(150, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(55),
-                            ),
-                          ),
-                          child: Text('Despesas',
-                              style: TextStyle(
-                                  color: categoriaAtual == 'despesa'
-                                      ? Colors.white
-                                      : Colors.black)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 50),
-                // Substitua o `map` e passe os dados como parâmetros explícitos.
-                ...categorias.map((categoria) {
-                  final String categoriaId = categoria['id'] ?? '';
-                  final String categoriaNome = categoria['nome'] ?? '';
-
-                  // Verifique se os dados essenciais estão presentes
-                  if (categoriaId.isEmpty || categoriaNome.isEmpty) {
-                    return SizedBox
-                        .shrink(); // Retorne um widget vazio se faltar algum dado
-                  }
-
-                  return _buildCategoryItem(
-                    IconData(categoria['icone'] ?? Icons.help_outline.codePoint,
-                        fontFamily: 'MaterialIcons'),
-                    categoriaNome,
-                    categoriaId,
-                  );
-                }).toList(),
-              ],
+      Expanded(
+        child: SizedBox(
+          height: 40, // Aumentando a altura dos botões
+          child: ElevatedButton(
+            onPressed: () {
+              mudarCategoria('despesa');
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: categoriaAtual == 'despesa' ? despesaColor : Colors.transparent,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
             ),
-          );
-        },
+            child: Text(
+              'Despesas',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: categoriaAtual == 'despesa' ? FontWeight.bold : FontWeight.normal, // Negrito se selecionado
+                color: categoriaAtual == 'despesa' ? Colors.white : Colors.black54,
+              ),
+            ),
+          ),
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddCategoriaDialog,
-        child: const Icon(Icons.add),
-        backgroundColor:
-            categoriaAtual == 'receita' ? receitaColor : despesaColor,
-      ),
-    );
-  }
+    ],
+  ),
+),
+            const SizedBox(height: 15),
+            ...categorias.map((categoria) {
+              final String categoriaId = categoria['id'] ?? '';
+              final String categoriaNome = categoria['nome'] ?? '';
+
+              if (categoriaId.isEmpty || categoriaNome.isEmpty) {
+                return SizedBox.shrink();
+              }
+
+              return _buildCategoryItem(
+                IconData(categoria['icone'] ?? Icons.help_outline.codePoint,
+                    fontFamily: 'MaterialIcons'),
+                categoriaNome,
+                categoriaId,
+              );
+            }).toList(),
+          ],
+        );
+      },
+    ),
+    floatingActionButton: FloatingActionButton(
+      onPressed: _showAddCategoriaDialog,
+      child: const Icon(Icons.add),
+      backgroundColor:
+          categoriaAtual == 'receita' ? receitaColor : despesaColor,
+    ),
+  );
+}
 
   Widget _buildCategoryItem(IconData icon, String title, String categoriaId) {
     return Container(
