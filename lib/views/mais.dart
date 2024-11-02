@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/services/gemini.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
 import 'package:prospere_ai/views/contas.dart';
 import 'package:prospere_ai/views/relatorio.dart';
