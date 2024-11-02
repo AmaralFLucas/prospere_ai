@@ -154,7 +154,7 @@ generateResponseDB(String selectedDateLabel) async {
   });
 
   final prompt =
-      'Data selecionada: $selectedDateLabel. Transforme em um Json: Receitas: ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após transformar em json analise os dados e faça algumas orientações em relação à saúde financeira do usuário.';
+      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
@@ -165,4 +165,5 @@ generateResponseDB(String selectedDateLabel) async {
   final response = await model.generateContent(content);
 
   print(response.text);
+  return response.text;
 }

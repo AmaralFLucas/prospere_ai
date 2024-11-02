@@ -79,6 +79,9 @@ flutter:
     - assets/images/logo_porco.png
     - assets/images/google_logo.png
     - assets/images/novalogo_porco2.png
+    - assets/images/iaporco.png
+    - assets/images/porcoia2.png
+    - assets/images/gemini.png
     
 
   #   - images/a_dot_burr.jpeg

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prospere_ai/components/customAppBar.dart';
 
 Color myColor = const Color.fromARGB(255, 30, 163, 132);
 
@@ -10,22 +11,16 @@ class Contas extends StatefulWidget {
 }
 
 class _ContasState extends State<Contas> {
-  List<Map<String, String>> contas =
-      []; 
+  List<Map<String, String>> contas = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: myColor,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context)
-                .pop(); 
-          },
-        ),
-        title: const Text('Contas'),
+      appBar: CustomAppBar(
+        title: 'Contas',
+        onBackButtonPressed: () {
+          // Ação ao pressionar o botão "back"
+        },
       ),
       body: ListView.builder(
         itemCount: contas.length,
@@ -58,7 +53,8 @@ class _ContasState extends State<Contas> {
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(labelText: 'Selecionar Banco'),
+                decoration:
+                    const InputDecoration(labelText: 'Selecionar Banco'),
                 items: [
                   '033 - Banco Santander (Brasil) S.A.',
                   '341 - Banco Itaú Unibanco S.A.',
@@ -99,7 +95,7 @@ class _ContasState extends State<Contas> {
             TextButton(
               child: const Text('Cancelar'),
               onPressed: () {
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
@@ -113,7 +109,7 @@ class _ContasState extends State<Contas> {
                     });
                   });
                 }
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
             ),
           ],
