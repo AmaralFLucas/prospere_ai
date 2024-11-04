@@ -36,8 +36,7 @@ Future<void> addReceita(String userId, double valor, String categoria,
   });
 }
 
-Future<void> addDespesa(String userId, double valor, String categoria,
-    Timestamp data, String tipo) async {
+Future<void> addDespesa(String userId, double valor, String categoria, Timestamp data, String tipo) async {
   CollectionReference despesas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -60,8 +59,7 @@ Future<void> addDespesa(String userId, double valor, String categoria,
 
   if (metasSnapshot.docs.isNotEmpty) {
     for (var metaDoc in metasSnapshot.docs) {
-      var metaData = metaDoc.data() as Map<String, dynamic>;
-      double valorAtual = metaData['valorAtual'] ?? 0.0;
+      double valorAtual = metaDoc['valorAtual'];
       double novoValorAtual = valorAtual + valor;
 
       await metaDoc.reference.update({'valorAtual': novoValorAtual});
@@ -340,4 +338,13 @@ Future<void> deletarCategoria(
   }
 
   await categorias.doc(categoriaId).delete();
+}
+
+Future<void> deletarMeta(String userId, String metaId) async {
+  CollectionReference metas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('metasFinanceiras');
+
+  await metas.doc(metaId).delete();
 }
