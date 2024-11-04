@@ -21,7 +21,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
   final _cidadeController = TextEditingController();
   final _estadoController = TextEditingController();
   final _objetivoFinanceiroController = TextEditingController();
-  final TextEditingController _dataNascimentoController = TextEditingController(); // Controlador para a data de nascimento
+  final TextEditingController _dataNascimentoController =
+      TextEditingController(); // Controlador para a data de nascimento
 
   DateTime? _dataNascimento;
   String? _sexo;
@@ -36,7 +37,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
     _cidadeController.dispose();
     _estadoController.dispose();
     _objetivoFinanceiroController.dispose();
-    _dataNascimentoController.dispose(); // Descartar o controlador da data de nascimento
+    _dataNascimentoController
+        .dispose(); // Descartar o controlador da data de nascimento
     super.dispose();
   }
 
@@ -50,7 +52,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
     if (picked != null) {
       setState(() {
         _dataNascimento = picked;
-        _dataNascimentoController.text = '${picked.day}/${picked.month}/${picked.year}'; // Atualiza o controlador com a data escolhida
+        _dataNascimentoController.text =
+            '${picked.day}/${picked.month}/${picked.year}'; // Atualiza o controlador com a data escolhida
       });
     }
   }
@@ -85,21 +88,26 @@ class _MeuCadastroState extends State<MeuCadastro> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
                     _buildTextLabel('Nome Completo'),
-                    _buildTextField(_nomeController, 'Digite o seu Nome Completo'),
+                    _buildTextField(
+                        _nomeController, 'Digite o seu Nome Completo'),
                     _buildTextLabel('Email'),
-                    _buildTextField(_emailController, 'Digite o seu E-mail', keyboardType: TextInputType.emailAddress),
+                    _buildTextField(_emailController, 'Digite o seu E-mail',
+                        keyboardType: TextInputType.emailAddress),
                     _buildTextLabel('Data de Nascimento'),
                     _buildDateField(context), // Campo de data
                     _buildTextLabel('Telefone'),
-                    _buildTextField(_telefoneController, 'Digite o seu Número do Telefone', keyboardType: TextInputType.phone),
+                    _buildTextField(
+                        _telefoneController, 'Digite o seu Número do Telefone',
+                        keyboardType: TextInputType.phone),
                     _buildTextLabel('Sexo'),
                     _buildSexoDropdown(),
                     _buildTextLabel('Nacionalidade'),
-                    _buildTextField(_cidadeController, 'Digite a sua Nacionalidade'),
+                    _buildTextField(
+                        _cidadeController, 'Digite a sua Nacionalidade'),
                     _buildTextLabel('CPF'),
                     _buildTextField(_cpfController, 'Digite o seu CPF'),
                     _buildTextLabel('CEP'),
@@ -109,7 +117,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                     _buildTextLabel('Estado'),
                     _buildTextField(_estadoController, 'Digite o seu Estado'),
                     _buildTextLabel('Objetivo Financeiro'),
-                    _buildTextField(_objetivoFinanceiroController, 'Digite qual o seu Objetivo Financeiro'),
+                    _buildTextField(_objetivoFinanceiroController,
+                        'Digite qual o seu Objetivo Financeiro'),
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -120,7 +129,8 @@ class _MeuCadastroState extends State<MeuCadastro> {
                           textColor: Colors.black,
                           onPressed: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const HomePage()),
+                              MaterialPageRoute(
+                                  builder: (context) => const HomePage()),
                             );
                           },
                         ),
@@ -161,80 +171,72 @@ class _MeuCadastroState extends State<MeuCadastro> {
     String hintText, {
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SizedBox(
-        width: 300,
-        child: TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            labelText: hintText,
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Por favor, insira $hintText';
-            }
-            return null;
-          },
+    return SizedBox(
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: hintText,
         ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor, insira $hintText';
+          }
+          return null;
+        },
       ),
     );
   }
 
   Widget _buildDateField(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SizedBox(
-        width: 300,
-        child: TextFormField(
-          controller: _dataNascimentoController, // Controlador para a data de nascimento
-          readOnly: true, // Torna o campo somente leitura
-          decoration: InputDecoration(
-            border: const OutlineInputBorder(),
-            labelText: 'Escolha a sua Data de Nascimento',
-          ),
-          onTap: () => _selecionarDataNascimento(context),
-          validator: (value) {
-            if (_dataNascimento == null) {
-              return 'Por favor, selecione a data de nascimento';
-            }
-            return null;
-          },
+    return SizedBox(
+      child: TextFormField(
+        textAlign: TextAlign.center,
+        controller:
+            _dataNascimentoController, // Controlador para a data de nascimento
+        readOnly: true, // Torna o campo somente leitura
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: 'Escolha a sua Data de Nascimento',
         ),
+        onTap: () => _selecionarDataNascimento(context),
+        validator: (value) {
+          if (_dataNascimento == null) {
+            return 'Por favor, selecione a data de nascimento';
+          }
+          return null;
+        },
       ),
     );
   }
 
   Widget _buildSexoDropdown() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: SizedBox(
-        width: 300,
-        child: DropdownButtonFormField<String>(
-          value: _sexo,
-          items: const [
-            DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
-            DropdownMenuItem(value: 'Feminino', child: Text('Feminino')),
-            DropdownMenuItem(value: 'Prefiro não especificar', child: Text('Prefiro não especificar')),
-          ],
-          onChanged: (value) {
-            setState(() {
-              _sexo = value;
-            });
-          },
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Escolha o Sexo',
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Por favor, selecione uma opção';
-            }
-            return null;
-          },
+    return SizedBox(
+      child: DropdownButtonFormField<String>(
+        value: _sexo,
+        items: const [
+          DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
+          DropdownMenuItem(value: 'Feminino', child: Text('Feminino')),
+          DropdownMenuItem(
+              value: 'Prefiro não especificar',
+              child: Text('Prefiro não especificar')),
+        ],
+        onChanged: (value) {
+          setState(() {
+            _sexo = value;
+          });
+        },
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(),
+          labelText: 'Escolha o Sexo',
         ),
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Por favor, selecione uma opção';
+          }
+          return null;
+        },
       ),
     );
   }
