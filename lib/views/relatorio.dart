@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:prospere_ai/views/homePage.dart';
 
 class Relatorio extends StatefulWidget {
-  const Relatorio({Key? key, this.title, required String userId}) : super(key: key);
   final String? title;
+  final String? userId;
+  Relatorio({Key? key, this.title, required this.userId}) : super(key: key);
 
   @override
   State<Relatorio> createState() => _RelatorioState();
@@ -15,7 +17,8 @@ Color myColor = const Color.fromARGB(255, 30, 163, 132);
 Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
-class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMixin {
+class _RelatorioState extends State<Relatorio>
+    with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
   String? selectedPeriodo;
@@ -31,18 +34,31 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 260),
     );
 
-    final curvedAnimation = CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
+    final curvedAnimation =
+        CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
     _fetchTransactions();
   }
 
   void _fetchTransactions() async {
-    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance.collection('users').doc('userId').collection('receitas').get();
-    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance.collection('users').doc('userId').collection('despesas').get();
+    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('receitas')
+        .get();
+    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('despesas')
+        .get();
 
-    List<Map<String, dynamic>> receitas = receitasSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
-    List<Map<String, dynamic>> despesas = despesasSnapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    List<Map<String, dynamic>> receitas = receitasSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+    List<Map<String, dynamic>> despesas = despesasSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
 
     setState(() {
       transactions = [
@@ -60,9 +76,11 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
       bool dateMatch = selectedPeriodo == 'Hoje'
           ? isSameDay(transactionDate, now)
           : selectedPeriodo == 'Semana'
-              ? transactionDate.isAfter(now.subtract(Duration(days: now.weekday)))
+              ? transactionDate
+                  .isAfter(now.subtract(Duration(days: now.weekday)))
               : selectedPeriodo == 'Mês'
-                  ? transactionDate.month == now.month && transactionDate.year == now.year
+                  ? transactionDate.month == now.month &&
+                      transactionDate.year == now.year
                   : true;
 
       bool typeMatch = selectedTipo == 'Receita'
@@ -76,7 +94,9 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
   }
 
   bool isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year && date1.month == date2.month && date1.day == date2.day;
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -87,14 +107,17 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Filtrar Relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          title: const Text('Filtrar Relatório',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Selecione o período do relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text('Selecione o período do relatório',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +152,9 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
                       ],
                     ),
                     const SizedBox(height: 20),
-                    const Text('Selecione o tipo de relatório', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text('Selecione o tipo de relatório',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,23 +194,44 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
             },
           ),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancelar', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  selectedPeriodo = tempSelectedPeriodo;
-                  selectedTipo = tempSelectedTipo;
-                });
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: myColor),
-              child: const Text('Salvar'),
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedPeriodo = '';
+                        selectedTipo = '';
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Limpar')),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancelar',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedPeriodo = tempSelectedPeriodo;
+                          selectedTipo = tempSelectedTipo;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: myColor),
+                      child: const Text('Salvar'),
+                    ),
+                  ],
+                )
+              ],
+            )
           ],
         );
       },
@@ -291,8 +337,12 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
   }
 
   Widget _buildBalanceCard() {
-    double totalReceitas = transactions.where((t) => t['tipo'] == 'receita').fold(0, (sum, t) => sum + (t['valor'] as num).toDouble());
-    double totalDespesas = transactions.where((t) => t['tipo'] == 'despesa').fold(0, (sum, t) => sum + (t['valor'] as num).toDouble());
+    double totalReceitas = transactions
+        .where((t) => t['tipo'] == 'receita')
+        .fold(0, (sum, t) => sum + (t['valor'] as num).toDouble());
+    double totalDespesas = transactions
+        .where((t) => t['tipo'] == 'despesa')
+        .fold(0, (sum, t) => sum + (t['valor'] as num).toDouble());
     double saldo = totalReceitas - totalDespesas;
 
     return Card(
@@ -302,9 +352,13 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Text('Saldo', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text('Saldo',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Text('R\$ ${saldo.toStringAsFixed(2)}', style: TextStyle(fontSize: 20, color: saldo >= 0 ? Colors.green : Colors.red)),
+            Text('R\$ ${saldo.toStringAsFixed(2)}',
+                style: TextStyle(
+                    fontSize: 20,
+                    color: saldo >= 0 ? Colors.green : Colors.red)),
           ],
         ),
       ),
@@ -325,14 +379,16 @@ class _RelatorioState extends State<Relatorio> with SingleTickerProviderStateMix
       itemBuilder: (context, index) {
         final transaction = filteredTransactions[index];
         DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
-
+        print(transactionDate);
         return Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            title: Text(transaction['descricao'] ?? 'Descrição não disponível'), // Garantindo que a descrição não seja nula
+            title: Text(transaction['descricao'] ??
+                'Descrição não disponível'), // Garantindo que a descrição não seja nula
             subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
-            trailing: Text('R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'), // Garantindo que o valor não seja nulo
+            trailing: Text(
+                'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'), // Garantindo que o valor não seja nulo
           ),
         );
       },
