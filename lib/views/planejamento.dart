@@ -31,7 +31,7 @@ class _PlanejamentoState extends State<Planejamento> {
   void initState() {
     super.initState();
     _loadMetas();
-    _carregarCategorias(); // Isso irá carregar e atualizar as categorias corretamente
+    _carregarCategorias();
   }
 
   Future<void> _carregarCategorias() async {
@@ -48,7 +48,7 @@ class _PlanejamentoState extends State<Planejamento> {
 
   Future<void> _loadMetas() async {
     String userId = widget.userId;
-    
+
     Stream<QuerySnapshot> metasStream = FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
@@ -56,22 +56,22 @@ class _PlanejamentoState extends State<Planejamento> {
         .snapshots();
 
     metasStream.listen((snapshot) {
-        setState(() {
-            planList = snapshot.docs.map((doc) {
-                final data = doc.data() as Map<String, dynamic>;
-                return {
-                    'id': doc.id,
-                    'name': data['descricao'],
-                    'value': data['valorMeta'],
-                    'spent': data['valorAtual'],
-                    'category': data['categoria'],
-                    'isExpense': data['tipoMeta'] == 'gastoMensal', // Isso ainda pode ser útil
-                };
-            }).toList();
-            print(planList); // Adicione este print para depuração
-        });
+      setState(() {
+        planList = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return {
+            'id': doc.id,
+            'name': data['descricao'],
+            'value': data['valorMeta'],
+            'spent': data['valorAtual'],
+            'category': data['categoria'],
+            'isExpense': data['tipoMeta'] == 'gastoMensal',
+          };
+        }).toList();
+        print(planList);
+      });
     });
-}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,148 +149,145 @@ class _PlanejamentoState extends State<Planejamento> {
     );
   }
 
-  // Dentro da classe _PlanejamentoState
-
-Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
-  return Container(
-    margin: const EdgeInsets.only(bottom: 16),
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: cardColor,
-      borderRadius: BorderRadius.circular(15),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 8,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              plan['name'],
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () {
-                    _editPlan(index);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    _confirmDeleteMeta(plan['id'], index);
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add, color: Colors.green),
-                  onPressed: () {
-                    _addValueToPlan(index);
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: PieChart(
-              PieChartData(
-                sections: [
-                  PieChartSectionData(
-                    color: Colors.green,
-                    value: plan['value'] - plan['spent'],
-                    radius: 40,
-                  ),
-                  PieChartSectionData(
-                    color: Colors.red,
-                    value: plan['spent'],
-                    radius: 40,
-                  ),
-                ],
-                borderData: FlBorderData(show: false),
-                sectionsSpace: 0,
-                centerSpaceRadius: 30,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Valor Planejado: R\$: ${plan['value'].toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
-        ),
-        Text(
-          'Gasto Atual: R\$: ${plan['spent'].toStringAsFixed(2)}',
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-void _confirmDeleteMeta(String metaId, int index) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: const Text('Confirmar Exclusão'),
-        content: const Text('Você tem certeza que deseja excluir esta meta?'),
-        actions: <Widget>[
-          TextButton(
-            child: Text(
-              'Cancelar',
-              style: TextStyle(color: myColor),
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-          TextButton(
-            child: Text(
-              'Excluir',
-              style: TextStyle(color: myColor),
-            ),
-            onPressed: () async {
-              await deletarMeta(widget.userId, metaId);
-              setState(() {
-                planList.removeAt(index); // Remove a meta da lista local
-              });
-              _loadMetas(); // Recarrega as metas
-              Navigator.of(context).pop(); // Fecha o diálogo
-            },
+  Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
           ),
         ],
-      );
-    },
-  );
-}
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                plan['name'],
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      _editPlan(index);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _confirmDeleteMeta(plan['id'], index);
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.add, color: Colors.green),
+                    onPressed: () {
+                      _addValueToPlan(index);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: PieChart(
+                PieChartData(
+                  sections: [
+                    PieChartSectionData(
+                      color: Colors.green,
+                      value: plan['value'] - plan['spent'],
+                      radius: 40,
+                    ),
+                    PieChartSectionData(
+                      color: Colors.red,
+                      value: plan['spent'],
+                      radius: 40,
+                    ),
+                  ],
+                  borderData: FlBorderData(show: false),
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 30,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Valor Planejado: R\$: ${plan['value'].toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+          Text(
+            'Gasto Atual: R\$: ${plan['spent'].toStringAsFixed(2)}',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteMeta(String metaId, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmar Exclusão'),
+          content: const Text('Você tem certeza que deseja excluir esta meta?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cancelar',
+                style: TextStyle(color: myColor),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(
+                'Excluir',
+                style: TextStyle(color: myColor),
+              ),
+              onPressed: () async {
+                await deletarMeta(widget.userId, metaId);
+                setState(() {
+                  planList.removeAt(index);
+                });
+                _loadMetas();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _showAddPlanDialog(BuildContext context) {
     String planName = '';
     String planValue = '';
-
     bool isExpense = false;
 
     showDialog(
@@ -328,7 +325,6 @@ void _confirmDeleteMeta(String metaId, int index) {
                       planValue = value;
                     },
                   ),
-                  // Dropdown para categorias
                   if (showCategoryDropdown)
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(
@@ -360,8 +356,7 @@ void _confirmDeleteMeta(String metaId, int index) {
                         onChanged: (bool? value) {
                           setState(() {
                             isExpense = value!;
-                            showCategoryDropdown =
-                                isExpense; // Habilitar o dropdown quando a checkbox é marcada
+                            showCategoryDropdown = isExpense;
                           });
                         },
                       ),
@@ -383,43 +378,42 @@ void _confirmDeleteMeta(String metaId, int index) {
               },
             ),
             TextButton(
-  child: Text(
-    'Adicionar',
-    style: TextStyle(color: myColor),
-  ),
-  onPressed: () async {
-    if (planName.isNotEmpty && planValue.isNotEmpty) {
-      double valorMeta = double.parse(planValue);
-      double valorAtual = 0.0;
+              child: Text(
+                'Adicionar',
+                style: TextStyle(color: myColor),
+              ),
+              onPressed: () async {
+                if (planName.isNotEmpty && planValue.isNotEmpty) {
+                  double valorMeta = double.parse(planValue);
+                  double valorAtual = 0.0;
+                  if (isExpense && selectedCategory != null) {
+                    QuerySnapshot despesasSnapshot = await FirebaseFirestore
+                        .instance
+                        .collection('users')
+                        .doc(widget.userId)
+                        .collection('despesas')
+                        .where('categoria', isEqualTo: selectedCategory)
+                        .get();
 
-      if (isExpense && selectedCategory != null) {
-        QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userId)
-            .collection('despesas')
-            .where('categoria', isEqualTo: selectedCategory)
-            .get();
-
-        valorAtual = despesasSnapshot.docs.fold(0, (sum, doc) => sum + (doc['valor'] as double));
-      }
-
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .collection('metasFinanceiras')
-          .add({
-        'descricao': planName,
-        'valorMeta': valorMeta,
-        'valorAtual': valorAtual,
-        'categoria': selectedCategory,
-        'tipoMeta': isExpense ? 'gastoMensal' : 'objetivo',
-      });
-
-      _loadMetas(); // Recarregar as metas após a adição
-      Navigator.of(context).pop();
-    }
-  },
-)
+                    valorAtual = despesasSnapshot.docs
+                        .fold(0, (sum, doc) => sum + (doc['valor'] as double));
+                  }
+                  FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(widget.userId)
+                      .collection('metasFinanceiras')
+                      .add({
+                    'descricao': planName,
+                    'valorMeta': valorMeta,
+                    'valorAtual': valorAtual,
+                    'categoria': selectedCategory,
+                    'tipoMeta': isExpense ? 'gastoMensal' : 'objetivo',
+                  });
+                  _loadMetas();
+                  Navigator.of(context).pop();
+                }
+              },
+            )
           ],
         );
       },
@@ -427,7 +421,6 @@ void _confirmDeleteMeta(String metaId, int index) {
   }
 
   void _editPlan(int index) {
-    // Lógica para edição de uma meta
     String updatedPlanName = planList[index]['name'];
     String updatedPlanValue = planList[index]['value'].toString();
     String? selectedCategory = planList[index]['category'];
@@ -529,14 +522,14 @@ void _confirmDeleteMeta(String metaId, int index) {
                       .collection('users')
                       .doc(widget.userId)
                       .collection('metasFinanceiras')
-                      .doc(planList[index]['id']) // Use o ID correto da meta
+                      .doc(planList[index]['id'])
                       .update({
                     'descricao': updatedPlanName,
                     'valorMeta': double.parse(updatedPlanValue),
                     'categoria': selectedCategory,
                     'tipoMeta': isExpense ? 'gastoMensal' : 'objetivo',
                   });
-                  _loadMetas(); // Recarregar as metas após a atualização
+                  _loadMetas();
                   Navigator.of(context).pop();
                 }
               },
@@ -549,7 +542,6 @@ void _confirmDeleteMeta(String metaId, int index) {
 
   void _addValueToPlan(int index) {
     String additionalValue = '';
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -596,7 +588,7 @@ void _confirmDeleteMeta(String metaId, int index) {
                       .doc(planId)
                       .update({'valorAtual': currentSpent + addValue}).then(
                           (_) {
-                    _loadMetas(); // Recarrega as metas após a atualização
+                    _loadMetas();
                     Navigator.of(context).pop();
                   });
                 }

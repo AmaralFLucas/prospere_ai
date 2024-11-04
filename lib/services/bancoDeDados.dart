@@ -36,7 +36,8 @@ Future<void> addReceita(String userId, double valor, String categoria,
   });
 }
 
-Future<void> addDespesa(String userId, double valor, String categoria, Timestamp data, String tipo) async {
+Future<void> addDespesa(String userId, double valor, String categoria,
+    Timestamp data, String tipo) async {
   CollectionReference despesas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
