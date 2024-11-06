@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:prospere_ai/components/meu_snackbar.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:string_similarity/string_similarity.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -43,17 +45,23 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     super.initState();
     _carregarCategorias();
 
+    isSelected = [
+      false,
+      false,
+      false
+    ]; // Nenhuma opção selecionada inicialmente
     if (widget.valorFormatado != null) {
       _valorController.text = widget.valorFormatado!;
     } else if (widget.valorReceita != null) {
       _valorController.text =
           widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
     }
-    DateTime hoje = DateTime.now();
-    DateTime ontem = hoje.subtract(Duration(days: 1));
 
     if (widget.data != null) {
+      DateTime hoje = DateTime.now();
+      DateTime ontem = hoje.subtract(Duration(days: 1));
       DateTime dataAudio = widget.data!.toDate();
+
       if (dataAudio.year == hoje.year &&
           dataAudio.month == hoje.month &&
           dataAudio.day == hoje.day) {
@@ -376,9 +384,37 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 15)),
                             ElevatedButton(
-                              onPressed: () {
-                                _salvarReceita();
-                                Navigator.of(context).pop();
+                              onPressed: () async {
+                                String valorInserido = _valorController.text
+                                    .replaceAll(RegExp(r'[^\d,]'), '')
+                                    .replaceAll(',', '.');
+                                double? valor = double.tryParse(valorInserido);
+
+                                if (valor != null &&
+                                    categoria != null &&
+                                    _dataSelecionada != null) {
+                                  try {
+                                    await addReceita(
+                                        uid,
+                                        valor,
+                                        categoria!,
+                                        _dataSelecionada!,
+                                        toggleValue
+                                            ? "Recebido"
+                                            : "Não Recebido");
+                                    Navigator.of(context).pop();
+                                  } catch (error) {
+                                    mostrarSnackBar(
+                                        context: context,
+                                        texto:
+                                            "Falha ao adicionar despesa. Tente novamente.");
+                                  }
+                                } else {
+                                  mostrarSnackBar(
+                                      context: context,
+                                      texto:
+                                          "Por favor, preencha todos os campos corretamente.");
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: myColor,
@@ -423,38 +459,6 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
         _dataSelecionada = Timestamp.fromDate(picked);
         outrosSelecionado = true;
       });
-    }
-  }
-
-  void _salvarReceita() {
-    String valorInserido =
-        _valorController.text.replaceAll(RegExp(r'[^\d,]'), '');
-    valorInserido = valorInserido.replaceAll(',', '.');
-
-    double? valor = double.tryParse(valorInserido);
-
-    String categoria = _categoriaController.text;
-    Timestamp data = _dataSelecionada ?? Timestamp.now();
-
-    if (valor != null && categoria.isNotEmpty) {
-      String userId = uid;
-
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('receitas')
-          .add({
-        'valor': valor,
-        'categoria': categoria,
-        'data': data,
-        'tipo': toggleValue ? "Recebido" : "Não Recebido",
-      }).then((_) {
-        print("receita adicionada com sucesso");
-      }).catchError((error) {
-        print("Falha ao adicionar receita: $error");
-      });
-    } else {
-      print("Por favor, insira todos os campos corretamente.");
     }
   }
 }
