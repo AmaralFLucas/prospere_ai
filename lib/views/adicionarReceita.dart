@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:string_similarity/string_similarity.dart';
@@ -78,6 +79,12 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
         outrosSelecionado = true;
       }
     }
+  }
+
+  // Função para formatar o valor inserido com vírgulas
+  TextInputFormatter _getInputFormatter() {
+    return LengthLimitingTextInputFormatter(
+        15); // Limita o tamanho total do valor para 12 caracteres
   }
 
   Future<void> _carregarCategorias() async {
@@ -251,7 +258,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                 controller: _valorController,
                                 keyboardType: TextInputType.numberWithOptions(
                                     decimal: true),
-                                inputFormatters: [CurrencyTextInputFormatter()],
+                                inputFormatters: [
+                                  CurrencyTextInputFormatter(), // Usando a formatação de moeda
+                                  _getInputFormatter() // Limitando o número de caracteres
+                                ],
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,

@@ -44,11 +44,11 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     print(valor);
     print(dataTexto);
 
-    double valorDouble =
-        double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
+    // double valorDouble =
+    //     double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
 
     String valorFormatado = CurrencyTextInputFormatter()
-        .formatToCurrency(valorDouble.toString().replaceAll('.', ','));
+        .formatToCurrency(valor.toString().replaceAll('.', ''));
 
     DateTime now = DateTime.now();
     String mesAtual = DateFormat('MM').format(now);
@@ -97,7 +97,8 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarDespesa(
-            valorDespesa: valorDouble,
+            // valorDespesa: valorDouble,
+            categoriaAudio: categoria,
             valorFormatado: valorFormatado,
             data: dataSelecionada,
           ),
@@ -108,7 +109,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarReceita(
-            valorReceita: valorDouble,
+            // valorReceita: valorDouble,
             valorFormatado: valorFormatado,
             categoriaAudio: categoria,
             data: dataSelecionada,

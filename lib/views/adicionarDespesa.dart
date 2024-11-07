@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/components/textFormatter.dart';
 import 'package:prospere_ai/services/bancoDeDados.dart';
@@ -33,7 +34,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
   List<String> categorias = [];
-
+  // static const double limiteMaximo = 1e12;
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
@@ -79,6 +80,12 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
     }
   }
 
+  // Função para formatar o valor inserido com vírgulas
+  TextInputFormatter _getInputFormatter() {
+    return LengthLimitingTextInputFormatter(
+        15); // Limita o tamanho total do valor para 12 caracteres
+  }
+
   Future<void> _carregarCategorias() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
@@ -98,6 +105,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
           String categoriaNormalizada = categoria.toLowerCase().trim();
           double similaridade =
               categoriaAudioNormalizada.similarityTo(categoriaNormalizada);
+
           if (similaridade > melhorSimilaridade) {
             melhorSimilaridade = similaridade;
             categoriaCorrespondente = categoria;
@@ -189,8 +197,6 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
         children: [
           Scaffold(
             body: SingleChildScrollView(
-              // child: Padding(
-              // padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -211,23 +217,25 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                     height: 150,
                     child: Column(
                       children: [
-                        Row(children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 10)),
-                          const Text(
-                            'Adicionar Despesa',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ]),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            const Padding(padding: EdgeInsets.only(left: 10)),
+                            const Text(
+                              'Adicionar Despesa',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ],
+                        ),
                         const Row(
                           children: [
                             Padding(padding: EdgeInsets.only(bottom: 20)),
@@ -247,7 +255,10 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                 controller: _valorController,
                                 keyboardType: TextInputType.numberWithOptions(
                                     decimal: true),
-                                inputFormatters: [CurrencyTextInputFormatter()],
+                                inputFormatters: [
+                                  CurrencyTextInputFormatter(), // Usando a formatação de moeda
+                                  _getInputFormatter() // Limitando o número de caracteres
+                                ],
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
