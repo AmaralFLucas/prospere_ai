@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -266,6 +268,34 @@ class _RelatorioState extends State<Relatorio>
     );
   }
 
+  Future<void> _exportToExcel() async {
+    var excel = Excel.createExcel();
+
+    Sheet sheetObject = excel['Relatório'];
+
+    sheetObject.appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
+
+    for (var transaction in _filterTransactions()) {
+      DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
+      sheetObject.appendRow([
+        transaction['descricao'] ?? 'Descrição não disponível',
+        transaction['tipo'] ?? '',
+        DateFormat('dd/MM/yyyy').format(transactionDate),
+        transaction['valor'] ?? 0,
+      ]);
+    }
+
+    var dir = '/storage/emulated/0/Download';
+    String filePath = "${dir}/relatorio.xlsx";
+    File(filePath)
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(excel.encode()!);
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Relatório Excel salvo em $filePath'),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -320,6 +350,7 @@ class _RelatorioState extends State<Relatorio>
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 _animationController.reverse();
+                _exportToExcel(); // Chama a função de exportação
               },
             ),
           ],
