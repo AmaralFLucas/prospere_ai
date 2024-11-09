@@ -131,11 +131,15 @@ generateResponseDB(String selectedDateLabel) async {
       firestore.collection('users').doc(userId).collection('receitas');
   CollectionReference despesas =
       firestore.collection('users').doc(userId).collection('despesas');
+  CollectionReference metas =
+      firestore.collection('users').doc(userId).collection('metasFinanceiras');
 
   var querySnapshot = await receitas.get();
   var querySnapshot2 = await despesas.get();
+  var querySnapshot3 = await metas.get();
   List<Map<String, dynamic>> receitasLista = [];
   List<Map<String, dynamic>> despesasLista = [];
+  List<Map<String, dynamic>> metasLista = [];
 
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
@@ -176,8 +180,21 @@ generateResponseDB(String selectedDateLabel) async {
     despesasLista.add(despesaData);
   });
 
+  querySnapshot3.docs.forEach((doc) {
+    Map<String, dynamic> metaData = doc.data() as Map<String, dynamic>;
+
+    if (metaData.containsKey('data') && metaData['data'] is Timestamp) {
+      Timestamp timestamp = metaData['data'];
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate = dateFormat.format(dateTime);
+      metaData['data'] = formattedDate;
+    }
+
+    metasLista.add(metaData);
+  });
+
   final prompt =
-      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
+      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, Metas: ${metasLista.toString()}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
@@ -188,5 +205,6 @@ generateResponseDB(String selectedDateLabel) async {
   final response = await model.generateContent(content);
 
   print(response.text);
+  print(metasLista);
   return response.text;
 }
