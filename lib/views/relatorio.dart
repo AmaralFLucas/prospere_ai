@@ -348,7 +348,7 @@ class _RelatorioState extends State<Relatorio>
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 _animationController.reverse();
-                _exportToExcel(); // Chama a função de exportação
+                _exportToExcel();
               },
             ),
           ],
@@ -413,10 +413,10 @@ class _RelatorioState extends State<Relatorio>
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
             title: Text(transaction['descricao'] ??
-                'Descrição não disponível'), // Garantindo que a descrição não seja nula
+                'Descrição não disponível'),
             subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
             trailing: Text(
-                'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'), // Garantindo que o valor não seja nulo
+                'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
           ),
         );
       },
