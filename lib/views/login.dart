@@ -125,21 +125,16 @@ class _LoginState extends State<Login> {
                         email: emailController.text,
                         senha: passwordController.text,
                       );
-
-                      if (loginValido) {
-                        mostrarSnackBar(
-                          context: context,
-                          texto: "Login realizado com sucesso",
-                          isErro: false,
-                        );
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(
-                              builder: (context) => const RoteadorTela()),
-                        );
-                      } else {
+                      if (!loginValido) {
                         mostrarSnackBar(
                           context: context,
                           texto: "Falha no login. Verifique suas credenciais.",
+                          isErro: true,
+                        );
+                      } else {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (context) => const RoteadorTela()),
                         );
                       }
                     } catch (erro) {

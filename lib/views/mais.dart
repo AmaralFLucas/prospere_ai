@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/views/categoriasReceitas.dart';
-import 'package:prospere_ai/views/contas.dart';
 import 'package:prospere_ai/views/relatorio.dart';
 
 class Mais extends StatefulWidget {
@@ -71,12 +70,6 @@ class _MaisState extends State<Mais> {
       body: ListView(
         padding: const EdgeInsets.all(8.0),
         children: [
-          buildNavigationOption('Contas', Icons.account_balance_wallet, () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const Contas()),
-            );
-          }),
           buildNavigationOption('Categorias', Icons.category, () {
             Navigator.push(
               context,
@@ -88,7 +81,10 @@ class _MaisState extends State<Mais> {
           buildNavigationOption('Relatório', Icons.bar_chart, () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Relatorio()),
+              MaterialPageRoute(
+                  builder: (context) => Relatorio(
+                        userId: uid,
+                      )),
             );
           }),
         ],

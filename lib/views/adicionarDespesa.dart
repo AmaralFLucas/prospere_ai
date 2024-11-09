@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/components/textFormatter.dart';
 import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:string_similarity/string_similarity.dart';
@@ -32,7 +34,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
   List<String> categorias = [];
-
+  // static const double limiteMaximo = 1e12;
   final TextEditingController _valorController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
@@ -43,17 +45,23 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
     super.initState();
     _carregarCategorias();
 
+    isSelected = [
+      false,
+      false,
+      false
+    ]; // Nenhuma opção selecionada inicialmente
     if (widget.valorFormatado != null) {
       _valorController.text = widget.valorFormatado!;
     } else if (widget.valorDespesa != null) {
       _valorController.text =
           widget.valorDespesa!.toStringAsFixed(2).replaceAll('.', ',');
     }
-    DateTime hoje = DateTime.now();
-    DateTime ontem = hoje.subtract(Duration(days: 1));
 
     if (widget.data != null) {
+      DateTime hoje = DateTime.now();
+      DateTime ontem = hoje.subtract(Duration(days: 1));
       DateTime dataAudio = widget.data!.toDate();
+
       if (dataAudio.year == hoje.year &&
           dataAudio.month == hoje.month &&
           dataAudio.day == hoje.day) {
@@ -70,6 +78,12 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
         outrosSelecionado = true;
       }
     }
+  }
+
+  // Função para formatar o valor inserido com vírgulas
+  TextInputFormatter _getInputFormatter() {
+    return LengthLimitingTextInputFormatter(
+        15); // Limita o tamanho total do valor para 12 caracteres
   }
 
   Future<void> _carregarCategorias() async {
@@ -91,6 +105,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
           String categoriaNormalizada = categoria.toLowerCase().trim();
           double similaridade =
               categoriaAudioNormalizada.similarityTo(categoriaNormalizada);
+
           if (similaridade > melhorSimilaridade) {
             melhorSimilaridade = similaridade;
             categoriaCorrespondente = categoria;
@@ -182,8 +197,6 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
         children: [
           Scaffold(
             body: SingleChildScrollView(
-              // child: Padding(
-              // padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -204,23 +217,25 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                     height: 150,
                     child: Column(
                       children: [
-                        Row(children: [
-                          IconButton(
-                            icon: const Icon(Icons.arrow_back),
-                            color: const Color.fromARGB(255, 255, 255, 255),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                          const Padding(padding: EdgeInsets.only(left: 10)),
-                          const Text(
-                            'Adicionar Despesa',
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                        ]),
+                        Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.arrow_back),
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            const Padding(padding: EdgeInsets.only(left: 10)),
+                            const Text(
+                              'Adicionar Despesa',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ],
+                        ),
                         const Row(
                           children: [
                             Padding(padding: EdgeInsets.only(bottom: 20)),
@@ -240,7 +255,10 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                 controller: _valorController,
                                 keyboardType: TextInputType.numberWithOptions(
                                     decimal: true),
-                                inputFormatters: [CurrencyTextInputFormatter()],
+                                inputFormatters: [
+                                  CurrencyTextInputFormatter(), // Usando a formatação de moeda
+                                  _getInputFormatter() // Limitando o número de caracteres
+                                ],
                                 style: const TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
@@ -373,13 +391,11 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                 padding: EdgeInsets.symmetric(horizontal: 15)),
                             ElevatedButton(
                               onPressed: () async {
-                                // Obtenha e converta o valor inserido
                                 String valorInserido = _valorController.text
                                     .replaceAll(RegExp(r'[^\d,]'), '')
                                     .replaceAll(',', '.');
                                 double? valor = double.tryParse(valorInserido);
 
-                                // Verifique os campos antes de chamar a função
                                 if (valor != null &&
                                     categoria != null &&
                                     _dataSelecionada != null) {
@@ -391,13 +407,17 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                         _dataSelecionada!,
                                         toggleValue ? "Pago" : "Não Pago");
                                     Navigator.of(context).pop();
-                                    print("Despesa adicionada com sucesso.");
                                   } catch (error) {
-                                    print("Falha ao adicionar despesa: $error");
+                                    mostrarSnackBar(
+                                        context: context,
+                                        texto:
+                                            "Falha ao adicionar despesa. Tente novamente.");
                                   }
                                 } else {
-                                  print(
-                                      "Por favor, insira todos os campos corretamente.");
+                                  mostrarSnackBar(
+                                      context: context,
+                                      texto:
+                                          "Por favor, preencha todos os campos corretamente.");
                                 }
                               },
                               style: ElevatedButton.styleFrom(
@@ -414,7 +434,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                   fontSize: 15,
                                 ),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ],
@@ -444,38 +464,6 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
       });
     }
   }
-
-  // void _salvarDespesa() {
-  //   String valorInserido =
-  //       _valorController.text.replaceAll(RegExp(r'[^\d,]'), '');
-  //   valorInserido = valorInserido.replaceAll(',', '.');
-
-  //   double? valor = double.tryParse(valorInserido);
-
-  //   String categoria = _categoriaController.text;
-  //   Timestamp data = _dataSelecionada ?? Timestamp.now();
-
-  //   if (valor != null && categoria.isNotEmpty) {
-  //     String userId = uid;
-
-  //     FirebaseFirestore.instance
-  //         .collection('users')
-  //         .doc(userId)
-  //         .collection('despesas')
-  //         .add({
-  //       'valor': valor,
-  //       'categoria': categoria,
-  //       'data': data,
-  //       'tipo': toggleValue ? "Pago" : "Não Pago",
-  //     }).then((_) {
-  //       print("despesa adicionada com sucesso");
-  //     }).catchError((error) {
-  //       print("Falha ao adicionar despesa: $error");
-  //     });
-  //   } else {
-  //     print("Por favor, insira todos os campos corretamente.");
-  //   }
-  // }
 
   void toggleButton() {
     setState(() {
