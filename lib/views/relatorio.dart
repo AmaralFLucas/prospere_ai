@@ -5,7 +5,6 @@ import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-
 class Relatorio extends StatefulWidget {
   final String? title;
   final String? userId;
