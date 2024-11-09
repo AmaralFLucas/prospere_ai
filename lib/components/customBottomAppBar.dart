@@ -36,21 +36,22 @@ class CustomBottomAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomAppBar(
-      height: 60,
-      notchMargin: 5,
-      shape: const CircularNotchedRectangle(),
-      color: const Color.fromARGB(255, 230, 234, 236),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          buildNavBarItem(Icons.home, 'Inicio', 0),
-          buildNavBarItem(Icons.currency_exchange, 'Transações', 1),
-          const SizedBox(width: 48), // Espaço para o FAB
-          buildNavBarItem(Icons.flag, 'Planejamento', 2),
-
-          buildNavBarItem(Icons.more_horiz, 'Mais', 3),
-        ],
+    return Expanded(
+      child: BottomAppBar(
+        notchMargin: 5,
+        shape: const CircularNotchedRectangle(),
+        color: const Color.fromARGB(255, 230, 234, 236),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            buildNavBarItem(Icons.home, 'Inicio', 0),
+            buildNavBarItem(Icons.currency_exchange, 'Transações', 1),
+            const SizedBox(width: 48), // Espaço para o FAB
+            buildNavBarItem(Icons.flag, 'Planejamento', 2),
+      
+            buildNavBarItem(Icons.more_horiz, 'Mais', 3),
+          ],
+        ),
       ),
     );
   }
