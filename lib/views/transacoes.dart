@@ -127,7 +127,7 @@ class _TransacoesState extends State<Transacoes>
         },
       ),
       floatingActionButton: Container(
-        margin: const EdgeInsets.all(10),
+        margin: const EdgeInsets.only(bottom: 16),
         child: FloatingActionBubble(
           items: <Bubble>[
             Bubble(

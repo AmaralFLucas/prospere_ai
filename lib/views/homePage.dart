@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage>
             userId: uid,
           ),
           Transacoes(userId: uid),
-          const Planejamento(),
+          Planejamento(userId: uid,),
           const Mais(),
         ],
       ),
