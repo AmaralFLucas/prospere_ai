@@ -79,7 +79,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
-        automaticallyImplyLeading: false, // Remove o botão de voltar
+        automaticallyImplyLeading: true, // Remove o botão de voltar
       ),
       body: SingleChildScrollView(
         child: Form(

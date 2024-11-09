@@ -44,11 +44,11 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     print(valor);
     print(dataTexto);
 
-    double valorDouble =
-        double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
+    // double valorDouble =
+    //     double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
 
     String valorFormatado = CurrencyTextInputFormatter()
-        .formatToCurrency(valorDouble.toString().replaceAll('.', ','));
+        .formatToCurrency(valor.toString().replaceAll('.', ''));
 
     DateTime now = DateTime.now();
     String mesAtual = DateFormat('MM').format(now);
@@ -97,7 +97,8 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarDespesa(
-            valorDespesa: valorDouble,
+            // valorDespesa: valorDouble,
+            categoriaAudio: categoria,
             valorFormatado: valorFormatado,
             data: dataSelecionada,
           ),
@@ -108,7 +109,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
         context,
         MaterialPageRoute(
           builder: (BuildContext context) => AdicionarReceita(
-            valorReceita: valorDouble,
+            // valorReceita: valorDouble,
             valorFormatado: valorFormatado,
             categoriaAudio: categoria,
             data: dataSelecionada,
@@ -130,11 +131,15 @@ generateResponseDB(String selectedDateLabel) async {
       firestore.collection('users').doc(userId).collection('receitas');
   CollectionReference despesas =
       firestore.collection('users').doc(userId).collection('despesas');
+  CollectionReference metas =
+      firestore.collection('users').doc(userId).collection('metasFinanceiras');
 
   var querySnapshot = await receitas.get();
   var querySnapshot2 = await despesas.get();
+  var querySnapshot3 = await metas.get();
   List<Map<String, dynamic>> receitasLista = [];
   List<Map<String, dynamic>> despesasLista = [];
+  List<Map<String, dynamic>> metasLista = [];
 
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
@@ -175,8 +180,21 @@ generateResponseDB(String selectedDateLabel) async {
     despesasLista.add(despesaData);
   });
 
+  querySnapshot3.docs.forEach((doc) {
+    Map<String, dynamic> metaData = doc.data() as Map<String, dynamic>;
+
+    if (metaData.containsKey('data') && metaData['data'] is Timestamp) {
+      Timestamp timestamp = metaData['data'];
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate = dateFormat.format(dateTime);
+      metaData['data'] = formattedDate;
+    }
+
+    metasLista.add(metaData);
+  });
+
   final prompt =
-      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
+      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, Metas: ${metasLista.toString()}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',
@@ -187,5 +205,6 @@ generateResponseDB(String selectedDateLabel) async {
   final response = await model.generateContent(content);
 
   print(response.text);
+  print(metasLista);
   return response.text;
 }
