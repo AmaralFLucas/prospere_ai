@@ -272,13 +272,11 @@ class _RelatorioState extends State<Relatorio>
   Future<void> _exportToExcel() async {
     var excel = Excel.createExcel();
 
-    Sheet sheetObject = excel['Relatório'];
-
-    sheetObject.appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
+    excel['Relatório'].appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
 
     for (var transaction in _filterTransactions()) {
       DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
-      sheetObject.appendRow([
+      excel['Relatório'].appendRow([
         transaction['descricao'] ?? 'Descrição não disponível',
         transaction['tipo'] ?? '',
         DateFormat('dd/MM/yyyy').format(transactionDate),
