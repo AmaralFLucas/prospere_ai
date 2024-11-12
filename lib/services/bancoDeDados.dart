@@ -94,6 +94,7 @@ Future<void> addCategoriasPadrao(String userId) async {
     {'nome': 'Lazer', 'icone': Icons.local_activity.codePoint},
     {'nome': 'Educação', 'icone': Icons.school.codePoint},
     {'nome': 'Outros', 'icone': Icons.more_horiz.codePoint},
+    {'nome': 'Supermercado', 'icone': Icons.shopping_cart.codePoint},
   ];
 
   // Adiciona as categorias de receitas

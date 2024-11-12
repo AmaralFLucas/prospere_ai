@@ -153,7 +153,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   iconSize: 45,
                   splashRadius: 30,
                   icon: Image.asset(
-                    'images/porcoia2.png',
+                    'assets/images/porcoia2.png',
                   ),
                   onPressed: () {
                     Navigator.of(context).push(
