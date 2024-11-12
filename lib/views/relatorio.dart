@@ -294,6 +294,53 @@ class _RelatorioState extends State<Relatorio>
     ));
   }
 
+  Future<void> _exportToPdf() async {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Relatório',
+                style:
+                    pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Table.fromTextArray(
+                headers: ['Descrição', 'Tipo', 'Data', 'Valor'],
+                data: _filterTransactions().map((transaction) {
+                  DateTime transactionDate =
+                      (transaction['data'] as Timestamp).toDate();
+                  return [
+                    transaction['descricao'] ?? 'Descrição não disponível',
+                    transaction['tipo'] ?? '',
+                    DateFormat('dd/MM/yyyy').format(transactionDate),
+                    transaction['valor']?.toString() ?? '0',
+                  ];
+                }).toList(),
+                border: pw.TableBorder.all(),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                cellAlignment: pw.Alignment.centerLeft,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    var dir = '/storage/emulated/0/Download';
+    String filePath = "${dir}/relatorio.pdf";
+
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Relatório PDF salvo em $filePath'),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -338,6 +385,7 @@ class _RelatorioState extends State<Relatorio>
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 _animationController.reverse();
+                _exportToPdf();
               },
             ),
             Bubble(
