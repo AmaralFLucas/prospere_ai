@@ -272,12 +272,12 @@ class _RelatorioState extends State<Relatorio>
 
   Future<void> _exportToExcel() async {
     var excel = Excel.createExcel();
-    var sheet =
-        excel['Relatório'].appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
+
+    excel['Relatório'].appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
 
     for (var transaction in _filterTransactions()) {
       DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
-      sheet.appendRow([
+      excel['Relatório'].appendRow([
         transaction['descricao'] ?? 'Descrição não disponível',
         transaction['tipo'] ?? '',
         DateFormat('dd/MM/yyyy').format(transactionDate),
@@ -298,8 +298,6 @@ class _RelatorioState extends State<Relatorio>
 
   Future<void> _exportToPdf() async {
     final pdf = pw.Document();
-
-    // Adiciona uma página com o conteúdo do relatório
     pdf.addPage(
       pw.Page(
         build: (context) {
@@ -334,11 +332,9 @@ class _RelatorioState extends State<Relatorio>
       ),
     );
 
-    // Obtém o diretório de download
     var dir = '/storage/emulated/0/Download';
     String filePath = "${dir}/relatorio.pdf";
 
-    // Salva o PDF no diretório de downloads
     final file = File(filePath);
     await file.writeAsBytes(await pdf.save());
 
@@ -466,10 +462,11 @@ class _RelatorioState extends State<Relatorio>
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            title: Text(transaction['descricao'] ?? 'Descrição não disponível'),
+            title: Text(transaction['descricao'] ??
+                'Descrição não disponível'),
             subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
-            trailing:
-                Text('R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
+            trailing: Text(
+                'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
           ),
         );
       },
