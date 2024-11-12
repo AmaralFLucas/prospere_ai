@@ -49,203 +49,221 @@ class _PlanejamentoState extends State<Planejamento> {
   }
 
   Future<void> _loadMetas() async {
-  String userId = widget.userId;
+    String userId = widget.userId;
 
-  Stream<QuerySnapshot> metasStream = FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('metasFinanceiras')
-      .snapshots();
+    Stream<QuerySnapshot> metasStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('metasFinanceiras')
+        .snapshots();
 
-  metasStream.listen((snapshot) {
-    setState(() {
-      planList = snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        final value = data['valorMeta'];
-        final spent = (data['valorAtual'] > value)
-            ? value
-            : data['valorAtual']; // Limita o valor máximo
-        return {
-          'id': doc.id,
-          'name': data['descricao'],
-          'value': value,
-          'spent': spent,
-          'category': data['categoria'],
-          'isExpense': data['tipoMeta'] == 'gastoMensal', // Filtro para gastos mensais
-        };
-      }).toList();
+    metasStream.listen((snapshot) {
+      setState(() {
+        planList = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          final value = data['valorMeta'];
+          final spent = (data['valorAtual'] > value)
+              ? value
+              : data['valorAtual']; // Limita o valor máximo
+          return {
+            'id': doc.id,
+            'name': data['descricao'],
+            'value': value,
+            'spent': spent,
+            'category': data['categoria'],
+            'isExpense':
+                data['tipoMeta'] == 'gastoMensal', // Filtro para gastos mensais
+          };
+        }).toList();
 
-      // Calcula totais separados
-      totalObjetivosPlanejado = planList
-          .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
-          .fold(0, (sum, item) => sum + item['value']); // Soma os valores das metas de objetivo
+        // Calcula totais separados
+        totalObjetivosPlanejado = planList
+            .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    item['value']); // Soma os valores das metas de objetivo
 
-      totalGastosPlanejado = planList
-          .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
-          .fold(0, (sum, item) => sum + item['value']); // Soma os valores das metas de gasto
+        totalGastosPlanejado = planList
+            .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum + item['value']); // Soma os valores das metas de gasto
 
-      totalGasto = planList
-          .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
-          .fold(0, (sum, item) => sum + item['spent']); // Soma os valores gastos de metas de gasto
+        totalGasto = planList
+            .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    item['spent']); // Soma os valores gastos de metas de gasto
 
-      totalObjetivo = planList
-          .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
-          .fold(0, (sum, item) => sum + item['spent']); // Soma os valores gastos de metas de objetivo
+        totalObjetivo = planList
+            .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    item[
+                        'spent']); // Soma os valores gastos de metas de objetivo
+      });
     });
-  });
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: myColor,
-      automaticallyImplyLeading: false,
-      title: const Text(
-        'Planejamento',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: myColor,
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Planejamento',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: _buildObjectiveChart(),
                   ),
-                  child: _buildObjectiveChart(),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: cardColor,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: _buildExpenseChart(),
                   ),
-                  child: _buildExpenseChart(),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 24), // Espaço entre gráficos e a lista
-          Expanded(child: _buildPlanList()),
-        ],
+              ],
+            ),
+            const SizedBox(height: 24), // Espaço entre gráficos e a lista
+            Expanded(child: _buildPlanList()),
+          ],
+        ),
       ),
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        _showAddPlanDialog(context);
-      },
-      backgroundColor: myColor,
-      child: const Icon(Icons.add),
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-  );
-}
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddPlanDialog(context);
+        },
+        backgroundColor: myColor,
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
 
   Widget _buildObjectiveChart() {
-  return Center(
-    child: Column(
-      children: [
-        const Text(
-          'Planejamento de Objetivos',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: PieChart(
-            PieChartData(
-              sections: [
-                PieChartSectionData(
-                  color: Colors.green,
-                  value: totalObjetivo, // Total de objetivos
-                  radius: 50,
-                ),
-                PieChartSectionData(
-                  color: Colors.grey,
-                  value: totalObjetivosPlanejado - totalObjetivo, // Parte não concluída dos objetivos
-                  radius: 50,
-                ),
-              ],
-              borderData: FlBorderData(show: false),
-              sectionsSpace: 0,
-              centerSpaceRadius: 40,
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            'Planejamento de Objetivos',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value: totalObjetivo, // Total de objetivos
+                    // radius: 50,
+                  ),
+                  PieChartSectionData(
+                    color: Colors.grey,
+                    value: totalObjetivosPlanejado -
+                        totalObjetivo, // Parte não concluída dos objetivos
+                    // radius: 50,
+                  ),
+                ],
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                centerSpaceRadius: 40,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
 
-Widget _buildExpenseChart() {
-  return Center(
-    child: Column(
-      children: [
-        const Text(
-          'Planejamento de Gastos Mensais',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: PieChart(
-            PieChartData(
-              sections: [
-                PieChartSectionData(
-                  color: Colors.green,
-                  value: totalGastosPlanejado, // Valor total de metas planejadas
-                  radius: 50,
-                ),
-                PieChartSectionData(
-                  color: Colors.red,
-                  value: totalGasto, // Total de gastos
-                  radius: 50,
-                ),
-              ],
-              borderData: FlBorderData(show: false),
-              sectionsSpace: 0,
-              centerSpaceRadius: 40,
+  Widget _buildExpenseChart() {
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            'Planejamento de Gastos Mensais',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value:
+                        totalGastosPlanejado, // Valor total de metas planejadas
+                    // radius: 50,
+                  ),
+                  PieChartSectionData(
+                    color: Colors.red,
+                    value: totalGasto, // Total de gastos
+                    // radius: 50,
+                  ),
+                ],
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                centerSpaceRadius: 40,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 10),
+        ],
+      ),
+    );
+  }
 
   Widget _buildPlanList() {
     return ListView.builder(
@@ -386,9 +404,9 @@ Widget _buildExpenseChart() {
               ),
               onPressed: () async {
                 await deletarMeta(widget.userId, metaId);
-                setState(() {
-                  planList.removeAt(index);
-                });
+                // setState(() {
+                //   planList.removeAt(index);
+                // });
                 _loadMetas();
                 Navigator.of(context).pop();
               },
