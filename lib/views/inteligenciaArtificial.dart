@@ -40,7 +40,7 @@ class _InteligenciaArtificialState extends State<InteligenciaArtificial> {
           },
         ),
         title: const Text(
-          'ProspereIA',
+          'ProspereAI',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
