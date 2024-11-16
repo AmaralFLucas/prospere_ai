@@ -203,34 +203,42 @@ class _TransacoesState extends State<Transacoes>
           ),
           const SizedBox(height: 10),
           Text(
-            'R\$ ${saldoAtual.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: myColor,
-            ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildBalanceDetail(
-                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
-              Container(
-                height: 40,
-                width: 1,
-                color: Colors.black26,
+              'R\$ ${saldoAtual.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: saldoAtual > 0
+                    ? myColor
+                    : myColor2, // Verifica se o saldo é maior que 0
               ),
-              _buildBalanceDetail(
-                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildBalanceDetail(
+                  'Receitas',
+                  'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                  myColor,
+                ),
+                Container(
+                  height: 40,
+                  width: 1,
+                  color: Colors.black26,
+                ),
+                _buildBalanceDetail(
+                  'Despesas',
+                  'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                  myColor2,
+                ),
+              ],
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildBalanceDetail(String title, String value) {
+  Widget _buildBalanceDetail(String title, String value, Color valueColor) {
     return Column(
       children: [
         Text(
@@ -238,7 +246,7 @@ class _TransacoesState extends State<Transacoes>
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: textColor,
+            color: valueColor,
           ),
         ),
         const SizedBox(height: 10),
@@ -246,7 +254,7 @@ class _TransacoesState extends State<Transacoes>
           title,
           style: TextStyle(
             fontSize: 16,
-            color: textColor.withOpacity(0.7),
+            color: textColor,
           ),
         ),
       ],
