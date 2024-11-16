@@ -23,7 +23,7 @@ Future<void> updateProfileImage(String userId, String imageUrl) async {
 }
 
 Future<void> addReceita(String userId, double valor, String categoria,
-    Timestamp data, String tipo) async {
+    Timestamp data, String descricao) async {
   CollectionReference receitas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -32,12 +32,12 @@ Future<void> addReceita(String userId, double valor, String categoria,
     'valor': valor,
     'categoria': categoria,
     'data': data,
-    'tipo': tipo,
+    'descricao': descricao,
   });
 }
 
 Future<void> addDespesa(String userId, double valor, String categoria,
-    Timestamp data, String tipo) async {
+    Timestamp data, String descricao) async {
   CollectionReference despesas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -47,7 +47,7 @@ Future<void> addDespesa(String userId, double valor, String categoria,
     'valor': valor,
     'categoria': categoria,
     'data': data,
-    'tipo': tipo,
+    'descricao': descricao,
   });
 
   QuerySnapshot metasSnapshot = await FirebaseFirestore.instance

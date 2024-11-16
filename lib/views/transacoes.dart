@@ -200,7 +200,7 @@ class _TransacoesState extends State<Transacoes>
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: textColor,
+            color: valueColor,
           ),
         ),
         const SizedBox(height: 10),

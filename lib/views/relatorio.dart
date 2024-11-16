@@ -17,6 +17,7 @@ class Relatorio extends StatefulWidget {
 }
 
 Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color myColor2 = const Color.fromARGB(255, 178, 0, 0);
 Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
@@ -429,17 +430,74 @@ class _RelatorioState extends State<Relatorio>
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text('Saldo',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(
+              'Saldo Atual',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
             const SizedBox(height: 10),
-            Text('R\$ ${saldo.toStringAsFixed(2)}',
-                style: TextStyle(
-                    fontSize: 20,
-                    color: saldo >= 0 ? Colors.green : Colors.red)),
+            Text(
+              'R\$ ${saldo.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: saldo > 0
+                    ? myColor
+                    : myColor2, // Verifica se o saldo é maior que 0
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildBalanceDetail(
+                  'Receitas',
+                  'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                  myColor,
+                ),
+                Container(
+                  height: 40,
+                  width: 1,
+                  color: Colors.black26,
+                ),
+                _buildBalanceDetail(
+                  'Despesas',
+                  'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                  myColor2,
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBalanceDetail(String title, String value, Color valueColor) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: valueColor,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            color: textColor,
+          ),
+        ),
+      ],
     );
   }
 
@@ -462,11 +520,10 @@ class _RelatorioState extends State<Relatorio>
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            title: Text(transaction['descricao'] ??
-                'Descrição não disponível'),
+            title: Text(transaction['descricao'] ?? 'Descrição não disponível'),
             subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
-            trailing: Text(
-                'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
+            trailing:
+                Text('R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
           ),
         );
       },

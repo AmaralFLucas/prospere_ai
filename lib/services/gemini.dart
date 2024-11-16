@@ -25,7 +25,8 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     "tipo": (receita ou despesa), 
     "categoria": ,
     "valor": ,
-    "data": (hoje, ontem, ou a data no formato 'dd/MM/yyyy')
+    "data": (hoje, ontem, ou a data no formato 'dd/MM/yyyy'),
+    "descricao": 
     }
   }""";
 

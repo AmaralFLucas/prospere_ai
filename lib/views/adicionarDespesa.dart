@@ -27,9 +27,8 @@ Color myColor = const Color.fromARGB(255, 178, 0, 0);
 Color myColorGray = const Color.fromARGB(255, 121, 108, 108);
 
 class _AdicionarDespesaState extends State<AdicionarDespesa> {
-  bool toggleValue = false;
-  String pago = "Não Pago";
   List<bool> isSelected = [true, false, false];
+  String? descricao;
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
@@ -286,35 +285,30 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                             Row(
                               children: [
                                 const Icon(
-                                  Icons.check_circle_outline_outlined,
+                                  Icons.description_outlined,
                                   size: 40,
                                 ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 5)),
-                                Text(
-                                  pago,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 5),
                                 ),
                               ],
                             ),
-                            Switch(
-                              value: toggleValue,
-                              onChanged: (bool newValue) {
-                                setState(() {
-                                  toggleValue = newValue;
-                                  pago = toggleValue ? "Pago" : "Não Pago";
-                                });
-                              },
-                              activeColor: Colors.white,
-                              activeTrackColor: myColor,
-                              inactiveTrackColor: Colors.grey[300],
-                              inactiveThumbColor: Colors.white,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: "Digite uma descrição",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  maxLines: 1,
+                                  onChanged: (value) {
+                                    descricao = value;
+                                  },
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -400,12 +394,8 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                     categoria != null &&
                                     _dataSelecionada != null) {
                                   try {
-                                    await addDespesa(
-                                        uid,
-                                        valor,
-                                        categoria!,
-                                        _dataSelecionada!,
-                                        toggleValue ? "Pago" : "Não Pago");
+                                    await addDespesa(uid, valor, categoria!,
+                                        _dataSelecionada!, descricao!);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
@@ -463,12 +453,5 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
         outrosSelecionado = true;
       });
     }
-  }
-
-  void toggleButton() {
-    setState(() {
-      toggleValue = !toggleValue;
-      pago = toggleValue ? "Pago" : "Não Pago";
-    });
   }
 }
