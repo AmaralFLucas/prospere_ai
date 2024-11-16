@@ -137,7 +137,7 @@ class _CadastroState extends State<Cadastro> {
               SizedBox(
                 width: 300,
                 child: MeuInput(
-                  labelText: 'Digite o seu nome',
+                  labelText: 'Digite o seu nome Completo',
                   controller: nomeController,
                 ),
               ),

@@ -28,9 +28,8 @@ Color myColor = const Color.fromARGB(255, 30, 163, 132);
 Color myColorGray = const Color.fromARGB(255, 121, 108, 108);
 
 class _AdicionarReceitaState extends State<AdicionarReceita> {
-  bool toggleValue = false;
-  String recebido = "Não Recebido";
   List<bool> isSelected = [true, false, false];
+  String? descricao;
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
@@ -289,36 +288,30 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             Row(
                               children: [
                                 const Icon(
-                                  Icons.check_circle_outline_outlined,
+                                  Icons.description_outlined,
                                   size: 40,
                                 ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 5)),
-                                Text(
-                                  recebido,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 5),
                                 ),
                               ],
                             ),
-                            Switch(
-                              value: toggleValue,
-                              onChanged: (bool newValue) {
-                                setState(() {
-                                  toggleValue = newValue;
-                                  recebido =
-                                      toggleValue ? "Recebido" : "Não Recebido";
-                                });
-                              },
-                              activeColor: Colors.white,
-                              activeTrackColor: myColor,
-                              inactiveTrackColor: Colors.grey[300],
-                              inactiveThumbColor: Colors.white,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: TextField(
+                                  decoration: InputDecoration(
+                                    hintText: "Digite uma descrição",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  maxLines: 1,
+                                  onChanged: (value) {
+                                    descricao = value;
+                                  },
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -409,9 +402,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                         valor,
                                         categoria!,
                                         _dataSelecionada!,
-                                        toggleValue
-                                            ? "Recebido"
-                                            : "Não Recebido");
+                                        descricao!);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
