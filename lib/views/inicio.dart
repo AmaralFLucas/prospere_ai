@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:prospere_ai/views/configuracoes.dart';
 import 'package:prospere_ai/views/inteligenciaArtificial.dart';
 import 'package:prospere_ai/views/meuCadastro.dart';
@@ -18,23 +20,24 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   late PageController pageController;
   final AutenticacaoServico _autenServico = AutenticacaoServico();
 
-  List<Map<String, dynamic>> receitas = [];
-  List<Map<String, dynamic>> despesas = [];
-
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
   double saldoAtual = 0.0;
 
+  List<Map<String, dynamic>> categoriasReceitas = [];
+  List<Map<String, dynamic>> categoriasDespesas = [];
+
   int initialPosition = 0;
-  final Color myColor = const Color.fromARGB(255, 30, 163, 132);
-  final Color cardColor = const Color(0xFFF4F4F4);
-  final Color textColor = Colors.black87;
+  Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color myColor2 = const Color.fromARGB(255, 178, 0, 0);
+Color cardColor = const Color(0xFFF4F4F4);
+Color textColor = Colors.black87;
 
   @override
   void initState() {
     super.initState();
     pageController = PageController();
-    _loadData();
+    loadCategorias();
   }
 
   @override
@@ -43,56 +46,42 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    List<Map<String, dynamic>> fetchedReceitas =
-        await getReceitas(widget.userId);
-    List<Map<String, dynamic>> fetchedDespesas =
-        await getDespesas(widget.userId);
-
-    double receitasSum =
-        fetchedReceitas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-    double despesasSum =
-        fetchedDespesas.fold(0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
-
-    setState(() {
-      receitas = fetchedReceitas;
-      despesas = fetchedDespesas;
-      totalReceitas = receitasSum;
-      totalDespesas = despesasSum;
-      saldoAtual = totalReceitas - totalDespesas;
-    });
+  Future<void> loadCategorias() async {
+    categoriasReceitas = await getCategorias(widget.userId, 'receita');
+    categoriasDespesas = await getCategorias(widget.userId, 'despesa');
+    setState(
+        () {}); // Atualizar o estado para garantir que os ícones sejam carregados
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.people, size: 100, color: Colors.white),
-                  IconButton(
-                    padding: const EdgeInsets.only(left: 135, bottom: 100),
-                    icon: const Icon(Icons.settings,
-                        size: 25, color: Colors.white),
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const Configuracoes()),
-                      );
-                    },
-                  ),
-                ],
-              ),
+Widget build(BuildContext context) {
+  return Scaffold(
+    drawer: Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Colors.blue,
             ),
-            ElevatedButton(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.people, size: 100, color: Colors.white),
+                IconButton(
+                  padding: const EdgeInsets.only(left: 135, bottom: 100),
+                  icon: const Icon(Icons.settings, size: 25, color: Colors.white),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const Configuracoes()),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(builder: (context) => const MeuCadastro()),
@@ -135,19 +124,17 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           ],
         ),
       ),
-      appBar: AppBar(
-        backgroundColor: myColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              widget.title ?? 'Inicio',
-              style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
-            ),
-            Stack(
+    appBar: AppBar(
+      backgroundColor: myColor,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            widget.title ?? 'Inicio',
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          Stack(
               children: [
                 IconButton(
                   iconSize: 45,
@@ -181,98 +168,156 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           ],
         ),
       ),
-      body: PageView(
-        controller: pageController,
-        onPageChanged: (index) {
-          setState(() {
-            initialPosition = index;
-          });
-        },
-        children: [
-          _buildInicioContent(),
-        ],
-      ),
-    );
-  }
+    body: StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('receitas')
+          .snapshots(),
+      builder: (context, receitasSnapshot) {
+        if (!receitasSnapshot.hasData)
+          return Center(child: CircularProgressIndicator());
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(widget.userId)
+              .collection('despesas')
+              .snapshots(),
+          builder: (context, despesasSnapshot) {
+            if (!despesasSnapshot.hasData)
+              return Center(child: CircularProgressIndicator());
 
-  Widget _buildInicioContent() {
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          _buildBalanceCard(),
-          const SizedBox(height: 20),
-          _buildTransactionList(),
-        ],
-      ),
-    );
-  }
+            List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
+                .map((doc) => doc.data() as Map<String, dynamic>)
+                .toList();
+            List<Map<String, dynamic>> despesas = despesasSnapshot.data!.docs
+                .map((doc) => doc.data() as Map<String, dynamic>)
+                .toList();
+
+            totalReceitas = receitas.fold(
+                0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+            totalDespesas = despesas.fold(
+                0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
+            saldoAtual = totalReceitas - totalDespesas;
+
+            // Filtrando apenas as despesas para exibição na lista
+            List<Map<String, dynamic>> transacoes = despesas.map((d) => {
+                  ...d,
+                  'tipo': 'despesa'
+                }).toList();
+
+            transacoes.sort((a, b) =>
+                (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  _buildBalanceCard(),
+                  const SizedBox(height: 20),
+                  _buildTransactionList(transacoes),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    ),
+    floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+  );
+}
 
   Widget _buildBalanceCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Text(
-            'Saldo Atual',
-            style: TextStyle(
-                fontSize: 22, fontWeight: FontWeight.bold, color: textColor),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'R\$ ${saldoAtual.toStringAsFixed(2)}',
-            style: TextStyle(
-                fontSize: 28, fontWeight: FontWeight.bold, color: myColor),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildBalanceDetail(
-                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
-              Container(height: 40, width: 1, color: Colors.black26),
-              _buildBalanceDetail(
-                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBalanceDetail(String title, String value) {
-    return Column(
+  // Definir cor dinâmica para o saldo
+  Color saldoColor = saldoAtual >= 0 ? myColor: myColor2;
+  
+  return Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: cardColor,
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: const [
+        BoxShadow(
+          color: Colors.black12,
+          blurRadius: 8,
+          offset: Offset(0, 4),
+        ),
+      ],
+    ),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         Text(
-          value,
+          'Saldo Atual',
           style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
-          title,
-          style: TextStyle(fontSize: 16, color: textColor.withOpacity(0.7)),
+          'R\$ ${saldoAtual.toStringAsFixed(2)}',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: saldoColor, // Usar a cor dinâmica do saldo
+          ),
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildBalanceDetail(
+              'Receitas',
+              'R\$ ${totalReceitas.toStringAsFixed(2)}',
+              myColor, // Verde para receitas
+            ),
+            Container(
+              height: 40,
+              width: 1,
+              color: Colors.black26,
+            ),
+            _buildBalanceDetail(
+              'Despesas',
+              'R\$ ${totalDespesas.toStringAsFixed(2)}',
+              myColor2, // Vermelho para despesas
+            ),
+          ],
         ),
       ],
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildTransactionList() {
+Widget _buildBalanceDetail(String title, String value, Color valueColor) {
+  return Column(
+    children: [
+      Text(
+        value,
+        style: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: valueColor, // Usar a cor dinâmica para valores
+        ),
+      ),
+      const SizedBox(height: 10),
+      Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          color: textColor.withOpacity(0.7),
+        ),
+      ),
+    ],
+  );
+}
+
+  Widget _buildTransactionList(List<Map<String, dynamic>> transacoes) {
     return Container(
       padding: const EdgeInsets.all(16),
+      width: double.infinity,
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(15),
@@ -286,44 +331,94 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: _buildTransactionItems(),
+        children: [
+          ..._buildTransactionItems(transacoes),
+        ],
       ),
     );
   }
 
-  List<Widget> _buildTransactionItems() {
-    despesas.sort(
-        (a, b) => (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+  List<Widget> _buildTransactionItems(List<Map<String, dynamic>> transacoes) {
+    List<Widget> transactionItems = [];
 
-    return despesas.map((despesa) {
+    transactionItems.addAll(transacoes.map((transacao) {
+      Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
+      Timestamp timestamp = transacao['data'] as Timestamp;
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+
+      // Obter o ícone correspondente à categoria
+      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+          ? categoriasReceitas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint})
+          : categoriasDespesas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint});
+
+      IconData iconeCategoria;
+      if (categoria['icone'] != null) {
+        iconeCategoria =
+            IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+      } else {
+        iconeCategoria = Icons.category;
+      }
+
       return Column(
         children: [
           _buildTransactionItem(
-              '${despesa['categoria']}', 'R\$ ${despesa['valor']}'),
+            '${transacao['categoria']}',
+            'R\$ ${transacao['valor']}',
+            'Data: $formattedDate',
+            cor,
+            iconeCategoria, // Passar o ícone da categoria
+          ),
           const SizedBox(height: 10),
         ],
       );
-    }).toList();
+    }).toList());
+
+    return transactionItems;
   }
 
-  Widget _buildTransactionItem(String title, String value) {
+  Widget _buildTransactionItem(String title, String value, String data,
+      Color textColor, IconData icone) {
     return Container(
       decoration: BoxDecoration(
-        color: myColor,
         borderRadius: BorderRadius.circular(12),
       ),
       padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16, color: Colors.white),
+          Row(
+            children: [
+              Icon(icone, color: textColor), // Exibir o ícone aqui
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+              Spacer(),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 5),
           Text(
-            value,
-            style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+            data,
+            style: TextStyle(
+              fontSize: 14,
+              color: const Color.fromARGB(255, 105, 105, 105),
+            ),
           ),
         ],
       ),

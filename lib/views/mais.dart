@@ -14,9 +14,10 @@ Color myColor = const Color(0xFF1EA384);
 
 class _MaisState extends State<Mais> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
+  bool toggleValue = false;
 
   Widget buildNavigationOption(
-      String title, IconData icon, VoidCallback onTap) {
+      String title, IconData icon, VoidCallback onTap, {Widget? trailing}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -47,7 +48,7 @@ class _MaisState extends State<Mais> {
               ),
             ),
             const Spacer(),
-            const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+            trailing ?? const Icon(Icons.arrow_forward_ios, color: Colors.grey),
           ],
         ),
       ),
@@ -77,7 +78,23 @@ class _MaisState extends State<Mais> {
             );
           }),
           buildNavigationOption(
-              'Modo Viagem', Icons.airplanemode_active, () {}),
+            'Modo Viagem',
+            Icons.airplanemode_active,
+            () {},
+            trailing: Switch(
+              value: toggleValue,
+              onChanged: (bool newValue) {
+                setState(() {
+                  toggleValue = newValue;
+                });
+              },
+              activeColor: Colors.white,
+              activeTrackColor: myColor,
+              inactiveTrackColor: Colors.grey[300],
+              inactiveThumbColor: Colors.white,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ),
           buildNavigationOption('Relatório', Icons.bar_chart, () {
             Navigator.push(
               context,
