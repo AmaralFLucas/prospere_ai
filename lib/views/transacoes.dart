@@ -177,89 +177,89 @@ class _TransacoesState extends State<Transacoes>
   }
 
   Widget _buildBalanceCard() {
-  Color saldoColor = saldoAtual >= 0 ? myColor: myColor2;
-  
-  return Container(
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: cardColor,
-      borderRadius: BorderRadius.circular(15),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 8,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    Color saldoColor = saldoAtual >= 0 ? myColor : myColor2;
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text(
+            'Saldo Atual',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'R\$ ${saldoAtual.toStringAsFixed(2)}',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: saldoColor, // Usar a cor dinâmica do saldo
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildBalanceDetail(
+                'Receitas',
+                'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                myColor, // Verde para receitas
+              ),
+              Container(
+                height: 40,
+                width: 1,
+                color: Colors.black26,
+              ),
+              _buildBalanceDetail(
+                'Despesas',
+                'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                myColor2, // Vermelho para despesas
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBalanceDetail(String title, String value, Color valueColor) {
+    return Column(
       children: [
         Text(
-          'Saldo Atual',
+          value,
           style: TextStyle(
-            fontSize: 22,
+            fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: valueColor,
+            color: valueColor, // Usar a cor dinâmica para valores
           ),
         ),
         const SizedBox(height: 10),
         Text(
-          'R\$ ${saldoAtual.toStringAsFixed(2)}',
+          title,
           style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: saldoColor, // Usar a cor dinâmica do saldo
+            fontSize: 16,
+            color: textColor.withOpacity(0.7),
           ),
         ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildBalanceDetail(
-              'Receitas',
-              'R\$ ${totalReceitas.toStringAsFixed(2)}',
-              myColor, // Verde para receitas
-            ),
-            Container(
-              height: 40,
-              width: 1,
-              color: Colors.black26,
-            ),
-            _buildBalanceDetail(
-              'Despesas',
-              'R\$ ${totalDespesas.toStringAsFixed(2)}',
-              myColor2, // Vermelho para despesas
-            ),
-          ],
-        ),
       ],
-    ),
-  );
-}
-
-Widget _buildBalanceDetail(String title, String value, Color valueColor) {
-  return Column(
-    children: [
-      Text(
-        value,
-        style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
-          color: valueColor, // Usar a cor dinâmica para valores
-        ),
-      ),
-      const SizedBox(height: 10),
-      Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          color: textColor.withOpacity(0.7),
-        ),
-      ),
-    ],
-  );
-}
+    );
+  }
 
   Widget _buildTransactionList(List<Map<String, dynamic>> transacoes) {
     return Container(

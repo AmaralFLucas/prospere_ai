@@ -12,23 +12,26 @@ const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
 
 generateResponse(BuildContext context, audio) async {
   var model = GenerativeModel(
-    model: 'gemini-1.5-flash-latest',
+    model: 'gemini-1.5-flash-8b',
     apiKey: apiKey,
   );
 
   try {
     var prompt =
         """Considere o texto '${audio}' e interprete as datas que são faladas como 'hoje', 'ontem', ou como uma data específica. 
-Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json":
+Retorne uma análise concisa em formato JSON puro e sem formatação adicional. 
+Não use formatação de código, como \`json\` ou backticks. Somente o JSON puro.
+
+Estrutura esperada:
 {
   "data": {
-    "tipo": (receita ou despesa), 
-    "categoria": ,
-    "valor": ,
-    "data": (hoje, ontem, ou a data no formato 'dd/MM/yyyy'),
-    "descricao": 
-    }
-  }""";
+    "tipo": "(receita ou despesa)",
+    "categoria": "",
+    "valor": "",
+    "data": "(hoje, ontem, ou a data no formato 'dd/MM/yyyy')",
+    "descricao": ""
+  }
+}""";
 
     var content = [Content.text(prompt)];
     var response = await model.generateContent(content);

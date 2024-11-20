@@ -397,18 +397,14 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     categoria != null &&
                                     _dataSelecionada != null) {
                                   try {
-                                    await addReceita(
-                                        uid,
-                                        valor,
-                                        categoria!,
-                                        _dataSelecionada!,
-                                        descricao!);
+                                    await addReceita(uid, valor, categoria!,
+                                        _dataSelecionada!, descricao!);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
                                         context: context,
                                         texto:
-                                            "Falha ao adicionar despesa. Tente novamente.");
+                                            "Falha ao adicionar receita. Tente novamente.");
                                   }
                                 } else {
                                   mostrarSnackBar(
