@@ -30,6 +30,8 @@ class _PlanejamentoState extends State<Planejamento> {
   bool showCategoryDropdown = false;
   String? selectedCategory;
   List<String> categorias = [];
+  final TextEditingController _nome = TextEditingController();
+  final TextEditingController _valor = TextEditingController();
 
   @override
   void initState() {
@@ -521,8 +523,6 @@ class _PlanejamentoState extends State<Planejamento> {
   }
 
   void _showAddPlanDialog(BuildContext context) {
-    String planName = '';
-    String planValue = '';
     bool isExpense = false;
 
     showDialog(
@@ -544,7 +544,7 @@ class _PlanejamentoState extends State<Planejamento> {
                       ),
                     ),
                     onChanged: (value) {
-                      planName = value;
+                      _nome.text = value;
                     },
                   ),
                   TextField(
@@ -557,7 +557,7 @@ class _PlanejamentoState extends State<Planejamento> {
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
-                      planValue = value;
+                      _valor.text = value;
                     },
                   ),
                   if (showCategoryDropdown)
@@ -611,6 +611,7 @@ class _PlanejamentoState extends State<Planejamento> {
               onPressed: () {
                 Navigator.of(context).pop();
                 isExpense = false;
+                showCategoryDropdown = isExpense;
               },
             ),
             TextButton(
@@ -619,35 +620,23 @@ class _PlanejamentoState extends State<Planejamento> {
                 style: TextStyle(color: myColor),
               ),
               onPressed: () async {
-                if (planName.isNotEmpty && planValue.isNotEmpty) {
-                  double valorMeta = double.parse(planValue);
+                if (_nome.text.isNotEmpty && _valor.text.isNotEmpty) {
+                  double valorMeta = double.parse(_valor.text);
                   double valorAtual = 0.0;
+                  print(selectedCategory);
                   if (isExpense && selectedCategory != null) {
-                    QuerySnapshot despesasSnapshot = await FirebaseFirestore
-                        .instance
-                        .collection('users')
-                        .doc(widget.userId)
-                        .collection('despesas')
-                        .where('categoria', isEqualTo: selectedCategory)
-                        .get();
-
-                    valorAtual = despesasSnapshot.docs
-                        .fold(0, (sum, doc) => sum + (doc['valor'] as double));
+                    criarMetaGastoMensal(
+                        widget.userId,
+                        _nome.text,
+                        valorMeta,
+                        selectedCategory!,
+                        valorAtual,
+                        isExpense ? 'gastoMensal' : 'objetivo');
                   }
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(widget.userId)
-                      .collection('metasFinanceiras')
-                      .add({
-                    'descricao': planName,
-                    'valorMeta': valorMeta,
-                    'valorAtual': valorAtual,
-                    'categoria': selectedCategory,
-                    'tipoMeta': isExpense ? 'gastoMensal' : 'objetivo',
-                  });
                   _loadMetas();
                   Navigator.of(context).pop();
                   isExpense = false;
+                  showCategoryDropdown = isExpense;
                 }
               },
             )

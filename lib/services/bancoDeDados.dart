@@ -148,7 +148,7 @@ Future<void> criarMeta(String userId, String tipoMeta, String descricao,
 }
 
 Future<void> criarMetaGastoMensal(String userId, String descricao,
-    double valorMeta, String categoria, DateTime? dataLimite) async {
+    double valorMeta, String categoria, valorAtual, tipo) async {
   CollectionReference metas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -171,13 +171,11 @@ Future<void> criarMetaGastoMensal(String userId, String descricao,
 
   // Criar a meta já considerando as movimentações anteriores
   await metas.add({
-    'tipoMeta': 'gastoMensal',
     'descricao': descricao,
     'valorMeta': valorMeta,
-    'valorAtual': totalDespesasAnteriores, // Valor inicial da meta é ajustado
+    'valorAtual': totalDespesasAnteriores,
     'categoria': categoria,
-    'dataCriacao': DateTime.now(),
-    'dataLimite': dataLimite ?? null,
+    'tipoMeta': tipo,
   });
 }
 
