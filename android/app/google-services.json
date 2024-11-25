@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "229392966027-1n476gkg5ca5u0bn39t6vo165dlimioh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "lucas.farias.prospere_ai",
-            "certificate_hash": "4b0e18b69ddc68c8f0764e203c1c1271bf3d5ede"
-          }
-        },
-        {
           "client_id": "229392966027-e0ktmec4ags230nlefjmqom7sq4qddtc.apps.googleusercontent.com",
           "client_type": 3
         }

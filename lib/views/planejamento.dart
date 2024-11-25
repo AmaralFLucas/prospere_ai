@@ -509,9 +509,6 @@ class _PlanejamentoState extends State<Planejamento> {
               ),
               onPressed: () async {
                 await deletarMeta(widget.userId, metaId);
-                // setState(() {
-                //   planList.removeAt(index);
-                // });
                 _loadMetas();
                 Navigator.of(context).pop();
               },
