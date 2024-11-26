@@ -209,9 +209,13 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                 _buildTextLabel('Data de Nascimento'),
                                 _buildDateField(context),
                                 _buildTextLabel('Telefone'),
-                                _buildTextField(_telefoneController,
-                                    'Digite o seu Número do Telefone',
-                                    keyboardType: TextInputType.phone),
+                                _buildTextField(
+                                  _telefoneController,
+                                  _telefoneController.text.isEmpty
+                                      ? 'Digite o seu Número do Telefone'
+                                      : '',
+                                  keyboardType: TextInputType.phone,
+                                ),
                                 _buildTextLabel('CPF'),
                                 Padding(
                                   padding:
@@ -235,8 +239,12 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                   ),
                                 ),
                                 _buildTextLabel('Objetivo Financeiro'),
-                                _buildTextField(_objetivoFinanceiroController,
-                                    'Digite qual o seu Objetivo Financeiro'),
+                                _buildTextField(
+                                  _objetivoFinanceiroController,
+                                  _objetivoFinanceiroController.text.isEmpty
+                                      ? 'Digite qual o seu Objetivo Financeiro'
+                                      : '',
+                                ),
                                 const SizedBox(height: 20),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -296,8 +304,13 @@ class _MeuCadastroState extends State<MeuCadastro> {
         keyboardType: keyboardType,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
-          labelText: hintText,
+          labelText: controller.text.isEmpty
+              ? hintText
+              : null, // Mostra o texto se estiver vazio
         ),
+        onChanged: (value) {
+          setState(() {}); // Atualiza o estado para refletir a mudança no campo
+        },
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Por favor, insira $hintText';
@@ -316,7 +329,9 @@ class _MeuCadastroState extends State<MeuCadastro> {
         readOnly: true,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
-          labelText: 'Escolha a sua Data de Nascimento',
+          hintText: _dataNascimentoController.text.isEmpty
+              ? 'Escolha a sua Data de Nascimento'
+              : null, // Exibe o hintText somente se o campo estiver vazio
         ),
         onTap: () => _selecionarDataNascimento(context),
         validator: (value) {
