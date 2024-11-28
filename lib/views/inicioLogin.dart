@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/main.dart';
-import 'package:prospere_ai/views/inicioCadastro.dart';
+import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/login.dart';
 import 'package:prospere_ai/views/termos_de_uso.dart';
 import 'package:prospere_ai/views/politica_de_privacidade.dart';
@@ -85,7 +85,7 @@ class _InicioLoginState extends State<InicioLogin> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => const InicioCadastro(),
+                      builder: (context) => const Cadastro(),
                     ),
                   );
                 },

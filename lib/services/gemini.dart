@@ -15,7 +15,6 @@ generateResponse(BuildContext context, audio) async {
     model: 'gemini-1.5-flash-8b',
     apiKey: apiKey,
   );
-
   try {
     var prompt =
         """Considere o texto '${audio}' e interprete as datas que são faladas como 'hoje', 'ontem', ou como uma data específica. 
@@ -41,6 +40,7 @@ Estrutura esperada:
     var tipo = teste['data']['tipo'];
     var categoria = teste['data']['categoria'];
     var dataTexto = teste['data']['data'];
+    var descricao = teste['data']['descricao'];
 
     print(teste);
     print(tipo);
@@ -51,8 +51,27 @@ Estrutura esperada:
     // double valorDouble =
     //     double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
 
+    // Remove caracteres que não sejam números ou ponto decimal, preservando apenas o primeiro ponto.
+    String valorSanitizado = valor
+        .toString()
+        .replaceAll(RegExp(r'[^\d.,]'), '')
+        .replaceAll(',', '.');
+
+// Garante que só haverá um ponto decimal no valor.
+    if (valorSanitizado.contains('.')) {
+      valorSanitizado = valorSanitizado.split('.').first +
+          '.' +
+          valorSanitizado.split('.').skip(1).join('');
+    }
+
+// Converte para double, garantindo que a formatação seja consistente.
+    double valorDouble = double.tryParse(valorSanitizado) ?? 0.0;
+
+// Formata o valor como string no padrão monetário.
     String valorFormatado = CurrencyTextInputFormatter()
-        .formatToCurrency(valor.toString().replaceAll('.', ''));
+        .formatToCurrency(valorDouble.toStringAsFixed(2).replaceAll('.', ','));
+
+    print(valorFormatado);
 
     DateTime now = DateTime.now();
     String mesAtual = DateFormat('MM').format(now);
@@ -105,6 +124,7 @@ Estrutura esperada:
             categoriaAudio: categoria,
             valorFormatado: valorFormatado,
             data: dataSelecionada,
+            descricao: descricao,
           ),
         ),
       );
@@ -117,6 +137,7 @@ Estrutura esperada:
             valorFormatado: valorFormatado,
             categoriaAudio: categoria,
             data: dataSelecionada,
+            descricao: descricao,
           ),
         ),
       );

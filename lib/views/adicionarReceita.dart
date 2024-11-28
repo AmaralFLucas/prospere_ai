@@ -12,13 +12,15 @@ class AdicionarReceita extends StatefulWidget {
   final String? valorFormatado;
   final String? categoriaAudio;
   final Timestamp? data;
+  final String? descricao;
 
   const AdicionarReceita(
       {super.key,
       this.valorReceita,
       this.valorFormatado,
       this.categoriaAudio,
-      this.data});
+      this.data,
+      this.descricao});
 
   @override
   State<AdicionarReceita> createState() => _AdicionarReceitaState();
@@ -36,6 +38,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   List<String> categorias = [];
 
   final TextEditingController _valorController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
@@ -55,6 +58,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     } else if (widget.valorReceita != null) {
       _valorController.text =
           widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+
+    if (widget.descricao != null) {
+      _descricaoController.text = widget.descricao!;
     }
 
     if (widget.data != null) {
@@ -300,6 +307,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: TextField(
+                                  controller: _descricaoController,
                                   decoration: InputDecoration(
                                     hintText: "Digite uma descrição",
                                     border: OutlineInputBorder(
@@ -307,9 +315,6 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     ),
                                   ),
                                   maxLines: 1,
-                                  onChanged: (value) {
-                                    descricao = value;
-                                  },
                                 ),
                               ),
                             ),
