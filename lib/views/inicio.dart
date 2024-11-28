@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
@@ -19,6 +20,7 @@ class Inicio extends StatefulWidget {
 class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   late PageController pageController;
   final AutenticacaoServico _autenServico = AutenticacaoServico();
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
@@ -49,8 +51,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   Future<void> loadCategorias() async {
     categoriasReceitas = await getCategorias(widget.userId, 'receita');
     categoriasDespesas = await getCategorias(widget.userId, 'despesa');
-    setState(
-        () {}); // Atualizar o estado para garantir que os ícones sejam carregados
+    setState(() {});
   }
 
   @override
@@ -85,7 +86,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) => const MeuCadastro()),
+                  MaterialPageRoute(
+                      builder: (context) => MeuCadastro(userId: uid)),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -203,7 +205,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
               saldoAtual = totalReceitas - totalDespesas;
 
-              // Filtrando apenas as despesas para exibição na lista
+
               List<Map<String, dynamic>> transacoes =
                   despesas.map((d) => {...d, 'tipo': 'despesa'}).toList();
 
@@ -230,7 +232,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildBalanceCard() {
-    // Definir cor dinâmica para o saldo
+
     Color saldoColor = saldoAtual >= 0 ? myColor : myColor2;
 
     return Container(
@@ -263,7 +265,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: saldoColor, // Usar a cor dinâmica do saldo
+
+              color: saldoColor,
+
             ),
           ),
           const SizedBox(height: 20),
@@ -273,7 +277,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               _buildBalanceDetail(
                 'Receitas',
                 'R\$ ${totalReceitas.toStringAsFixed(2)}',
-                myColor, // Verde para receitas
+
+                myColor,
+
               ),
               Container(
                 height: 40,
@@ -283,7 +289,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               _buildBalanceDetail(
                 'Despesas',
                 'R\$ ${totalDespesas.toStringAsFixed(2)}',
-                myColor2, // Vermelho para despesas
+
+                myColor2,
+
               ),
             ],
           ),
@@ -300,7 +308,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: valueColor, // Usar a cor dinâmica para valores
+
+            color: valueColor,
+
           ),
         ),
         const SizedBox(height: 10),
@@ -348,7 +358,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
       DateTime dateTime = timestamp.toDate();
       String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
-      // Obter o ícone correspondente à categoria
       Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
           ? categoriasReceitas.firstWhere(
               (cat) => cat['nome'] == transacao['categoria'],
@@ -372,7 +381,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             'R\$ ${transacao['valor']}',
             'Data: $formattedDate',
             cor,
-            iconeCategoria, // Passar o ícone da categoria
+            iconeCategoria,
           ),
           const SizedBox(height: 10),
         ],
@@ -394,7 +403,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         children: [
           Row(
             children: [
-              Icon(icone, color: textColor), // Exibir o ícone aqui
+              Icon(icone, color: textColor),
               const SizedBox(width: 10),
               Text(
                 title,
