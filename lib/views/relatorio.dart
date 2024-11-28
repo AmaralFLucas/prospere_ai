@@ -273,6 +273,8 @@ class _RelatorioState extends State<Relatorio>
   Future<void> _exportToExcel() async {
     var excel = Excel.createExcel();
 
+    excel.delete('Sheet1');
+
     excel['Relatório'].appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
 
     for (var transaction in _filterTransactions()) {

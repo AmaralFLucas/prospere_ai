@@ -12,7 +12,7 @@ const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
 
 generateResponse(BuildContext context, audio) async {
   var model = GenerativeModel(
-    model: 'gemini-1.5-flash-latest',
+    model: 'gemini-1.5-flash-8b',
     apiKey: apiKey,
   );
   try {
