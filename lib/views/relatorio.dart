@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/material.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
@@ -273,6 +272,8 @@ class _RelatorioState extends State<Relatorio>
 
   Future<void> _exportToExcel() async {
     var excel = Excel.createExcel();
+
+    excel.delete('Sheet1');
 
     excel['Relatório'].appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
 

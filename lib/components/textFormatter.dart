@@ -2,14 +2,15 @@ import 'package:flutter/services.dart';
 
 class CurrencyTextInputFormatter extends TextInputFormatter {
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
     // Se o novo texto estiver vazio, retorna um valor vazio
     if (newValue.text.isEmpty) {
       return const TextEditingValue(text: '');
     }
 
     // Remove todos os caracteres que não são dígitos
-    String digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    String digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d.]'), '');
 
     // Se a string estiver vazia, retorna
     if (digitsOnly.isEmpty) {
@@ -20,7 +21,8 @@ class CurrencyTextInputFormatter extends TextInputFormatter {
     String formattedValue;
     if (digitsOnly.length > 2) {
       String wholePart = digitsOnly.substring(0, digitsOnly.length - 2);
-      String decimalPart = digitsOnly.substring(digitsOnly.length - 2).padLeft(2);
+      String decimalPart =
+          digitsOnly.substring(digitsOnly.length - 2).padLeft(2);
       formattedValue = '$wholePart,$decimalPart';
     } else if (digitsOnly.length == 2) {
       formattedValue = ',$digitsOnly';
@@ -39,17 +41,17 @@ class CurrencyTextInputFormatter extends TextInputFormatter {
   }
 
   String formatToCurrency(String value) {
-  // Separa a parte inteira e a decimal
-  List<String> parts = value.split(',');
-  String wholePart = parts[0].replaceAllMapped(
-    RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-    (Match match) => '${match[1]}.',
-  );
+    // Separa a parte inteira e a decimal
+    List<String> parts = value.split(',');
+    String wholePart = parts[0].replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match match) => '${match[1]}.',
+    );
 
-  // Adiciona o símbolo de moeda e formata centavos
-  String formattedValue = 'R\$ $wholePart${parts.length > 1 ? ',' + parts[1] : ''}';
-  
-  return formattedValue;
-}
+    // Adiciona o símbolo de moeda e formata centavos
+    String formattedValue =
+        'R\$ $wholePart${parts.length > 1 ? ',' + parts[1] : ''}';
 
+    return formattedValue;
+  }
 }

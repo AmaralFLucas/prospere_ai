@@ -205,6 +205,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                   0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
               saldoAtual = totalReceitas - totalDespesas;
 
+
               List<Map<String, dynamic>> transacoes =
                   despesas.map((d) => {...d, 'tipo': 'despesa'}).toList();
 
@@ -231,6 +232,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildBalanceCard() {
+
     Color saldoColor = saldoAtual >= 0 ? myColor : myColor2;
 
     return Container(
@@ -263,7 +265,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
+
               color: saldoColor,
+
             ),
           ),
           const SizedBox(height: 20),
@@ -273,7 +277,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               _buildBalanceDetail(
                 'Receitas',
                 'R\$ ${totalReceitas.toStringAsFixed(2)}',
+
                 myColor,
+
               ),
               Container(
                 height: 40,
@@ -283,7 +289,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               _buildBalanceDetail(
                 'Despesas',
                 'R\$ ${totalDespesas.toStringAsFixed(2)}',
+
                 myColor2,
+
               ),
             ],
           ),
@@ -300,7 +308,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
+
             color: valueColor,
+
           ),
         ),
         const SizedBox(height: 10),

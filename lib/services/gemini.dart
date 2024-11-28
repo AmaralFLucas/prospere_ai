@@ -12,23 +12,25 @@ const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
 
 generateResponse(BuildContext context, audio) async {
   var model = GenerativeModel(
-    model: 'gemini-1.5-flash-latest',
+    model: 'gemini-1.5-flash-8b',
     apiKey: apiKey,
   );
-
   try {
     var prompt =
         """Considere o texto '${audio}' e interprete as datas que são faladas como 'hoje', 'ontem', ou como uma data específica. 
-Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json":
+Retorne uma análise concisa em formato JSON puro e sem formatação adicional. 
+Não use formatação de código, como \`json\` ou backticks. Somente o JSON puro.
+
+Estrutura esperada:
 {
   "data": {
-    "tipo": (receita ou despesa), 
-    "categoria": ,
-    "valor": ,
-    "data": (hoje, ontem, ou a data no formato 'dd/MM/yyyy'),
-    "descricao": 
-    }
-  }""";
+    "tipo": "(receita ou despesa)",
+    "categoria": "",
+    "valor": "",
+    "data": "(hoje, ontem, ou a data no formato 'dd/MM/yyyy')",
+    "descricao": ""
+  }
+}""";
 
     var content = [Content.text(prompt)];
     var response = await model.generateContent(content);
@@ -38,6 +40,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     var tipo = teste['data']['tipo'];
     var categoria = teste['data']['categoria'];
     var dataTexto = teste['data']['data'];
+    var descricao = teste['data']['descricao'];
 
     print(teste);
     print(tipo);
@@ -48,8 +51,27 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
     // double valorDouble =
     //     double.tryParse(valor.toString().replaceAll(',', '.')) ?? 0.0;
 
+    // Remove caracteres que não sejam números ou ponto decimal, preservando apenas o primeiro ponto.
+    String valorSanitizado = valor
+        .toString()
+        .replaceAll(RegExp(r'[^\d.,]'), '')
+        .replaceAll(',', '.');
+
+// Garante que só haverá um ponto decimal no valor.
+    if (valorSanitizado.contains('.')) {
+      valorSanitizado = valorSanitizado.split('.').first +
+          '.' +
+          valorSanitizado.split('.').skip(1).join('');
+    }
+
+// Converte para double, garantindo que a formatação seja consistente.
+    double valorDouble = double.tryParse(valorSanitizado) ?? 0.0;
+
+// Formata o valor como string no padrão monetário.
     String valorFormatado = CurrencyTextInputFormatter()
-        .formatToCurrency(valor.toString().replaceAll('.', ''));
+        .formatToCurrency(valorDouble.toStringAsFixed(2).replaceAll('.', ','));
+
+    print(valorFormatado);
 
     DateTime now = DateTime.now();
     String mesAtual = DateFormat('MM').format(now);
@@ -102,6 +124,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
             categoriaAudio: categoria,
             valorFormatado: valorFormatado,
             data: dataSelecionada,
+            descricao: descricao,
           ),
         ),
       );
@@ -114,6 +137,7 @@ Retorne a resposta obrigatoria na seguinte estrutura sem exibir a palavra "json"
             valorFormatado: valorFormatado,
             categoriaAudio: categoria,
             data: dataSelecionada,
+            descricao: descricao,
           ),
         ),
       );
