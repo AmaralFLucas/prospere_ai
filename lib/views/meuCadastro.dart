@@ -37,9 +37,6 @@ class _MeuCadastroState extends State<MeuCadastro> {
   final _objetivoFinanceiroController = TextEditingController();
   final TextEditingController _dataNascimentoController =
       TextEditingController();
-  bool _isEditableNumero = true;
-  bool _isEditableDataNascimento = true;
-  bool _isEditableObjetivo = true;
 
   DateTime? _dataNascimento;
   bool _isLoading = true;

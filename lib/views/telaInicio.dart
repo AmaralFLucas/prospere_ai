@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/InicioCadastro.dart';
+import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/inicioLogin.dart';
 
 class TelaInicio extends StatefulWidget {
@@ -67,7 +67,7 @@ class _TelaInicioState extends State<TelaInicio> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) => const InicioCadastro()),
+                        builder: (context) => const Cadastro()),
                   );
                 },
                 style: ElevatedButton.styleFrom(

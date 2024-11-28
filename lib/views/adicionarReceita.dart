@@ -87,10 +87,9 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     }
   }
 
-  // Função para formatar o valor inserido com vírgulas
   TextInputFormatter _getInputFormatter() {
     return LengthLimitingTextInputFormatter(
-        15); // Limita o tamanho total do valor para 12 caracteres
+        15);
   }
 
   Future<void> _carregarCategorias() async {
