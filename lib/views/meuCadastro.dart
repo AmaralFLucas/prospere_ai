@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:prospere_ai/services/bancoDeDados.dart';
-import 'package:prospere_ai/views/homePage.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class MeuCadastro extends StatefulWidget {
@@ -40,6 +39,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
 
   DateTime? _dataNascimento;
   bool _isLoading = true;
+  bool _isEditing = false; // Variável para controlar a edição
 
   @override
   void initState() {
@@ -82,54 +82,26 @@ class _MeuCadastroState extends State<MeuCadastro> {
     }
   }
 
-  @override
-  void dispose() {
-    _nomeController.dispose();
-    _emailController.dispose();
-    _telefoneController.dispose();
-    _cpfController.dispose();
-    _objetivoFinanceiroController.dispose();
-    _dataNascimentoController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _selecionarDataNascimento(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
-      setState(() {
-        _dataNascimento = picked;
-        _dataNascimentoController.text =
-            '${picked.day}/${picked.month}/${picked.year}';
-      });
-    }
-  }
-
   void _salvarCadastro() async {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Dados do MeuCadastro atualizados com sucesso!')),
+        const SnackBar(content: Text('Dados do MeuCadastro atualizados com sucesso!')),
       );
 
       await updateCadastro(
         widget.userId,
-        _telefoneController.text,
-        _dataNascimento!,
-        _objetivoFinanceiroController.text,
+        _nomeController.text, // Nome
+        _emailController.text, // Email
+        _telefoneController.text, // Telefone
+        _dataNascimento!, // Data de Nascimento
+        _objetivoFinanceiroController.text, // Objetivo Financeiro
+        _cpfController.text, // CPF
       );
 
       setState(() {
         _loadCadastro();
+        _isEditing = false; // Volta para o modo de visualização após salvar
       });
-
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
     }
   }
 
@@ -160,80 +132,39 @@ class _MeuCadastroState extends State<MeuCadastro> {
                             child: Column(
                               children: [
                                 _buildTextLabel('Nome'),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: TextFormField(
-                                    initialValue: _nomeController.text,
-                                    enabled: false,
-                                    decoration: InputDecoration(
-                                      hintText: 'Digite seu Nome',
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                      ),
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 14.0, horizontal: 10.0),
-                                    ),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  _nomeController,
+                                  _nomeController.text.isEmpty
+                                      ? 'Digite seu Nome'
+                                      : '',
+                                  enabled: _isEditing,
                                 ),
                                 _buildTextLabel('Email'),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: TextFormField(
-                                    initialValue: _emailController.text,
-                                    enabled: false,
-                                    decoration: InputDecoration(
-                                      hintText: 'Digite seu Email',
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                      ),
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 14.0, horizontal: 10.0),
-                                    ),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  _emailController,
+                                  _emailController.text.isEmpty
+                                      ? 'Digite seu Email'
+                                      : '',
+                                  enabled: _isEditing,
                                 ),
                                 _buildTextLabel('Data de Nascimento'),
-                                _buildDateField(context),
+                                _buildDateField(context, enabled: _isEditing),
                                 _buildTextLabel('Telefone'),
                                 _buildTextField(
                                   _telefoneController,
                                   _telefoneController.text.isEmpty
                                       ? 'Digite o seu Número do Telefone'
                                       : '',
+                                  enabled: _isEditing,
                                   keyboardType: TextInputType.phone,
                                 ),
                                 _buildTextLabel('CPF'),
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: TextFormField(
-                                    initialValue: _cpfController.text,
-                                    enabled: false,
-                                    decoration: InputDecoration(
-                                      hintText: 'Digite seu CPF',
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                      ),
-                                      contentPadding: EdgeInsets.symmetric(
-                                          vertical: 14.0, horizontal: 10.0),
-                                    ),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
+                                _buildTextField(
+                                  _cpfController,
+                                  _cpfController.text.isEmpty
+                                      ? 'Digite seu CPF'
+                                      : '',
+                                  enabled: _isEditing,
                                 ),
                                 _buildTextLabel('Objetivo Financeiro'),
                                 _buildTextField(
@@ -241,28 +172,31 @@ class _MeuCadastroState extends State<MeuCadastro> {
                                   _objetivoFinanceiroController.text.isEmpty
                                       ? 'Digite qual o seu Objetivo Financeiro'
                                       : '',
+                                  enabled: _isEditing,
                                 ),
                                 const SizedBox(height: 20),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     _buildActionButton(
-                                      label: 'Cancelar',
+                                      label: _isEditing ? 'Cancelar' : 'Editar',
                                       color: Colors.white,
                                       textColor: Colors.black,
                                       onPressed: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const HomePage()),
-                                        );
+                                        setState(() {
+                                          if (_isEditing) {
+                                            _isEditing = false;
+                                          } else {
+                                            _isEditing = true;
+                                          }
+                                        });
                                       },
                                     ),
                                     const SizedBox(width: 15),
                                     _buildActionButton(
                                       label: 'Salvar',
                                       color: myColor,
-                                      onPressed: _salvarCadastro,
+                                      onPressed: _isEditing ? _salvarCadastro : null, // Habilita o salvar somente quando em modo de edição
                                     ),
                                   ],
                                 ),
@@ -291,46 +225,51 @@ class _MeuCadastroState extends State<MeuCadastro> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String hintText, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return SizedBox(
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          labelText: controller.text.isEmpty
-              ? hintText
-              : null, // Mostra o texto se estiver vazio
-        ),
-        onChanged: (value) {
-          setState(() {}); // Atualiza o estado para refletir a mudança no campo
-        },
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor, insira $hintText';
-          }
-          return null;
-        },
-      ),
-    );
-  }
+  TextEditingController controller,
+  String hintText, {
+  TextInputType keyboardType = TextInputType.text,
+  bool enabled = false,
+}) {
+  // Se o campo for para email, sempre desabilita
+  bool isEmailField = controller == _emailController;
 
-  Widget _buildDateField(BuildContext context) {
+  return SizedBox(
+    child: TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      enabled: !isEmailField && enabled, // Desabilita o email permanentemente
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: controller.text.isEmpty
+            ? hintText
+            : null, // Mostra o texto se estiver vazio
+      ),
+      onChanged: (value) {
+        setState(() {}); // Atualiza o estado para refletir a mudança no campo
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor, insira $hintText';
+        }
+        return null;
+      },
+    ),
+  );
+}
+
+  Widget _buildDateField(BuildContext context, {bool enabled = false}) {
     return SizedBox(
       child: TextFormField(
         textAlign: TextAlign.center,
         controller: _dataNascimentoController,
-        readOnly: true,
+        readOnly: !enabled, // Só permite a edição quando estiver em modo de edição
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           hintText: _dataNascimentoController.text.isEmpty
               ? 'Escolha a sua Data de Nascimento'
               : null, // Exibe o hintText somente se o campo estiver vazio
         ),
-        onTap: () => _selecionarDataNascimento(context),
+        onTap: enabled ? () => _selecionarDataNascimento(context) : null,
         validator: (value) {
           if (_dataNascimento == null) {
             return 'Por favor, selecione a data de nascimento';
@@ -345,7 +284,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
     required String label,
     required Color color,
     Color textColor = Colors.white,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) {
     return Container(
       height: 50,
@@ -369,8 +308,29 @@ class _MeuCadastroState extends State<MeuCadastro> {
             borderRadius: BorderRadius.circular(55),
           ),
         ),
-        child: Text(label, style: TextStyle(color: textColor)),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 18, color: textColor),
+        ),
       ),
     );
   }
+
+  Future<void> _selecionarDataNascimento(BuildContext context) async {
+    final DateTime? dataSelecionada = await showDatePicker(
+      context: context,
+      initialDate: _dataNascimento ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (dataSelecionada != null && dataSelecionada != _dataNascimento) {
+      setState(() {
+        _dataNascimento = dataSelecionada;
+        _dataNascimentoController.text =
+            '${_dataNascimento!.day}/${_dataNascimento!.month}/${_dataNascimento!.year}';
+      });
+    }
+  }
 }
+

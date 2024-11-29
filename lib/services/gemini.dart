@@ -8,7 +8,7 @@ import 'package:prospere_ai/components/textFormatter.dart';
 import 'package:prospere_ai/views/adicionarDespesa.dart';
 import 'package:prospere_ai/views/adicionarReceita.dart';
 
-const apiKey = 'AIzaSyBW_T2tYv3iuhAWylGervuMqjfMPQ1NiQ4';
+const apiKey = 'AIzaSyB8HK_uUf5m2FJWyY_otyk7_SAZAGRjjWY';
 
 generateResponse(BuildContext context, audio) async {
   var model = GenerativeModel(
@@ -219,7 +219,9 @@ generateResponseDB(String selectedDateLabel) async {
   });
 
   final prompt =
-      'Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\nAnalise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, Metas: ${metasLista.toString()}, após analisar os dados faça algumas orientações em relação à saúde financeira do usuário.';
+      '''Você está fazendo parte de um aplicativo de controle financeiro que se chama Prospere.AI você precisa fazer o que se pede abaixo para o usuário:\n
+      Analise os seguites dados ${receitasLista.toString()}, Total Receitas: ${totalReceitas}, Despesas: ${despesasLista.toString()}, Total Despesas: ${totalDespesas}, Metas: ${metasLista.toString()}, 
+      com base nesses dados eu preciso que você gere uma análise preditiva, analise os hábitos de consumo do usuário e gere previsões de despesas, receitas do usuário para o próximo mês e não esqueça de considerar as metas do usuário.''';
 
   final model = GenerativeModel(
     model: 'gemini-1.5-flash-latest',

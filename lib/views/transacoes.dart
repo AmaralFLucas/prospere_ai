@@ -28,7 +28,7 @@ class _TransacoesState extends State<Transacoes>
   String? selectedPeriodo;
   String? selectedTipo;
   List<Map<String, dynamic>> transactions = [];
-
+  DateTimeRange? selectedDateRange;
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
   double saldoAtual = 0.0;
@@ -238,7 +238,11 @@ class _TransacoesState extends State<Transacoes>
               : selectedPeriodo == 'Mês'
                   ? transactionDate.month == now.month &&
                       transactionDate.year == now.year
-                  : true;
+                  : selectedPeriodo == 'Período' && selectedDateRange != null
+                      ? transactionDate.isAfter(selectedDateRange!.start) &&
+                          transactionDate.isBefore(selectedDateRange!.end
+                              .add(const Duration(days: 1)))
+                      : true;
 
       bool typeMatch = selectedTipo == 'Receita'
           ? transaction['tipo'] == 'receita'
@@ -285,6 +289,7 @@ class _TransacoesState extends State<Transacoes>
                           onTap: () {
                             setState(() {
                               tempSelectedPeriodo = 'Hoje';
+                              selectedDateRange = null;
                             });
                           },
                         ),
@@ -294,6 +299,7 @@ class _TransacoesState extends State<Transacoes>
                           onTap: () {
                             setState(() {
                               tempSelectedPeriodo = 'Semana';
+                              selectedDateRange = null;
                             });
                           },
                         ),
@@ -303,10 +309,81 @@ class _TransacoesState extends State<Transacoes>
                           onTap: () {
                             setState(() {
                               tempSelectedPeriodo = 'Mês';
+                              selectedDateRange = null;
                             });
                           },
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () async {
+                        DateTimeRange? range = await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                          initialDateRange: selectedDateRange,
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: ThemeData(
+                                primaryColor: Colors.black,
+                                colorScheme: ColorScheme.light(
+                                  primary: myColor,
+                                  onPrimary: Colors.white,
+                                  onSurface: myColor,
+                                ),
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: myColor,
+                                    textStyle: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                iconButtonTheme: IconButtonThemeData(
+                                  style: IconButton.styleFrom(
+                                      foregroundColor: myColor),
+                                ),
+                                appBarTheme: AppBarTheme(
+                                  backgroundColor: myColor, // Cor do cabeçalho
+                                  iconTheme: IconThemeData(
+                                      color:
+                                          Colors.white), // Ícones no cabeçalho
+                                  titleTextStyle: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ), // Estilo do texto do título
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (range != null) {
+                          setState(() {
+                            selectedDateRange = range;
+                            tempSelectedPeriodo = 'Período';
+                          });
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[200],
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        selectedDateRange == null
+                            ? 'Selecionar Período'
+                            : '${DateFormat('dd/MM/yyyy').format(selectedDateRange!.start)} - ${DateFormat('dd/MM/yyyy').format(selectedDateRange!.end)}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     const Text('Selecione o tipo de relatório',
@@ -359,6 +436,7 @@ class _TransacoesState extends State<Transacoes>
                       setState(() {
                         selectedPeriodo = '';
                         selectedTipo = '';
+                        selectedDateRange = null;
                       });
                       Navigator.of(context).pop();
                     },
@@ -588,7 +666,7 @@ class _TransacoesState extends State<Transacoes>
         children: [
           Row(
             children: [
-              Icon(icone, color: textColor), // Exibir o ícone aqui
+              Icon(icone, color: textColor),
               const SizedBox(width: 10),
               Text(
                 title,
