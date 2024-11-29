@@ -25,6 +25,9 @@ class _TransacoesState extends State<Transacoes>
     with SingleTickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
+  String? selectedPeriodo;
+  String? selectedTipo;
+  List<Map<String, dynamic>> transactions = [];
 
   double totalReceitas = 0.0;
   double totalDespesas = 0.0;
@@ -36,6 +39,7 @@ class _TransacoesState extends State<Transacoes>
   @override
   void initState() {
     super.initState();
+    loadCategorias();
 
     _animationController = AnimationController(
       vsync: this,
@@ -46,8 +50,7 @@ class _TransacoesState extends State<Transacoes>
         CurvedAnimation(curve: Curves.easeInOut, parent: _animationController);
     _animation = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
 
-    // Carregar categorias de receitas e despesas e atualizar o estado
-    loadCategorias();
+    _fetchTransactions();
   }
 
   Future<void> loadCategorias() async {
@@ -55,6 +58,33 @@ class _TransacoesState extends State<Transacoes>
     categoriasDespesas = await getCategorias(widget.userId, 'despesa');
     setState(
         () {}); // Atualizar o estado para garantir que os ícones sejam carregados
+  }
+
+  void _fetchTransactions() async {
+    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('receitas')
+        .get();
+    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('despesas')
+        .get();
+
+    List<Map<String, dynamic>> receitas = receitasSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+    List<Map<String, dynamic>> despesas = despesasSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .toList();
+
+    setState(() {
+      transactions = [
+        ...receitas.map((r) => {...r, 'tipo': 'receita'}),
+        ...despesas.map((d) => {...d, 'tipo': 'despesa'})
+      ];
+    });
   }
 
   @override
@@ -71,6 +101,14 @@ class _TransacoesState extends State<Transacoes>
             color: Colors.white,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_alt_outlined),
+            onPressed: () {
+              _showFilterDialog(context);
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -88,9 +126,11 @@ class _TransacoesState extends State<Transacoes>
                 .collection('despesas')
                 .snapshots(),
             builder: (context, despesasSnapshot) {
-              if (!despesasSnapshot.hasData)
-                return Center(child: CircularProgressIndicator());
+              if (!despesasSnapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
+              // Obter dados das coleções
               List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
                   .map((doc) => doc.data() as Map<String, dynamic>)
                   .toList();
@@ -98,19 +138,26 @@ class _TransacoesState extends State<Transacoes>
                   .map((doc) => doc.data() as Map<String, dynamic>)
                   .toList();
 
+              // Calcular totais
               totalReceitas = receitas.fold(
                   0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
               totalDespesas = despesas.fold(
                   0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
               saldoAtual = totalReceitas - totalDespesas;
 
-              List<Map<String, dynamic>> transacoes = [];
-              transacoes.addAll(receitas.map((r) => {...r, 'tipo': 'receita'}));
-              transacoes.addAll(despesas.map((d) => {...d, 'tipo': 'despesa'}));
+              // Combinar transações e aplicar filtros
+              List<Map<String, dynamic>> transacoes = [
+                ...receitas.map((r) => {...r, 'tipo': 'receita'}),
+                ...despesas.map((d) => {...d, 'tipo': 'despesa'}),
+              ];
 
+              // Ordenar e filtrar
               transacoes.sort((a, b) =>
                   (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
+              List<Map<String, dynamic>> transacoesFiltradas =
+                  _filterTransactions(transacoes);
 
+              // Construir o layout
               return SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -118,7 +165,7 @@ class _TransacoesState extends State<Transacoes>
                   children: [
                     _buildBalanceCard(),
                     const SizedBox(height: 20),
-                    _buildTransactionList(transacoes),
+                    _buildTransactionList(transacoesFiltradas),
                   ],
                 ),
               );
@@ -176,7 +223,210 @@ class _TransacoesState extends State<Transacoes>
     );
   }
 
+  List<Map<String, dynamic>> _filterTransactions(
+      List<Map<String, dynamic>> transacoes) {
+    DateTime now = DateTime.now();
+
+    return transacoes.where((transaction) {
+      DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
+
+      bool dateMatch = selectedPeriodo == 'Hoje'
+          ? isSameDay(transactionDate, now)
+          : selectedPeriodo == 'Semana'
+              ? transactionDate
+                  .isAfter(now.subtract(Duration(days: now.weekday)))
+              : selectedPeriodo == 'Mês'
+                  ? transactionDate.month == now.month &&
+                      transactionDate.year == now.year
+                  : true;
+
+      bool typeMatch = selectedTipo == 'Receita'
+          ? transaction['tipo'] == 'receita'
+          : selectedTipo == 'Despesa'
+              ? transaction['tipo'] == 'despesa'
+              : true;
+
+      return dateMatch && typeMatch;
+    }).toList();
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  void _showFilterDialog(BuildContext context) {
+    String? tempSelectedPeriodo = selectedPeriodo;
+    String? tempSelectedTipo = selectedTipo;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Filtrar Relatório',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Selecione o período do relatório',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildToggleButton(
+                          label: 'Hoje',
+                          isSelected: tempSelectedPeriodo == 'Hoje',
+                          onTap: () {
+                            setState(() {
+                              tempSelectedPeriodo = 'Hoje';
+                            });
+                          },
+                        ),
+                        _buildToggleButton(
+                          label: 'Semana',
+                          isSelected: tempSelectedPeriodo == 'Semana',
+                          onTap: () {
+                            setState(() {
+                              tempSelectedPeriodo = 'Semana';
+                            });
+                          },
+                        ),
+                        _buildToggleButton(
+                          label: 'Mês',
+                          isSelected: tempSelectedPeriodo == 'Mês',
+                          onTap: () {
+                            setState(() {
+                              tempSelectedPeriodo = 'Mês';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Selecione o tipo de relatório',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildToggleButton(
+                          label: 'Receita',
+                          isSelected: tempSelectedTipo == 'Receita',
+                          onTap: () {
+                            setState(() {
+                              tempSelectedTipo = 'Receita';
+                            });
+                          },
+                        ),
+                        _buildToggleButton(
+                          label: 'Despesa',
+                          isSelected: tempSelectedTipo == 'Despesa',
+                          onTap: () {
+                            setState(() {
+                              tempSelectedTipo = 'Despesa';
+                            });
+                          },
+                        ),
+                        _buildToggleButton(
+                          label: 'Todos',
+                          isSelected: tempSelectedTipo == 'Todos',
+                          onTap: () {
+                            setState(() {
+                              tempSelectedTipo = 'Todos';
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectedPeriodo = '';
+                        selectedTipo = '';
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Limpar')),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Cancelar',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold)),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          selectedPeriodo = tempSelectedPeriodo;
+                          selectedTipo = tempSelectedTipo;
+                        });
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(backgroundColor: myColor),
+                      child: const Text('Salvar'),
+                    ),
+                  ],
+                )
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildToggleButton({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          decoration: BoxDecoration(
+            color: isSelected ? myColor : Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBalanceCard() {
+    Color saldoColor = saldoAtual >= 0 ? myColor : myColor2;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -207,7 +457,7 @@ class _TransacoesState extends State<Transacoes>
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-              color: myColor,
+              color: saldoColor, // Usar a cor dinâmica do saldo
             ),
           ),
           const SizedBox(height: 20),
@@ -215,14 +465,20 @@ class _TransacoesState extends State<Transacoes>
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildBalanceDetail(
-                  'Receitas', 'R\$ ${totalReceitas.toStringAsFixed(2)}'),
+                'Receitas',
+                'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                myColor, // Verde para receitas
+              ),
               Container(
                 height: 40,
                 width: 1,
                 color: Colors.black26,
               ),
               _buildBalanceDetail(
-                  'Despesas', 'R\$ ${totalDespesas.toStringAsFixed(2)}'),
+                'Despesas',
+                'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                myColor2, // Vermelho para despesas
+              ),
             ],
           ),
         ],
@@ -230,7 +486,7 @@ class _TransacoesState extends State<Transacoes>
     );
   }
 
-  Widget _buildBalanceDetail(String title, String value) {
+  Widget _buildBalanceDetail(String title, String value, Color valueColor) {
     return Column(
       children: [
         Text(
@@ -238,7 +494,7 @@ class _TransacoesState extends State<Transacoes>
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: textColor,
+            color: valueColor, // Usar a cor dinâmica para valores
           ),
         ),
         const SizedBox(height: 10),
