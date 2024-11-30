@@ -12,13 +12,15 @@ class AdicionarReceita extends StatefulWidget {
   final String? valorFormatado;
   final String? categoriaAudio;
   final Timestamp? data;
+  final String? descricao;
 
   const AdicionarReceita(
       {super.key,
       this.valorReceita,
       this.valorFormatado,
       this.categoriaAudio,
-      this.data});
+      this.data,
+      this.descricao});
 
   @override
   State<AdicionarReceita> createState() => _AdicionarReceitaState();
@@ -36,6 +38,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
   List<String> categorias = [];
 
   final TextEditingController _valorController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
@@ -55,6 +58,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     } else if (widget.valorReceita != null) {
       _valorController.text =
           widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+
+    if (widget.descricao != null) {
+      _descricaoController.text = widget.descricao!;
     }
 
     if (widget.data != null) {
@@ -80,10 +87,9 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     }
   }
 
-  // Função para formatar o valor inserido com vírgulas
   TextInputFormatter _getInputFormatter() {
     return LengthLimitingTextInputFormatter(
-        15); // Limita o tamanho total do valor para 12 caracteres
+        15);
   }
 
   Future<void> _carregarCategorias() async {
@@ -300,6 +306,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: TextField(
+                                  controller: _descricaoController,
                                   decoration: InputDecoration(
                                     hintText: "Digite uma descrição",
                                     border: OutlineInputBorder(
@@ -307,9 +314,6 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     ),
                                   ),
                                   maxLines: 1,
-                                  onChanged: (value) {
-                                    descricao = value;
-                                  },
                                 ),
                               ),
                             ),
@@ -397,18 +401,14 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     categoria != null &&
                                     _dataSelecionada != null) {
                                   try {
-                                    await addReceita(
-                                        uid,
-                                        valor,
-                                        categoria!,
-                                        _dataSelecionada!,
-                                        descricao!);
+                                    await addReceita(uid, valor, categoria!,
+                                        _dataSelecionada!, descricao!);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
                                         context: context,
                                         texto:
-                                            "Falha ao adicionar despesa. Tente novamente.");
+                                            "Falha ao adicionar receita. Tente novamente.");
                                   }
                                 } else {
                                   mostrarSnackBar(

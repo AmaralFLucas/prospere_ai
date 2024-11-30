@@ -12,12 +12,15 @@ class AdicionarDespesa extends StatefulWidget {
   final String? valorFormatado;
   final Timestamp? data;
   final String? categoriaAudio;
+  final String? descricao;
+
   const AdicionarDespesa(
       {super.key,
       this.valorDespesa,
       this.valorFormatado,
       this.data,
-      this.categoriaAudio});
+      this.categoriaAudio,
+      this.descricao});
 
   @override
   State<AdicionarDespesa> createState() => _AdicionarDespesaState();
@@ -35,6 +38,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
   List<String> categorias = [];
   // static const double limiteMaximo = 1e12;
   final TextEditingController _valorController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
@@ -54,6 +58,10 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
     } else if (widget.valorDespesa != null) {
       _valorController.text =
           widget.valorDespesa!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+
+    if (widget.descricao != null) {
+      _descricaoController.text = widget.descricao!;
     }
 
     if (widget.data != null) {
@@ -297,6 +305,7 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 10),
                                 child: TextField(
+                                  controller: _descricaoController,
                                   decoration: InputDecoration(
                                     hintText: "Digite uma descrição",
                                     border: OutlineInputBorder(
@@ -304,9 +313,6 @@ class _AdicionarDespesaState extends State<AdicionarDespesa> {
                                     ),
                                   ),
                                   maxLines: 1,
-                                  onChanged: (value) {
-                                    descricao = value;
-                                  },
                                 ),
                               ),
                             ),

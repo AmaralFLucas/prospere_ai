@@ -30,6 +30,8 @@ class _PlanejamentoState extends State<Planejamento> {
   bool showCategoryDropdown = false;
   String? selectedCategory;
   List<String> categorias = [];
+  final TextEditingController _nome = TextEditingController();
+  final TextEditingController _valor = TextEditingController();
 
   @override
   void initState() {
@@ -273,86 +275,86 @@ class _PlanejamentoState extends State<Planejamento> {
   }
 
   Widget _buildFilteredObjectiveChart(double totalSpent, double totalPlanned) {
-  double spentPercentage =
-      totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
-  double remainingPercentage = 100 - spentPercentage;
+    double spentPercentage =
+        totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
+    double remainingPercentage = 100 - spentPercentage;
 
-  return Center(
-    child: Column(
-      children: [
-        const Text(
-          'Planejamento de Objetivos',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: PieChart(
-            PieChartData(
-              sections: [
-                PieChartSectionData(
-                  color: Colors.green,
-                  value: spentPercentage,
-                  title: '${spentPercentage.toStringAsFixed(2)}%',
-                ),
-                PieChartSectionData(
-                  color: Colors.grey,
-                  value: remainingPercentage,
-                  title: '${remainingPercentage.toStringAsFixed(2)}%',
-                ),
-              ],
-              borderData: FlBorderData(show: false),
-              sectionsSpace: 0,
-              centerSpaceRadius: 40,
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            'Planejamento de Objetivos',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value: spentPercentage,
+                    title: '${spentPercentage.toStringAsFixed(2)}%',
+                  ),
+                  PieChartSectionData(
+                    color: Colors.grey,
+                    value: remainingPercentage,
+                    title: '${remainingPercentage.toStringAsFixed(2)}%',
+                  ),
+                ],
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                centerSpaceRadius: 40,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-Widget _buildFilteredExpenseChart(double totalSpent, double totalPlanned) {
-  double spentPercentage =
-      totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
-  double remainingPercentage = 100 - spentPercentage;
+  Widget _buildFilteredExpenseChart(double totalSpent, double totalPlanned) {
+    double spentPercentage =
+        totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
+    double remainingPercentage = 100 - spentPercentage;
 
-  return Center(
-    child: Column(
-      children: [
-        const Text(
-          'Planejamento de Gastos Mensais',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: PieChart(
-            PieChartData(
-              sections: [
-                PieChartSectionData(
-                  color: Colors.red,
-                  value: spentPercentage,
-                  title: '${spentPercentage.toStringAsFixed(2)}%',
-                ),
-                PieChartSectionData(
-                  color: Colors.green,
-                  value: remainingPercentage,
-                  title: '${remainingPercentage.toStringAsFixed(2)}%',
-                ),
-              ],
-              borderData: FlBorderData(show: false),
-              sectionsSpace: 0,
-              centerSpaceRadius: 40,
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            'Planejamento de Gastos Mensais',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.red,
+                    value: spentPercentage,
+                    title: '${spentPercentage.toStringAsFixed(2)}%',
+                  ),
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value: remainingPercentage,
+                    title: '${remainingPercentage.toStringAsFixed(2)}%',
+                  ),
+                ],
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                centerSpaceRadius: 40,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   Widget _buildPlanList(List<Map<String, dynamic>> metas) {
     return ListView.builder(
@@ -366,100 +368,122 @@ Widget _buildFilteredExpenseChart(double totalSpent, double totalPlanned) {
   }
 
 // Função para formatar valores monetários
-String formatCurrency(double value) {
-  final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-  return format.format(value);
-}
+  String formatCurrency(double value) {
+    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return format.format(value);
+  }
 
-Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
-  final isObjective = !plan['isExpense'];
-  final backgroundColor = isObjective ? Colors.grey : Colors.green;
-  final progressColor = isObjective ? Colors.green : Colors.red;
+  Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
+    final isObjective = !plan['isExpense'];
+    final backgroundColor = isObjective ? Colors.grey : Colors.green;
+    final progressColor = isObjective ? Colors.green : Colors.red;
 
-  double percentage =
-      plan['value'] > 0 ? (plan['spent'] / plan['value']) * 100 : 0;
+    double percentage =
+        plan['value'] > 0 ? (plan['spent'] / plan['value']) * 100 : 0;
 
-  return Container(
-    margin: const EdgeInsets.only(bottom: 16),
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: cardColor,
-      borderRadius: BorderRadius.circular(15),
-      boxShadow: const [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 8,
-          offset: Offset(0, 4),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              plan['name'],
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 8,
+            offset: Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                plan['name'],
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
-            ),
-            // Botões de edição e exclusão
-          ],
-        ),
-        const SizedBox(height: 8),
-        Center(
-          child: SizedBox(
-            width: 100,
-            height: 100,
-            child: PieChart(
-              PieChartData(
-                sections: [
-                  PieChartSectionData(
-                    color: progressColor,
-                    value: percentage,
-                    title: '${percentage.toStringAsFixed(2)}%',
-                    radius: 40,
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: Colors.blue),
+                    onPressed: () {
+                      _editPlan(index);
+                    },
                   ),
-                  PieChartSectionData(
-                    color: backgroundColor,
-                    value: 100 - percentage,
-                    title: '${(100 - percentage).toStringAsFixed(2)}%',
-                    radius: 40,
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      _confirmDeleteMeta(plan['id'], index);
+                    },
                   ),
+                  if (!plan['isExpense'])
+                    IconButton(
+                      icon: const Icon(Icons.add, color: Colors.green),
+                      onPressed: () {
+                        _addValueToPlan(index);
+                      },
+                    ),
                 ],
-                borderData: FlBorderData(show: false),
-                sectionsSpace: 0,
-                centerSpaceRadius: 30,
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Center(
+            child: SizedBox(
+              width: 100,
+              height: 100,
+              child: PieChart(
+                PieChartData(
+                  sections: [
+                    PieChartSectionData(
+                      color: progressColor,
+                      value: percentage,
+                      title: '${percentage.toStringAsFixed(2)}%',
+                      radius: 40,
+                    ),
+                    PieChartSectionData(
+                      color: backgroundColor,
+                      value: 100 - percentage,
+                      title: '${(100 - percentage).toStringAsFixed(2)}%',
+                      radius: 40,
+                    ),
+                  ],
+                  borderData: FlBorderData(show: false),
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 30,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 25),
-        // Exibe os valores formatados
-        Text(
-          'Valor Planejado: ${formatCurrency(plan['value'])}',
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
+          const SizedBox(height: 25),
+          // Exibe os valores formatados
+          Text(
+            'Valor Planejado: ${formatCurrency(plan['value'])}',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
           ),
-        ),
-        Text(
-          isObjective
-              ? 'Valor Atingido: ${formatCurrency(plan['spent'])}'
-              : 'Gasto Atual: ${formatCurrency(plan['spent'])}',
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
+          Text(
+            isObjective
+                ? 'Valor Atingido: ${formatCurrency(plan['spent'])}'
+                : 'Gasto Atual: ${formatCurrency(plan['spent'])}',
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
   void _confirmDeleteMeta(String metaId, int index) {
     showDialog(
@@ -485,9 +509,6 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
               ),
               onPressed: () async {
                 await deletarMeta(widget.userId, metaId);
-                // setState(() {
-                //   planList.removeAt(index);
-                // });
                 _loadMetas();
                 Navigator.of(context).pop();
               },
@@ -499,8 +520,6 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
   }
 
   void _showAddPlanDialog(BuildContext context) {
-    String planName = '';
-    String planValue = '';
     bool isExpense = false;
 
     showDialog(
@@ -522,7 +541,7 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
                       ),
                     ),
                     onChanged: (value) {
-                      planName = value;
+                      _nome.text = value;
                     },
                   ),
                   TextField(
@@ -535,7 +554,7 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
-                      planValue = value;
+                      _valor.text = value;
                     },
                   ),
                   if (showCategoryDropdown)
@@ -588,6 +607,8 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
               ),
               onPressed: () {
                 Navigator.of(context).pop();
+                isExpense = false;
+                showCategoryDropdown = isExpense;
               },
             ),
             TextButton(
@@ -596,34 +617,23 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
                 style: TextStyle(color: myColor),
               ),
               onPressed: () async {
-                if (planName.isNotEmpty && planValue.isNotEmpty) {
-                  double valorMeta = double.parse(planValue);
+                if (_nome.text.isNotEmpty && _valor.text.isNotEmpty) {
+                  double valorMeta = double.parse(_valor.text);
                   double valorAtual = 0.0;
+                  print(selectedCategory);
                   if (isExpense && selectedCategory != null) {
-                    QuerySnapshot despesasSnapshot = await FirebaseFirestore
-                        .instance
-                        .collection('users')
-                        .doc(widget.userId)
-                        .collection('despesas')
-                        .where('categoria', isEqualTo: selectedCategory)
-                        .get();
-
-                    valorAtual = despesasSnapshot.docs
-                        .fold(0, (sum, doc) => sum + (doc['valor'] as double));
+                    criarMetaGastoMensal(
+                        widget.userId,
+                        _nome.text,
+                        valorMeta,
+                        selectedCategory!,
+                        valorAtual,
+                        isExpense ? 'gastoMensal' : 'objetivo');
                   }
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(widget.userId)
-                      .collection('metasFinanceiras')
-                      .add({
-                    'descricao': planName,
-                    'valorMeta': valorMeta,
-                    'valorAtual': valorAtual,
-                    'categoria': selectedCategory,
-                    'tipoMeta': isExpense ? 'gastoMensal' : 'objetivo',
-                  });
                   _loadMetas();
                   Navigator.of(context).pop();
+                  isExpense = false;
+                  showCategoryDropdown = isExpense;
                 }
               },
             )
@@ -762,7 +772,7 @@ Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
           title: const Text('Adicionar Valor à Meta'),
           content: TextField(
             decoration: InputDecoration(
-              labelText: 'Valor Adicional',
+              labelText: 'Valor Atingido',
               labelStyle: TextStyle(color: textColor),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: myColor),

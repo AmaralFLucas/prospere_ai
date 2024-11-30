@@ -4,8 +4,8 @@ import 'package:prospere_ai/components/meu_input.dart';
 import 'package:prospere_ai/components/meu_snackbar.dart';
 import 'package:prospere_ai/main.dart';
 import 'package:prospere_ai/services/autenticacao.dart';
+import 'package:prospere_ai/views/cadastro.dart';
 import 'package:prospere_ai/views/esqueciSenha.dart';
-import 'package:prospere_ai/views/inicioCadastro.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -132,9 +132,10 @@ class _LoginState extends State<Login> {
                           isErro: true,
                         );
                       } else {
-                        Navigator.of(context).pushReplacement(
+                        Navigator.of(context).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) => const RoteadorTela()),
+                          (route) => false,
                         );
                       }
                     } catch (erro) {
@@ -179,7 +180,7 @@ class _LoginState extends State<Login> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                            builder: (context) => const InicioCadastro()),
+                            builder: (context) => const Cadastro()),
                       );
                     },
                     child: const Text(
