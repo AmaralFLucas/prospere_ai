@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
+import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/material.dart';
 import 'package:floating_action_bubble/floating_action_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,6 +16,7 @@ class Relatorio extends StatefulWidget {
 }
 
 Color myColor = const Color.fromARGB(255, 30, 163, 132);
+Color myColor2 = const Color.fromARGB(255, 178, 0, 0);
 Color cardColor = const Color(0xFFF4F4F4);
 Color textColor = Colors.black87;
 
@@ -271,13 +273,13 @@ class _RelatorioState extends State<Relatorio>
   Future<void> _exportToExcel() async {
     var excel = Excel.createExcel();
 
-    Sheet sheetObject = excel['Relatório'];
+    excel.delete('Sheet1');
 
-    sheetObject.appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
+    excel['Relatório'].appendRow(['Descrição', 'Tipo', 'Data', 'Valor']);
 
     for (var transaction in _filterTransactions()) {
       DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
-      sheetObject.appendRow([
+      excel['Relatório'].appendRow([
         transaction['descricao'] ?? 'Descrição não disponível',
         transaction['tipo'] ?? '',
         DateFormat('dd/MM/yyyy').format(transactionDate),
@@ -293,6 +295,53 @@ class _RelatorioState extends State<Relatorio>
 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Relatório Excel salvo em $filePath'),
+    ));
+  }
+
+  Future<void> _exportToPdf() async {
+    final pdf = pw.Document();
+    pdf.addPage(
+      pw.Page(
+        build: (context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text(
+                'Relatório',
+                style:
+                    pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
+              ),
+              pw.SizedBox(height: 10),
+              pw.Table.fromTextArray(
+                headers: ['Descrição', 'Tipo', 'Data', 'Valor'],
+                data: _filterTransactions().map((transaction) {
+                  DateTime transactionDate =
+                      (transaction['data'] as Timestamp).toDate();
+                  return [
+                    transaction['descricao'] ?? 'Descrição não disponível',
+                    transaction['tipo'] ?? '',
+                    DateFormat('dd/MM/yyyy').format(transactionDate),
+                    transaction['valor']?.toString() ?? '0',
+                  ];
+                }).toList(),
+                border: pw.TableBorder.all(),
+                headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                cellAlignment: pw.Alignment.centerLeft,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    var dir = '/storage/emulated/0/Download';
+    String filePath = "${dir}/relatorio.pdf";
+
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Relatório PDF salvo em $filePath'),
     ));
   }
 
@@ -340,6 +389,7 @@ class _RelatorioState extends State<Relatorio>
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 _animationController.reverse();
+                _exportToPdf();
               },
             ),
             Bubble(
@@ -350,7 +400,7 @@ class _RelatorioState extends State<Relatorio>
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
                 _animationController.reverse();
-                _exportToExcel(); // Chama a função de exportação
+                _exportToExcel();
               },
             ),
           ],
@@ -381,17 +431,74 @@ class _RelatorioState extends State<Relatorio>
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text('Saldo',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(
+              'Saldo Atual',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
+            ),
             const SizedBox(height: 10),
-            Text('R\$ ${saldo.toStringAsFixed(2)}',
-                style: TextStyle(
-                    fontSize: 20,
-                    color: saldo >= 0 ? Colors.green : Colors.red)),
+            Text(
+              'R\$ ${saldo.toStringAsFixed(2)}',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: saldo > 0
+                    ? myColor
+                    : myColor2, // Verifica se o saldo é maior que 0
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildBalanceDetail(
+                  'Receitas',
+                  'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                  myColor,
+                ),
+                Container(
+                  height: 40,
+                  width: 1,
+                  color: Colors.black26,
+                ),
+                _buildBalanceDetail(
+                  'Despesas',
+                  'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                  myColor2,
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBalanceDetail(String title, String value, Color valueColor) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: valueColor,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            color: textColor,
+          ),
+        ),
+      ],
     );
   }
 
@@ -414,11 +521,10 @@ class _RelatorioState extends State<Relatorio>
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            title: Text(transaction['descricao'] ??
-                'Descrição não disponível'), // Garantindo que a descrição não seja nula
+            title: Text(transaction['descricao'] ?? 'Descrição não disponível'),
             subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
-            trailing: Text(
-                'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'), // Garantindo que o valor não seja nulo
+            trailing:
+                Text('R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
           ),
         );
       },

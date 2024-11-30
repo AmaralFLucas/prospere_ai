@@ -110,7 +110,7 @@ class _CadastroState extends State<Cadastro> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(
-                'images/novalogo_porco2.png',
+                'assets/images/novalogo_porco2.png',
                 width: 150,
                 height: 150,
               ),
@@ -137,7 +137,7 @@ class _CadastroState extends State<Cadastro> {
               SizedBox(
                 width: 300,
                 child: MeuInput(
-                  labelText: 'Digite o seu nome',
+                  labelText: 'Digite o seu nome Completo',
                   controller: nomeController,
                 ),
               ),

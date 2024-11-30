@@ -66,8 +66,10 @@ class _HomePageState extends State<HomePage>
             userId: uid,
           ),
           Transacoes(userId: uid),
-          Planejamento(userId: uid,),
-          const Mais(),
+          Planejamento(
+            userId: uid,
+          ),
+          Mais(),
         ],
       ),
       floatingActionButton: FloatingActionButton(

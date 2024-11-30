@@ -12,13 +12,15 @@ class AdicionarReceita extends StatefulWidget {
   final String? valorFormatado;
   final String? categoriaAudio;
   final Timestamp? data;
+  final String? descricao;
 
   const AdicionarReceita(
       {super.key,
       this.valorReceita,
       this.valorFormatado,
       this.categoriaAudio,
-      this.data});
+      this.data,
+      this.descricao});
 
   @override
   State<AdicionarReceita> createState() => _AdicionarReceitaState();
@@ -28,15 +30,15 @@ Color myColor = const Color.fromARGB(255, 30, 163, 132);
 Color myColorGray = const Color.fromARGB(255, 121, 108, 108);
 
 class _AdicionarReceitaState extends State<AdicionarReceita> {
-  bool toggleValue = false;
-  String recebido = "Não Recebido";
   List<bool> isSelected = [true, false, false];
+  String? descricao;
   bool vertical = false;
   String uid = FirebaseAuth.instance.currentUser!.uid;
   String? categoria;
   List<String> categorias = [];
 
   final TextEditingController _valorController = TextEditingController();
+  final TextEditingController _descricaoController = TextEditingController();
   final TextEditingController _categoriaController = TextEditingController();
   Timestamp? _dataSelecionada;
   bool outrosSelecionado = false;
@@ -56,6 +58,10 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     } else if (widget.valorReceita != null) {
       _valorController.text =
           widget.valorReceita!.toStringAsFixed(2).replaceAll('.', ',');
+    }
+
+    if (widget.descricao != null) {
+      _descricaoController.text = widget.descricao!;
     }
 
     if (widget.data != null) {
@@ -81,10 +87,9 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     }
   }
 
-  // Função para formatar o valor inserido com vírgulas
   TextInputFormatter _getInputFormatter() {
     return LengthLimitingTextInputFormatter(
-        15); // Limita o tamanho total do valor para 12 caracteres
+        15);
   }
 
   Future<void> _carregarCategorias() async {
@@ -289,36 +294,28 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                             Row(
                               children: [
                                 const Icon(
-                                  Icons.check_circle_outline_outlined,
+                                  Icons.description_outlined,
                                   size: 40,
                                 ),
-                                Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 5)),
-                                Text(
-                                  recebido,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 5),
                                 ),
                               ],
                             ),
-                            Switch(
-                              value: toggleValue,
-                              onChanged: (bool newValue) {
-                                setState(() {
-                                  toggleValue = newValue;
-                                  recebido =
-                                      toggleValue ? "Recebido" : "Não Recebido";
-                                });
-                              },
-                              activeColor: Colors.white,
-                              activeTrackColor: myColor,
-                              inactiveTrackColor: Colors.grey[300],
-                              inactiveThumbColor: Colors.white,
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: TextField(
+                                  controller: _descricaoController,
+                                  decoration: InputDecoration(
+                                    hintText: "Digite uma descrição",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  maxLines: 1,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -404,20 +401,14 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     categoria != null &&
                                     _dataSelecionada != null) {
                                   try {
-                                    await addReceita(
-                                        uid,
-                                        valor,
-                                        categoria!,
-                                        _dataSelecionada!,
-                                        toggleValue
-                                            ? "Recebido"
-                                            : "Não Recebido");
+                                    await addReceita(uid, valor, categoria!,
+                                        _dataSelecionada!, descricao!);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
                                         context: context,
                                         texto:
-                                            "Falha ao adicionar despesa. Tente novamente.");
+                                            "Falha ao adicionar receita. Tente novamente.");
                                   }
                                 } else {
                                   mostrarSnackBar(

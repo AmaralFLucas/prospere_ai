@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:prospere_ai/services/bancoDeDados.dart';
+import 'package:intl/intl.dart';
 
 class Planejamento extends StatefulWidget {
   const Planejamento({Key? key, this.title, required this.userId})
@@ -22,12 +23,15 @@ class _PlanejamentoState extends State<Planejamento> {
   List<Map<String, dynamic>> planList = [];
   String uid = FirebaseAuth.instance.currentUser!.uid;
   double totalGasto = 0;
+  String selectedFilter = 'Todos';
   double totalGastosPlanejado = 0;
   double totalObjetivosPlanejado = 0;
-  double totalObjetivo = 0; // Para os objetivos que serão subtraídos do total
+  double totalObjetivo = 0;
   bool showCategoryDropdown = false;
   String? selectedCategory;
   List<String> categorias = [];
+  final TextEditingController _nome = TextEditingController();
+  final TextEditingController _valor = TextEditingController();
 
   @override
   void initState() {
@@ -49,217 +53,333 @@ class _PlanejamentoState extends State<Planejamento> {
   }
 
   Future<void> _loadMetas() async {
-  String userId = widget.userId;
+    String userId = widget.userId;
 
-  Stream<QuerySnapshot> metasStream = FirebaseFirestore.instance
-      .collection('users')
-      .doc(userId)
-      .collection('metasFinanceiras')
-      .snapshots();
+    Stream<QuerySnapshot> metasStream = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('metasFinanceiras')
+        .snapshots();
 
-  metasStream.listen((snapshot) {
-    setState(() {
-      planList = snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        final value = data['valorMeta'];
-        final spent = (data['valorAtual'] > value)
-            ? value
-            : data['valorAtual']; // Limita o valor máximo
-        return {
-          'id': doc.id,
-          'name': data['descricao'],
-          'value': value,
-          'spent': spent,
-          'category': data['categoria'],
-          'isExpense': data['tipoMeta'] == 'gastoMensal', // Filtro para gastos mensais
-        };
-      }).toList();
+    metasStream.listen((snapshot) {
+      setState(() {
+        planList = snapshot.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          final value = data['valorMeta'];
+          final spent = (data['valorAtual'] > value)
+              ? value
+              : data['valorAtual']; // Limita o valor máximo
+          return {
+            'id': doc.id,
+            'name': data['descricao'],
+            'value': value,
+            'spent': spent,
+            'category': data['categoria'],
+            'isExpense':
+                data['tipoMeta'] == 'gastoMensal', // Filtro para gastos mensais
+          };
+        }).toList();
 
-      // Calcula totais separados
-      totalObjetivosPlanejado = planList
-          .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
-          .fold(0, (sum, item) => sum + item['value']); // Soma os valores das metas de objetivo
+        // Calcula totais separados
+        totalObjetivosPlanejado = planList
+            .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    item['value']); // Soma os valores das metas de objetivo
 
-      totalGastosPlanejado = planList
-          .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
-          .fold(0, (sum, item) => sum + item['value']); // Soma os valores das metas de gasto
+        totalGastosPlanejado = planList
+            .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum + item['value']); // Soma os valores das metas de gasto
 
-      totalGasto = planList
-          .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
-          .fold(0, (sum, item) => sum + item['spent']); // Soma os valores gastos de metas de gasto
+        totalGasto = planList
+            .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    item['spent']); // Soma os valores gastos de metas de gasto
 
-      totalObjetivo = planList
-          .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
-          .fold(0, (sum, item) => sum + item['spent']); // Soma os valores gastos de metas de objetivo
+        totalObjetivo = planList
+            .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
+            .fold(
+                0,
+                (sum, item) =>
+                    sum +
+                    item[
+                        'spent']); // Soma os valores gastos de metas de objetivo
+      });
     });
-  });
-}
-
+  }
 
   @override
   Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      backgroundColor: myColor,
-      automaticallyImplyLeading: false,
-      title: const Text(
-        'Planejamento',
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+    // Aplica o filtro selecionado à lista de metas
+    List<Map<String, dynamic>> filteredList = planList;
+    if (selectedFilter == 'Objetivos') {
+      filteredList = planList.where((item) => !item['isExpense']).toList();
+    } else if (selectedFilter == 'Gastos') {
+      filteredList = planList.where((item) => item['isExpense']).toList();
+    }
+
+    // Recalcula os totais baseados na lista filtrada
+    double filteredTotalObjetivosPlanejado = filteredList
+        .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
+        .fold(
+            0,
+            (sum, item) =>
+                sum + item['value']); // Soma os valores das metas de objetivo
+
+    double filteredTotalObjetivo = filteredList
+        .where((item) => !item['isExpense']) // Apenas metas de "objetivo"
+        .fold(
+            0,
+            (sum, item) =>
+                sum +
+                item['spent']); // Soma os valores gastos de metas de objetivo
+
+    double filteredTotalGastosPlanejado = filteredList
+        .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
+        .fold(
+            0,
+            (sum, item) =>
+                sum + item['value']); // Soma os valores das metas de gasto
+
+    double filteredTotalGasto = filteredList
+        .where((item) => item['isExpense']) // Apenas metas de "gastoMensal"
+        .fold(
+            0,
+            (sum, item) =>
+                sum +
+                item['spent']); // Soma os valores gastos de metas de gasto
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: myColor,
+        title: const Text(
+          'Planejamento',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(16),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Filtro de seleção
+            Row(
+              children: [
+                const Text(
+                  "Filtrar por:",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 16),
+                DropdownButton<String>(
+                  value: selectedFilter,
+                  items: const [
+                    DropdownMenuItem(
+                      value: 'Todos',
+                      child: Text('Todos'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Objetivos',
+                      child: Text('Objetivos'),
+                    ),
+                    DropdownMenuItem(
+                      value: 'Gastos',
+                      child: Text('Gastos Mensais'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      selectedFilter = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            // Gráficos
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                if (selectedFilter !=
+                    'Gastos') // Mostra apenas para "Todos" ou "Objetivos"
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: _buildFilteredObjectiveChart(
+                        filteredTotalObjetivo,
+                        filteredTotalObjetivosPlanejado,
+                      ),
+                    ),
+                  ),
+                if (selectedFilter !=
+                    'Objetivos') // Mostra apenas para "Todos" ou "Gastos"
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: cardColor,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 8,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: _buildFilteredExpenseChart(
+                        filteredTotalGasto,
+                        filteredTotalGastosPlanejado,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // Lista de metas filtradas
+            Expanded(
+              child: _buildPlanList(filteredList),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _showAddPlanDialog(context);
+        },
+        backgroundColor: myColor,
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Widget _buildFilteredObjectiveChart(double totalSpent, double totalPlanned) {
+    double spentPercentage =
+        totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
+    double remainingPercentage = 100 - spentPercentage;
+
+    return Center(
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: _buildObjectiveChart(),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: _buildExpenseChart(),
-                ),
-              ),
-            ],
+          const Text(
+            'Planejamento de Objetivos',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 24), // Espaço entre gráficos e a lista
-          Expanded(child: _buildPlanList()),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value: spentPercentage,
+                    title: '${spentPercentage.toStringAsFixed(2)}%',
+                  ),
+                  PieChartSectionData(
+                    color: Colors.grey,
+                    value: remainingPercentage,
+                    title: '${remainingPercentage.toStringAsFixed(2)}%',
+                  ),
+                ],
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                centerSpaceRadius: 40,
+              ),
+            ),
+          ),
         ],
       ),
-    ),
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        _showAddPlanDialog(context);
-      },
-      backgroundColor: myColor,
-      child: const Icon(Icons.add),
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-  );
-}
+    );
+  }
 
-  Widget _buildObjectiveChart() {
-  return Center(
-    child: Column(
-      children: [
-        const Text(
-          'Planejamento de Objetivos',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: PieChart(
-            PieChartData(
-              sections: [
-                PieChartSectionData(
-                  color: Colors.green,
-                  value: totalObjetivo, // Total de objetivos
-                  radius: 50,
-                ),
-                PieChartSectionData(
-                  color: Colors.grey,
-                  value: totalObjetivosPlanejado - totalObjetivo, // Parte não concluída dos objetivos
-                  radius: 50,
-                ),
-              ],
-              borderData: FlBorderData(show: false),
-              sectionsSpace: 0,
-              centerSpaceRadius: 40,
+  Widget _buildFilteredExpenseChart(double totalSpent, double totalPlanned) {
+    double spentPercentage =
+        totalPlanned > 0 ? (totalSpent / totalPlanned) * 100 : 0;
+    double remainingPercentage = 100 - spentPercentage;
+
+    return Center(
+      child: Column(
+        children: [
+          const Text(
+            'Planejamento de Gastos Mensais',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 150,
+            height: 150,
+            child: PieChart(
+              PieChartData(
+                sections: [
+                  PieChartSectionData(
+                    color: Colors.red,
+                    value: spentPercentage,
+                    title: '${spentPercentage.toStringAsFixed(2)}%',
+                  ),
+                  PieChartSectionData(
+                    color: Colors.green,
+                    value: remainingPercentage,
+                    title: '${remainingPercentage.toStringAsFixed(2)}%',
+                  ),
+                ],
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 0,
+                centerSpaceRadius: 40,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
 
-Widget _buildExpenseChart() {
-  return Center(
-    child: Column(
-      children: [
-        const Text(
-          'Planejamento de Gastos Mensais',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: 150,
-          height: 150,
-          child: PieChart(
-            PieChartData(
-              sections: [
-                PieChartSectionData(
-                  color: Colors.green,
-                  value: totalGastosPlanejado, // Valor total de metas planejadas
-                  radius: 50,
-                ),
-                PieChartSectionData(
-                  color: Colors.red,
-                  value: totalGasto, // Total de gastos
-                  radius: 50,
-                ),
-              ],
-              borderData: FlBorderData(show: false),
-              sectionsSpace: 0,
-              centerSpaceRadius: 40,
-            ),
-          ),
-        ),
-        const SizedBox(height: 10),
-      ],
-    ),
-  );
-}
-
-  Widget _buildPlanList() {
+  Widget _buildPlanList(List<Map<String, dynamic>> metas) {
     return ListView.builder(
-      itemCount: planList.length,
+      itemCount:
+          metas.length, // Corrigir para usar o comprimento da lista filtrada
       itemBuilder: (context, index) {
-        return _buildPlanCard(planList[index], index);
+        final meta = metas[index];
+        return _buildPlanCard(meta, index);
       },
     );
+  }
+
+// Função para formatar valores monetários
+  String formatCurrency(double value) {
+    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return format.format(value);
   }
 
   Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
     final isObjective = !plan['isExpense'];
     final backgroundColor = isObjective ? Colors.grey : Colors.green;
     final progressColor = isObjective ? Colors.green : Colors.red;
+
+    double percentage =
+        plan['value'] > 0 ? (plan['spent'] / plan['value']) * 100 : 0;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -303,7 +423,7 @@ Widget _buildExpenseChart() {
                       _confirmDeleteMeta(plan['id'], index);
                     },
                   ),
-                  if (isObjective)
+                  if (!plan['isExpense'])
                     IconButton(
                       icon: const Icon(Icons.add, color: Colors.green),
                       onPressed: () {
@@ -324,12 +444,14 @@ Widget _buildExpenseChart() {
                   sections: [
                     PieChartSectionData(
                       color: progressColor,
-                      value: plan['spent'],
+                      value: percentage,
+                      title: '${percentage.toStringAsFixed(2)}%',
                       radius: 40,
                     ),
                     PieChartSectionData(
                       color: backgroundColor,
-                      value: plan['value'] - plan['spent'],
+                      value: 100 - percentage,
+                      title: '${(100 - percentage).toStringAsFixed(2)}%',
                       radius: 40,
                     ),
                   ],
@@ -340,9 +462,10 @@ Widget _buildExpenseChart() {
               ),
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 25),
+          // Exibe os valores formatados
           Text(
-            'Valor Planejado: R\$: ${plan['value'].toStringAsFixed(2)}',
+            'Valor Planejado: ${formatCurrency(plan['value'])}',
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
@@ -350,8 +473,8 @@ Widget _buildExpenseChart() {
           ),
           Text(
             isObjective
-                ? 'Valor Atingido: R\$: ${plan['spent'].toStringAsFixed(2)}'
-                : 'Gasto Atual: R\$: ${plan['spent'].toStringAsFixed(2)}',
+                ? 'Valor Atingido: ${formatCurrency(plan['spent'])}'
+                : 'Gasto Atual: ${formatCurrency(plan['spent'])}',
             style: const TextStyle(
               fontSize: 16,
               color: Colors.black87,
@@ -386,9 +509,6 @@ Widget _buildExpenseChart() {
               ),
               onPressed: () async {
                 await deletarMeta(widget.userId, metaId);
-                setState(() {
-                  planList.removeAt(index);
-                });
                 _loadMetas();
                 Navigator.of(context).pop();
               },
@@ -400,8 +520,6 @@ Widget _buildExpenseChart() {
   }
 
   void _showAddPlanDialog(BuildContext context) {
-    String planName = '';
-    String planValue = '';
     bool isExpense = false;
 
     showDialog(
@@ -423,7 +541,7 @@ Widget _buildExpenseChart() {
                       ),
                     ),
                     onChanged: (value) {
-                      planName = value;
+                      _nome.text = value;
                     },
                   ),
                   TextField(
@@ -436,7 +554,7 @@ Widget _buildExpenseChart() {
                     ),
                     keyboardType: TextInputType.number,
                     onChanged: (value) {
-                      planValue = value;
+                      _valor.text = value;
                     },
                   ),
                   if (showCategoryDropdown)
@@ -489,6 +607,8 @@ Widget _buildExpenseChart() {
               ),
               onPressed: () {
                 Navigator.of(context).pop();
+                isExpense = false;
+                showCategoryDropdown = isExpense;
               },
             ),
             TextButton(
@@ -497,34 +617,23 @@ Widget _buildExpenseChart() {
                 style: TextStyle(color: myColor),
               ),
               onPressed: () async {
-                if (planName.isNotEmpty && planValue.isNotEmpty) {
-                  double valorMeta = double.parse(planValue);
+                if (_nome.text.isNotEmpty && _valor.text.isNotEmpty) {
+                  double valorMeta = double.parse(_valor.text);
                   double valorAtual = 0.0;
+                  print(selectedCategory);
                   if (isExpense && selectedCategory != null) {
-                    QuerySnapshot despesasSnapshot = await FirebaseFirestore
-                        .instance
-                        .collection('users')
-                        .doc(widget.userId)
-                        .collection('despesas')
-                        .where('categoria', isEqualTo: selectedCategory)
-                        .get();
-
-                    valorAtual = despesasSnapshot.docs
-                        .fold(0, (sum, doc) => sum + (doc['valor'] as double));
+                    criarMetaGastoMensal(
+                        widget.userId,
+                        _nome.text,
+                        valorMeta,
+                        selectedCategory!,
+                        valorAtual,
+                        isExpense ? 'gastoMensal' : 'objetivo');
                   }
-                  FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(widget.userId)
-                      .collection('metasFinanceiras')
-                      .add({
-                    'descricao': planName,
-                    'valorMeta': valorMeta,
-                    'valorAtual': valorAtual,
-                    'categoria': selectedCategory,
-                    'tipoMeta': isExpense ? 'gastoMensal' : 'objetivo',
-                  });
                   _loadMetas();
                   Navigator.of(context).pop();
+                  isExpense = false;
+                  showCategoryDropdown = isExpense;
                 }
               },
             )
@@ -663,7 +772,7 @@ Widget _buildExpenseChart() {
           title: const Text('Adicionar Valor à Meta'),
           content: TextField(
             decoration: InputDecoration(
-              labelText: 'Valor Adicional',
+              labelText: 'Valor Atingido',
               labelStyle: TextStyle(color: textColor),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: myColor),
