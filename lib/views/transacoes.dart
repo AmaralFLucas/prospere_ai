@@ -146,11 +146,20 @@ class _TransacoesState extends State<Transacoes>
               saldoAtual = totalReceitas - totalDespesas;
 
               // Combinar transações e aplicar filtros
+              // Combinar transações e aplicar filtros
               List<Map<String, dynamic>> transacoes = [
-                ...receitas.map((r) => {...r, 'tipo': 'receita'}),
-                ...despesas.map((d) => {...d, 'tipo': 'despesa'}),
+                ...receitasSnapshot.data!.docs.map((doc) => {
+                      ...doc.data() as Map<String, dynamic>,
+                      'docId': doc.id,
+                      'tipo': 'receita',
+                    }),
+                ...despesasSnapshot.data!.docs.map((doc) => {
+                      ...doc.data() as Map<String, dynamic>,
+                      'docId': doc.id,
+                      'tipo': 'despesa',
+                    }),
               ];
-
+              print(transacoes);
               // Ordenar e filtrar
               transacoes.sort((a, b) =>
                   (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
@@ -165,7 +174,7 @@ class _TransacoesState extends State<Transacoes>
                   children: [
                     _buildBalanceCard(),
                     const SizedBox(height: 20),
-                    _buildTransactionList(transacoesFiltradas),
+                    _buildTransactionList(transacoesFiltradas, widget.userId),
                   ],
                 ),
               );
@@ -587,7 +596,8 @@ class _TransacoesState extends State<Transacoes>
     );
   }
 
-  Widget _buildTransactionList(List<Map<String, dynamic>> transacoes) {
+  Widget _buildTransactionList(
+      List<Map<String, dynamic>> transacoes, String userId) {
     return Container(
       padding: const EdgeInsets.all(16),
       width: double.infinity,
@@ -605,13 +615,14 @@ class _TransacoesState extends State<Transacoes>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          ..._buildTransactionItems(transacoes),
+          ..._buildTransactionItems(transacoes, userId),
         ],
       ),
     );
   }
 
-  List<Widget> _buildTransactionItems(List<Map<String, dynamic>> transacoes) {
+  List<Widget> _buildTransactionItems(
+      List<Map<String, dynamic>> transacoes, String userId) {
     List<Widget> transactionItems = [];
 
     transactionItems.addAll(transacoes.map((transacao) {
@@ -640,11 +651,14 @@ class _TransacoesState extends State<Transacoes>
       return Column(
         children: [
           _buildTransactionItem(
+            userId,
+            transacao['docId'], // Passa o ID do documento para exclusão
+            transacao['tipo'],
             '${transacao['categoria']}',
             'R\$ ${transacao['valor']}',
             'Data: $formattedDate',
             cor,
-            iconeCategoria, // Passar o ícone da categoria
+            iconeCategoria,
           ),
           const SizedBox(height: 10),
         ],
@@ -654,8 +668,15 @@ class _TransacoesState extends State<Transacoes>
     return transactionItems;
   }
 
-  Widget _buildTransactionItem(String title, String value, String data,
-      Color textColor, IconData icone) {
+  Widget _buildTransactionItem(
+      String userId,
+      String docId,
+      String tipo,
+      String title,
+      String value,
+      String data,
+      Color textColor,
+      IconData icone) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -683,6 +704,12 @@ class _TransacoesState extends State<Transacoes>
                   color: textColor,
                 ),
               ),
+              IconButton(
+                icon: Icon(Icons.delete_forever_outlined, color: myColor2),
+                onPressed: () {
+                  _confirmarExclusao(userId, docId, tipo);
+                },
+              ),
             ],
           ),
           const SizedBox(height: 5),
@@ -696,5 +723,45 @@ class _TransacoesState extends State<Transacoes>
         ],
       ),
     );
+  }
+
+  void _confirmarExclusao(String userId, String docId, String tipo) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirmar Exclusão'),
+          content: Text('Tem certeza de que deseja excluir esta transação?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _excluirTransacao(userId, docId, tipo);
+              },
+              child: Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _excluirTransacao(
+      String userId, String docId, String tipo) async {
+    try {
+      if (tipo == 'receita') {
+        await excluirReceita(userId, docId);
+      } else {
+        await excluirDespesa(userId, docId);
+      }
+      // Atualizar a lista de transações após a exclusão (depende da sua lógica de estado)
+      // Exemplo: setState(() => _fetchTransacoes());
+    } catch (e) {
+      print('Erro ao excluir transação: $e');
+    }
   }
 }
