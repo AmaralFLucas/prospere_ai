@@ -598,14 +598,27 @@ class _RelatorioState extends State<Relatorio>
         final transaction = filteredTransactions[index];
         DateTime transactionDate = (transaction['data'] as Timestamp).toDate();
         print(transactionDate);
+
+        // Definir a cor com base no tipo da transação
+        Color corTexto = transaction['tipo'] == 'receita' ? myColor : myColor2;
+
         return Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
-            title: Text(transaction['descricao'] ?? 'Descrição não disponível'),
-            subtitle: Text(DateFormat('dd/MM/yyyy').format(transactionDate)),
-            trailing:
-                Text('R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}'),
+            title: Text(
+              transaction['descricao'] ?? 'Descrição não disponível',
+              style: TextStyle(
+                  color: corTexto), // Aplica a cor ao texto da descrição
+            ),
+            subtitle: Text(
+              DateFormat('dd/MM/yyyy').format(transactionDate),
+            ),
+            trailing: Text(
+              'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}',
+              style:
+                  TextStyle(color: corTexto), // Aplica a cor ao texto do valor
+            ),
           ),
         );
       },
