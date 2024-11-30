@@ -312,6 +312,7 @@ Stream<QuerySnapshot> getMetas(String userId, String tipoMeta) {
 Future<List<Map<String, dynamic>>> getCategorias(
     String userId, String tipo) async {
   CollectionReference categorias;
+  
 
   if (tipo == 'receita') {
     categorias = FirebaseFirestore.instance
@@ -324,6 +325,7 @@ Future<List<Map<String, dynamic>>> getCategorias(
         .doc(userId)
         .collection('categoriasDespesas');
   }
+  
 
   QuerySnapshot snapshot = await categorias.get();
 
@@ -337,6 +339,7 @@ Future<List<Map<String, dynamic>>> getCategorias(
       'icone': data['icone'],
     };
   }).toList();
+  
 }
 
 Future<List<Map<String, dynamic>>> getReceitas(String userId) async {
