@@ -51,29 +51,22 @@ class _InteligenciaArtificialState extends State<InteligenciaArtificial> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: isLoading
-            ? const Center(child: CircularProgressIndicator()) // Mostra carregamento
+            ? const Center(child: CircularProgressIndicator())
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
                   const Text(
                     "Aqui você vai ver alguns insights para melhorar sua vida financeira",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,
+                      fontWeight: FontWeight.bold,
                       color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 20),
                   aiAnalysis != null
-                      ? Text(
-                          aiAnalysis!,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.black87,
-                          ),
-                        )
+                      ? _buildDynamicContent(aiAnalysis!)
                       : const Text(
                           "Sem dados para análise.",
                           textAlign: TextAlign.center,
@@ -83,6 +76,7 @@ class _InteligenciaArtificialState extends State<InteligenciaArtificial> {
                           ),
                         ),
                   const SizedBox(height: 20),
+                  const Divider(thickness: 2),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -104,6 +98,54 @@ class _InteligenciaArtificialState extends State<InteligenciaArtificial> {
                 ],
               ),
       ),
+    );
+  }
+
+  Widget _buildDynamicContent(String analysisText) {
+    // Remove os asteriscos (*) do texto
+    final cleanText = analysisText.replaceAll('*', '');
+
+    // Divide o texto em linhas para processar títulos e parágrafos
+    final lines = cleanText.split('\n').map((line) => line.trim()).toList();
+
+    // Lista de widgets formatados
+    List<Widget> widgets = [];
+
+    for (var line in lines) {
+      if (line.isEmpty) continue; // Ignora linhas vazias
+
+      if (line.endsWith(':')) {
+        // Trata linhas que terminam com ":" como títulos
+        widgets.add(Padding(
+          padding: const EdgeInsets.only(top: 16.0),
+          child: Text(
+            line, // Adiciona o título
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.teal,
+            ),
+          ),
+        ));
+      } else {
+        // Adiciona texto normal para outras linhas
+        widgets.add(Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            line, // Adiciona o conteúdo
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black87,
+              height: 1.5,
+            ),
+          ),
+        ));
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
     );
   }
 }

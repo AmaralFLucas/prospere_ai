@@ -19,12 +19,19 @@ class _LoginState extends State<Login> {
   TextEditingController passwordController = TextEditingController();
   final AutenticacaoServico _autenServico = AutenticacaoServico();
   final _formKey = GlobalKey<FormState>();
+  bool obscurePassword = true;
 
   // Máscara de email (não convencional, mas pode ser aplicada se necessário)
   final MaskTextInputFormatter emailMaskFormatter = MaskTextInputFormatter(
     mask: '############################', // Limite de caracteres para e-mail
     filter: {"#": RegExp(r'[a-zA-Z0-9@.]')},
   );
+
+  void togglePasswordVisibility() {
+    setState(() {
+      obscurePassword = !obscurePassword;
+    });
+  }
 
   bool validateEmail(String email) {
     return email.contains('@') && email.contains('.');
@@ -110,7 +117,16 @@ class _LoginState extends State<Login> {
                       child: MeuInput(
                         labelText: 'Senha',
                         controller: passwordController,
-                        obscure: true,
+                        obscure: obscurePassword,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            obscurePassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: accentColor,
+                          ),
+                          onPressed: togglePasswordVisibility,
+                        ),
                       ),
                     ),
                   ],

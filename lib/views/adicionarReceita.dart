@@ -89,7 +89,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
 
   TextInputFormatter _getInputFormatter() {
     return LengthLimitingTextInputFormatter(
-        15);
+        17);
   }
 
   Future<void> _carregarCategorias() async {
@@ -402,7 +402,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     _dataSelecionada != null) {
                                   try {
                                     await addReceita(uid, valor, categoria!,
-                                        _dataSelecionada!, descricao!);
+                                        _dataSelecionada!, _descricaoController.text);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
