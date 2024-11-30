@@ -9,35 +9,39 @@ class CurrencyTextInputFormatter extends TextInputFormatter {
       return const TextEditingValue(text: '');
     }
 
-    // Remove todos os caracteres que não são dígitos
-    String digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d.]'), '');
+    // Remove caracteres não numéricos
+    String digitsOnly = newValue.text.replaceAll(RegExp(r'[^\d]'), '');
 
-    // Se a string estiver vazia, retorna
+    // Se estiver vazio, retorna
     if (digitsOnly.isEmpty) {
       return const TextEditingValue(text: '');
     }
 
-    // Adiciona as casas decimais
-    String formattedValue;
-    if (digitsOnly.length > 2) {
-      String wholePart = digitsOnly.substring(0, digitsOnly.length - 2);
-      String decimalPart =
-          digitsOnly.substring(digitsOnly.length - 2).padLeft(2);
-      formattedValue = '$wholePart,$decimalPart';
-    } else if (digitsOnly.length == 2) {
-      formattedValue = ',$digitsOnly';
-    } else {
-      formattedValue = ',${digitsOnly.padLeft(2)}';
-    }
+    // Formata com casas decimais
+    String wholePart = digitsOnly.substring(0, digitsOnly.length - 2);
+    String decimalPart = digitsOnly.substring(digitsOnly.length - 2);
+    String formattedValue = '$wholePart,$decimalPart';
 
-    // Formata para adicionar separadores de milhar
-    formattedValue = formatToCurrency(formattedValue);
+    // Adiciona separadores de milhar corretamente
+    formattedValue = _addThousandSeparator(formattedValue);
 
-    // Ajusta o cursor na posição correta
+    // Retorna o valor formatado com o cursor ajustado
     return TextEditingValue(
       text: formattedValue,
       selection: TextSelection.collapsed(offset: formattedValue.length),
     );
+  }
+
+  String _addThousandSeparator(String value) {
+    // Separa a parte inteira e decimal
+    List<String> parts = value.split(',');
+    String wholePart = parts[0].replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (Match match) => '${match[1]}.',
+    );
+
+    // Junta a parte formatada com a decimal
+    return 'R\$ $wholePart${parts.length > 1 ? ',' + parts[1] : ''}';
   }
 
   String formatToCurrency(String value) {

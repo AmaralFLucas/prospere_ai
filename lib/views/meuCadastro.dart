@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:prospere_ai/views/homePage.dart';
+import 'package:prospere_ai/services/bancoDeDados.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 
 class MeuCadastro extends StatefulWidget {
-  const MeuCadastro({super.key});
+  const MeuCadastro(
+      {super.key,
+      this.nome,
+      this.email,
+      this.cpf,
+      this.telefone,
+      this.nascimento,
+      this.objetivo,
+      required this.userId});
+
+  final String? nome;
+  final String? email;
+  final String? cpf;
+  final String? telefone;
+  final DateTime? nascimento;
+  final String? objetivo;
+  final String userId;
 
   @override
   State<MeuCadastro> createState() => _MeuCadastroState();
@@ -17,55 +33,75 @@ class _MeuCadastroState extends State<MeuCadastro> {
   final _emailController = TextEditingController();
   final _telefoneController = MaskedTextController(mask: '(00) 0000-0000');
   final _cpfController = MaskedTextController(mask: '000.000.000-00');
-  final _cepController = MaskedTextController(mask: '00000-000');
-  final _cidadeController = TextEditingController();
-  final _estadoController = TextEditingController();
   final _objetivoFinanceiroController = TextEditingController();
   final TextEditingController _dataNascimentoController =
-      TextEditingController(); // Controlador para a data de nascimento
+      TextEditingController();
 
   DateTime? _dataNascimento;
-  String? _sexo;
+  bool _isLoading = true;
+  bool _isEditing = false; // Variável para controlar a edição
 
   @override
-  void dispose() {
-    _nomeController.dispose();
-    _emailController.dispose();
-    _telefoneController.dispose();
-    _cpfController.dispose();
-    _cepController.dispose();
-    _cidadeController.dispose();
-    _estadoController.dispose();
-    _objetivoFinanceiroController.dispose();
-    _dataNascimentoController
-        .dispose(); // Descartar o controlador da data de nascimento
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadCadastro();
   }
 
-  Future<void> _selecionarDataNascimento(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null) {
+  Future<void> _loadCadastro() async {
+    final userId = widget.userId;
+
+    try {
+      final List<Map<String, dynamic>> data = await getCadastro(userId);
+
       setState(() {
-        _dataNascimento = picked;
-        _dataNascimentoController.text =
-            '${picked.day}/${picked.month}/${picked.year}'; // Atualiza o controlador com a data escolhida
+        if (data.isNotEmpty) {
+          final cadastro = data.first;
+
+          _nomeController.text = cadastro['nome'] ?? '';
+          _emailController.text = cadastro['email'] ?? '';
+          _telefoneController.text = cadastro['telefone'] ?? '';
+          _cpfController.text = cadastro['cpf'] ?? '';
+          _objetivoFinanceiroController.text = cadastro['objetivo'] ?? '';
+
+          if (cadastro['nascimento'] != null) {
+            _dataNascimento = DateTime.parse(cadastro['nascimento']);
+            _dataNascimentoController.text =
+                '${_dataNascimento!.day}/${_dataNascimento!.month}/${_dataNascimento!.year}';
+          }
+        } else {
+          print("Nenhum cadastro encontrado.");
+        }
+
+        _isLoading = false;
+      });
+    } catch (e) {
+      print("Erro ao carregar dados: $e");
+      setState(() {
+        _isLoading = false;
       });
     }
   }
 
-  void _salvarCadastro() {
+  void _salvarCadastro() async {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cadastro salvo com sucesso!')),
+        const SnackBar(content: Text('Dados do MeuCadastro atualizados com sucesso!')),
       );
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const HomePage()),
+
+      await updateCadastro(
+        widget.userId,
+        _nomeController.text, // Nome
+        _emailController.text, // Email
+        _telefoneController.text, // Telefone
+        _dataNascimento!, // Data de Nascimento
+        _objetivoFinanceiroController.text, // Objetivo Financeiro
+        _cpfController.text, // CPF
       );
+
+      setState(() {
+        _loadCadastro();
+        _isEditing = false; // Volta para o modo de visualização após salvar
+      });
     }
   }
 
@@ -79,65 +115,98 @@ class _MeuCadastroState extends State<MeuCadastro> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         elevation: 0,
-        automaticallyImplyLeading: true, // Remove o botão de voltar
+        automaticallyImplyLeading: true,
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    _buildTextLabel('Nome Completo'),
-                    _buildTextField(
-                        _nomeController, 'Digite o seu Nome Completo'),
-                    _buildTextLabel('Email'),
-                    _buildTextField(_emailController, 'Digite o seu E-mail',
-                        keyboardType: TextInputType.emailAddress),
-                    _buildTextLabel('Data de Nascimento'),
-                    _buildDateField(context), // Campo de data
-                    _buildTextLabel('Telefone'),
-                    _buildTextField(
-                        _telefoneController, 'Digite o seu Número do Telefone',
-                        keyboardType: TextInputType.phone),
-                    _buildTextLabel('CPF'),
-                    _buildTextField(_cpfController, 'Digite o seu CPF'),
-                    _buildTextLabel('Objetivo Financeiro'),
-                    _buildTextField(_objetivoFinanceiroController,
-                        'Digite qual o seu Objetivo Financeiro'),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildActionButton(
-                          label: 'Cancelar',
-                          color: Colors.white,
-                          textColor: Colors.black,
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => const HomePage()),
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 15),
-                        _buildActionButton(
-                          label: 'Salvar',
-                          color: myColor,
-                          onPressed: _salvarCadastro,
-                        ),
-                      ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: _nomeController.text.isEmpty
+                  ? const Center(child: Text('Nenhum dado encontrado.'))
+                  : Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                _buildTextLabel('Nome'),
+                                _buildTextField(
+                                  _nomeController,
+                                  _nomeController.text.isEmpty
+                                      ? 'Digite seu Nome'
+                                      : '',
+                                  enabled: _isEditing,
+                                ),
+                                _buildTextLabel('Email'),
+                                _buildTextField(
+                                  _emailController,
+                                  _emailController.text.isEmpty
+                                      ? 'Digite seu Email'
+                                      : '',
+                                  enabled: _isEditing,
+                                ),
+                                _buildTextLabel('Data de Nascimento'),
+                                _buildDateField(context, enabled: _isEditing),
+                                _buildTextLabel('Telefone'),
+                                _buildTextField(
+                                  _telefoneController,
+                                  _telefoneController.text.isEmpty
+                                      ? 'Digite o seu Número do Telefone'
+                                      : '',
+                                  enabled: _isEditing,
+                                  keyboardType: TextInputType.phone,
+                                ),
+                                _buildTextLabel('CPF'),
+                                _buildTextField(
+                                  _cpfController,
+                                  _cpfController.text.isEmpty
+                                      ? 'Digite seu CPF'
+                                      : '',
+                                  enabled: _isEditing,
+                                ),
+                                _buildTextLabel('Objetivo Financeiro'),
+                                _buildTextField(
+                                  _objetivoFinanceiroController,
+                                  _objetivoFinanceiroController.text.isEmpty
+                                      ? 'Digite qual o seu Objetivo Financeiro'
+                                      : '',
+                                  enabled: _isEditing,
+                                ),
+                                const SizedBox(height: 20),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _buildActionButton(
+                                      label: _isEditing ? 'Cancelar' : 'Editar',
+                                      color: Colors.white,
+                                      textColor: Colors.black,
+                                      onPressed: () {
+                                        setState(() {
+                                          if (_isEditing) {
+                                            _isEditing = false;
+                                          } else {
+                                            _isEditing = true;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 15),
+                                    _buildActionButton(
+                                      label: 'Salvar',
+                                      color: myColor,
+                                      onPressed: _isEditing ? _salvarCadastro : null, // Habilita o salvar somente quando em modo de edição
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -156,73 +225,54 @@ class _MeuCadastroState extends State<MeuCadastro> {
   }
 
   Widget _buildTextField(
-    TextEditingController controller,
-    String hintText, {
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return SizedBox(
-      child: TextFormField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          labelText: hintText,
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor, insira $hintText';
-          }
-          return null;
-        },
-      ),
-    );
-  }
+  TextEditingController controller,
+  String hintText, {
+  TextInputType keyboardType = TextInputType.text,
+  bool enabled = false,
+}) {
+  // Se o campo for para email, sempre desabilita
+  bool isEmailField = controller == _emailController;
 
-  Widget _buildDateField(BuildContext context) {
+  return SizedBox(
+    child: TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      enabled: !isEmailField && enabled, // Desabilita o email permanentemente
+      decoration: InputDecoration(
+        border: const OutlineInputBorder(),
+        labelText: controller.text.isEmpty
+            ? hintText
+            : null, // Mostra o texto se estiver vazio
+      ),
+      onChanged: (value) {
+        setState(() {}); // Atualiza o estado para refletir a mudança no campo
+      },
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Por favor, insira $hintText';
+        }
+        return null;
+      },
+    ),
+  );
+}
+
+  Widget _buildDateField(BuildContext context, {bool enabled = false}) {
     return SizedBox(
       child: TextFormField(
         textAlign: TextAlign.center,
-        controller:
-            _dataNascimentoController, // Controlador para a data de nascimento
-        readOnly: true, // Torna o campo somente leitura
+        controller: _dataNascimentoController,
+        readOnly: !enabled, // Só permite a edição quando estiver em modo de edição
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
-          labelText: 'Escolha a sua Data de Nascimento',
+          hintText: _dataNascimentoController.text.isEmpty
+              ? 'Escolha a sua Data de Nascimento'
+              : null, // Exibe o hintText somente se o campo estiver vazio
         ),
-        onTap: () => _selecionarDataNascimento(context),
+        onTap: enabled ? () => _selecionarDataNascimento(context) : null,
         validator: (value) {
           if (_dataNascimento == null) {
             return 'Por favor, selecione a data de nascimento';
-          }
-          return null;
-        },
-      ),
-    );
-  }
-
-  Widget _buildSexoDropdown() {
-    return SizedBox(
-      child: DropdownButtonFormField<String>(
-        value: _sexo,
-        items: const [
-          DropdownMenuItem(value: 'Masculino', child: Text('Masculino')),
-          DropdownMenuItem(value: 'Feminino', child: Text('Feminino')),
-          DropdownMenuItem(
-              value: 'Prefiro não especificar',
-              child: Text('Prefiro não especificar')),
-        ],
-        onChanged: (value) {
-          setState(() {
-            _sexo = value;
-          });
-        },
-        decoration: const InputDecoration(
-          border: OutlineInputBorder(),
-          labelText: 'Escolha o Sexo',
-        ),
-        validator: (value) {
-          if (value == null || value.isEmpty) {
-            return 'Por favor, selecione uma opção';
           }
           return null;
         },
@@ -234,7 +284,7 @@ class _MeuCadastroState extends State<MeuCadastro> {
     required String label,
     required Color color,
     Color textColor = Colors.white,
-    required VoidCallback onPressed,
+    required VoidCallback? onPressed,
   }) {
     return Container(
       height: 50,
@@ -258,8 +308,29 @@ class _MeuCadastroState extends State<MeuCadastro> {
             borderRadius: BorderRadius.circular(55),
           ),
         ),
-        child: Text(label, style: TextStyle(color: textColor)),
+        child: Text(
+          label,
+          style: TextStyle(fontSize: 18, color: textColor),
+        ),
       ),
     );
   }
+
+  Future<void> _selecionarDataNascimento(BuildContext context) async {
+    final DateTime? dataSelecionada = await showDatePicker(
+      context: context,
+      initialDate: _dataNascimento ?? DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (dataSelecionada != null && dataSelecionada != _dataNascimento) {
+      setState(() {
+        _dataNascimento = dataSelecionada;
+        _dataNascimentoController.text =
+            '${_dataNascimento!.day}/${_dataNascimento!.month}/${_dataNascimento!.year}';
+      });
+    }
+  }
 }
+

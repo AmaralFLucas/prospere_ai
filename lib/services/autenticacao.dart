@@ -10,7 +10,6 @@ class AutenticacaoServico {
         '229392966027-e0ktmec4ags230nlefjmqom7sq4qddtc.apps.googleusercontent.com',
   );
 
-  // Função para cadastrar usuário com e-mail e senha
   Future<String?> cadastrarUsuario({
     required String email,
     required String cpf,
@@ -20,6 +19,8 @@ class AutenticacaoServico {
     try {
       UserCredential userCredential = await _firebaseAuth
           .createUserWithEmailAndPassword(email: email, password: senha);
+      addCadastro(
+          userCredential.user!.uid, nome, email, DateTime.now(), '', cpf, '');
       await userCredential.user!.updateDisplayName(nome);
       await addCategoriasPadrao(userCredential.user!.uid);
       return null;
@@ -32,25 +33,23 @@ class AutenticacaoServico {
     }
   }
 
-  // Função para logar com e-mail e senha
   Future<bool> logarUsuarios(
       {required String email, required String senha}) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: senha);
-      return true; // Retorna true se o login for bem-sucedido
+      return true;
     } catch (e) {
-      print("Erro no login: $e"); // Exibe o erro no console para depuração
-      return false; // Retorna false em caso de falha no login
+      print("Erro no login: $e");
+      return false;
     }
   }
 
-  // Função para realizar o login com o Google
   Future<User?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        return null; // O usuário cancelou o login
+        return null;
       }
 
       final GoogleSignInAuthentication googleAuth =
@@ -65,7 +64,6 @@ class AutenticacaoServico {
           await _firebaseAuth.signInWithCredential(credential);
       User? user = userCredential.user;
 
-      // Aqui você pode salvar informações adicionais do usuário no Firestore, se necessário
       return user;
     } on FirebaseAuthException catch (e) {
       throw 'Erro de autenticação: ${e.message}';
@@ -80,25 +78,21 @@ class AutenticacaoServico {
 
   Future<void> deslogarUsuario() async {
     try {
-      // Verifica se o usuário está logado com o Google
       if (_firebaseAuth.currentUser != null) {
-        // Se for um login do Google, realiza o signOut no Google também
         for (final providerProfile
             in _firebaseAuth.currentUser?.providerData ?? []) {
           if (providerProfile.providerId == 'google.com') {
-            await _googleSignIn.signOut(); // Desloga do Google
+            await _googleSignIn.signOut();
             break;
           }
         }
       }
-      // Desloga do Firebase (mesmo que não seja Google)
       await _firebaseAuth.signOut();
     } catch (e) {
       print('Erro ao deslogar: $e');
     }
   }
 
-  // Função para redefinir senha
   Future<String?> redefinirSenha({required String email}) async {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);

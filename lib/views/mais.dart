@@ -4,7 +4,9 @@ import 'package:prospere_ai/views/categoriasReceitas.dart';
 import 'package:prospere_ai/views/relatorio.dart';
 
 class Mais extends StatefulWidget {
-  const Mais({super.key});
+  final bool? toggleValue;
+
+  const Mais({super.key, this.toggleValue});
 
   @override
   State<Mais> createState() => _MaisState();
@@ -16,8 +18,8 @@ class _MaisState extends State<Mais> {
   String uid = FirebaseAuth.instance.currentUser!.uid;
   bool toggleValue = false;
 
-  Widget buildNavigationOption(
-      String title, IconData icon, VoidCallback onTap, {Widget? trailing}) {
+  Widget buildNavigationOption(String title, IconData icon, VoidCallback onTap,
+      {Widget? trailing}) {
     return GestureDetector(
       onTap: onTap,
       child: Container(

@@ -1,25 +1,85 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-// class conexaoBanco {
-//   criarDespesa(uid) async {
-//     FirebaseFirestore db = await FirebaseFirestore.instance;
-//     try {
-//       await db.collection('receitas').doc(uid).set({
-//       'Nome': 'teste'
-//     });
-//     } catch (e) {
-//       print(e);
-//     }
-//   }
-// }
-
 Future<void> updateProfileImage(String userId, String imageUrl) async {
   DocumentReference userRef =
       FirebaseFirestore.instance.collection('users').doc(userId);
   await userRef.update({
-    'profileImageUrl': imageUrl, // Atualiza a URL da imagem do perfil
+    'profileImageUrl': imageUrl,
   });
+}
+
+Future<void> updateCadastro(
+    String userId,
+    String nome,
+    String email,
+    String telefone,
+    DateTime nascimento,
+    String objetivo,
+    String cpf) async {
+  CollectionReference meuCadastro = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('meuCadastro');
+
+  final querySnapshot = await meuCadastro.get();
+  if (querySnapshot.docs.isNotEmpty) {
+    final documentId = querySnapshot.docs.first.id;
+
+    await meuCadastro.doc(documentId).update({
+      'nome': nome,
+      'email': email,
+      'telefone': telefone,
+      'cpf': cpf,
+      'nascimento': nascimento.toIso8601String(),
+      'objetivo': objetivo,
+    });
+  } else {
+    print("Nenhum cadastro encontrado para o usuário.");
+  }
+}
+
+Future<void> addCadastro(String userId, String nome, String email,
+    DateTime nascimento, String telefone, String cpf, String objetivo) async {
+  CollectionReference meuCadastro = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('meuCadastro');
+  await meuCadastro.add({
+    'nome': nome,
+    'email': email,
+    'nascimento': nascimento,
+    'telefone': telefone,
+    'cpf': cpf,
+    'objetivo': objetivo,
+  });
+}
+
+Future<List<Map<String, dynamic>>> getCadastro(String userId) async {
+  try {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('meuCadastro')
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      List<Map<String, dynamic>> data = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+        docData['cadastroId'] = doc.id;
+        return docData;
+      }).toList();
+
+      print("Dados carregados: $data");
+      return data;
+    } else {
+      print("Nenhum documento encontrado na subcoleção 'meuCadastro'.");
+      return [];
+    }
+  } catch (e) {
+    print("Erro ao buscar dados do Firestore: $e");
+    return [];
+  }
 }
 
 Future<void> addReceita(String userId, double valor, String categoria,
@@ -68,6 +128,48 @@ Future<void> addDespesa(String userId, double valor, String categoria,
   }
 }
 
+Future<void> editarReceita(String userId, String docId, double valor, String categoria, Timestamp data, String descricao) async {
+  CollectionReference receitas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('receitas');
+  await receitas.doc(docId).update({
+    'valor': valor,
+    'categoria': categoria,
+    'data': data,
+    'descricao': descricao,
+  });
+}
+
+Future<void> editarDespesa(String userId, String docId, double valor, String categoria, Timestamp data, String descricao) async {
+  CollectionReference despesas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas');
+  await despesas.doc(docId).update({
+    'valor': valor,
+    'categoria': categoria,
+    'data': data,
+    'descricao': descricao,
+  });
+}
+
+Future<void> excluirReceita(String userId, String docId) async {
+  CollectionReference receitas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('receitas');
+  await receitas.doc(docId).delete();
+}
+
+Future<void> excluirDespesa(String userId, String docId) async {
+  CollectionReference despesas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas');
+  await despesas.doc(docId).delete();
+}
+
 Future<void> addCategoriasPadrao(String userId) async {
   CollectionReference categoriasReceitas = FirebaseFirestore.instance
       .collection('users')
@@ -78,7 +180,6 @@ Future<void> addCategoriasPadrao(String userId) async {
       .doc(userId)
       .collection('categoriasDespesas');
 
-  // Categorias padrão de receitas
   List<Map<String, dynamic>> categoriasReceitasPadrao = [
     {'nome': 'Salário', 'icone': Icons.monetization_on_outlined.codePoint},
     {'nome': 'Investimento', 'icone': Icons.bar_chart.codePoint},
@@ -87,7 +188,6 @@ Future<void> addCategoriasPadrao(String userId) async {
     {'nome': 'Outros', 'icone': Icons.more_horiz.codePoint},
   ];
 
-  // Categorias padrão de despesas
   List<Map<String, dynamic>> categoriasDespesasPadrao = [
     {'nome': 'Alimentação', 'icone': Icons.fastfood.codePoint},
     {'nome': 'Transporte', 'icone': Icons.directions_car.codePoint},
@@ -97,12 +197,10 @@ Future<void> addCategoriasPadrao(String userId) async {
     {'nome': 'Supermercado', 'icone': Icons.shopping_cart.codePoint},
   ];
 
-  // Adiciona as categorias de receitas
   for (var categoria in categoriasReceitasPadrao) {
     await categoriasReceitas.add(categoria);
   }
 
-  // Adiciona as categorias de despesas
   for (var categoria in categoriasDespesasPadrao) {
     await categoriasDespesas.add(categoria);
   }
@@ -126,7 +224,7 @@ Future<void> addCategoria(
 
   await categorias.add({
     'nome': nomeCategoria,
-    'icone': icone.codePoint, // Armazena o código do ícone
+    'icone': icone.codePoint,
   });
 }
 
@@ -154,7 +252,6 @@ Future<void> criarMetaGastoMensal(String userId, String descricao,
       .doc(userId)
       .collection('metasFinanceiras');
 
-  // Buscar todas as despesas já registradas na categoria
   QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -162,14 +259,12 @@ Future<void> criarMetaGastoMensal(String userId, String descricao,
       .where('categoria', isEqualTo: categoria)
       .get();
 
-  // Calcular o valor total das despesas anteriores
   double totalDespesasAnteriores = 0.0;
   for (var doc in despesasSnapshot.docs) {
     var despesaData = doc.data() as Map<String, dynamic>;
     totalDespesasAnteriores += despesaData['valor'];
   }
 
-  // Criar a meta já considerando as movimentações anteriores
   await metas.add({
     'descricao': descricao,
     'valorMeta': valorMeta,
@@ -232,16 +327,14 @@ Future<List<Map<String, dynamic>>> getCategorias(
 
   QuerySnapshot snapshot = await categorias.get();
 
-  // Debug: Verifique se as categorias foram recuperadas corretamente
   print("Número de categorias recuperadas: ${snapshot.docs.length}");
 
   return snapshot.docs.map((doc) {
     final data = doc.data() as Map<String, dynamic>;
     return {
-      'id': doc.id, // Armazena o ID do documento
+      'id': doc.id,
       'nome': data['nome'],
       'icone': data['icone'],
-      // Converte codePoint para IconData
     };
   }).toList();
 }

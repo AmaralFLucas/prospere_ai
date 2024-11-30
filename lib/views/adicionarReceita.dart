@@ -87,10 +87,9 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
     }
   }
 
-  // Função para formatar o valor inserido com vírgulas
   TextInputFormatter _getInputFormatter() {
     return LengthLimitingTextInputFormatter(
-        15); // Limita o tamanho total do valor para 12 caracteres
+        17);
   }
 
   Future<void> _carregarCategorias() async {
@@ -403,7 +402,7 @@ class _AdicionarReceitaState extends State<AdicionarReceita> {
                                     _dataSelecionada != null) {
                                   try {
                                     await addReceita(uid, valor, categoria!,
-                                        _dataSelecionada!, descricao!);
+                                        _dataSelecionada!, _descricaoController.text);
                                     Navigator.of(context).pop();
                                   } catch (error) {
                                     mostrarSnackBar(
