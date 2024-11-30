@@ -9,8 +9,14 @@ Future<void> updateProfileImage(String userId, String imageUrl) async {
   });
 }
 
-Future<void> updateCadastro(String userId, String telefone, DateTime nascimento,
-    String objetivo) async {
+Future<void> updateCadastro(
+    String userId,
+    String nome,
+    String email,
+    String telefone,
+    DateTime nascimento,
+    String objetivo,
+    String cpf) async {
   CollectionReference meuCadastro = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -21,7 +27,10 @@ Future<void> updateCadastro(String userId, String telefone, DateTime nascimento,
     final documentId = querySnapshot.docs.first.id;
 
     await meuCadastro.doc(documentId).update({
+      'nome': nome,
+      'email': email,
       'telefone': telefone,
+      'cpf': cpf,
       'nascimento': nascimento.toIso8601String(),
       'objetivo': objetivo,
     });
@@ -117,6 +126,48 @@ Future<void> addDespesa(String userId, double valor, String categoria,
       await metaDoc.reference.update({'valorAtual': novoValorAtual});
     }
   }
+}
+
+Future<void> editarReceita(String userId, String docId, double valor, String categoria, Timestamp data, String descricao) async {
+  CollectionReference receitas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('receitas');
+  await receitas.doc(docId).update({
+    'valor': valor,
+    'categoria': categoria,
+    'data': data,
+    'descricao': descricao,
+  });
+}
+
+Future<void> editarDespesa(String userId, String docId, double valor, String categoria, Timestamp data, String descricao) async {
+  CollectionReference despesas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas');
+  await despesas.doc(docId).update({
+    'valor': valor,
+    'categoria': categoria,
+    'data': data,
+    'descricao': descricao,
+  });
+}
+
+Future<void> excluirReceita(String userId, String docId) async {
+  CollectionReference receitas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('receitas');
+  await receitas.doc(docId).delete();
+}
+
+Future<void> excluirDespesa(String userId, String docId) async {
+  CollectionReference despesas = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('despesas');
+  await despesas.doc(docId).delete();
 }
 
 Future<void> addCategoriasPadrao(String userId) async {
