@@ -622,108 +622,116 @@ class _TransacoesState extends State<Transacoes>
   }
 
   List<Widget> _buildTransactionItems(
-      List<Map<String, dynamic>> transacoes, String userId) {
-    List<Widget> transactionItems = [];
+    List<Map<String, dynamic>> transacoes, String userId) {
+  List<Widget> transactionItems = [];
 
-    transactionItems.addAll(transacoes.map((transacao) {
-      Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
-      Timestamp timestamp = transacao['data'] as Timestamp;
-      DateTime dateTime = timestamp.toDate();
-      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+  transactionItems.addAll(transacoes.map((transacao) {
+    Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
+    Timestamp timestamp = transacao['data'] as Timestamp;
+    DateTime dateTime = timestamp.toDate();
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
-      // Obter o ícone correspondente à categoria
-      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
-          ? categoriasReceitas.firstWhere(
-              (cat) => cat['nome'] == transacao['categoria'],
-              orElse: () => {'icone': Icons.category.codePoint})
-          : categoriasDespesas.firstWhere(
-              (cat) => cat['nome'] == transacao['categoria'],
-              orElse: () => {'icone': Icons.category.codePoint});
+    // Obter o ícone correspondente à categoria
+    Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+        ? categoriasReceitas.firstWhere(
+            (cat) => cat['nome'] == transacao['categoria'],
+            orElse: () => {'icone': Icons.category.codePoint})
+        : categoriasDespesas.firstWhere(
+            (cat) => cat['nome'] == transacao['categoria'],
+            orElse: () => {'icone': Icons.category.codePoint});
 
-      IconData iconeCategoria;
-      if (categoria['icone'] != null) {
-        iconeCategoria =
-            IconData(categoria['icone'], fontFamily: 'MaterialIcons');
-      } else {
-        iconeCategoria = Icons.category;
-      }
+    IconData iconeCategoria;
+    if (categoria['icone'] != null) {
+      iconeCategoria =
+          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+    } else {
+      iconeCategoria = Icons.category;
+    }
 
-      return Column(
-        children: [
-          _buildTransactionItem(
-            userId,
-            transacao['docId'], // Passa o ID do documento para exclusão
-            transacao['tipo'],
-            '${transacao['categoria']}',
-            'R\$ ${transacao['valor']}',
-            'Data: $formattedDate',
-            cor,
-            iconeCategoria,
-          ),
-          const SizedBox(height: 10),
-        ],
-      );
-    }).toList());
+    // Verifica se o modo viagem está ativo para esta transação
+    bool isTravelMode = transacao['modoViagem'] ?? false;
 
-    return transactionItems;
-  }
+    return Column(
+      children: [
+        _buildTransactionItem(
+          userId,
+          transacao['docId'],
+          transacao['tipo'],
+          '${transacao['categoria']}',
+          'R\$ ${transacao['valor']}',
+          'Data: $formattedDate',
+          cor,
+          iconeCategoria,
+          isTravelMode, // Passa o estado do modo viagem
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }).toList());
+
+  return transactionItems;
+}
 
   Widget _buildTransactionItem(
-      String userId,
-      String docId,
-      String tipo,
-      String title,
-      String value,
-      String data,
-      Color textColor,
-      IconData icone) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icone, color: textColor),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor,
-                ),
+    String userId,
+    String docId,
+    String tipo,
+    String title,
+    String value,
+    String data,
+    Color textColor,
+    IconData icone,
+    bool isTravelMode) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icone, color: textColor),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                color: textColor,
               ),
-              Spacer(),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor,
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.delete_forever_outlined, color: myColor2),
-                onPressed: () {
-                  _confirmarExclusao(userId, docId, tipo);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Text(
-            data,
-            style: TextStyle(
-              fontSize: 14,
-              color: const Color.fromARGB(255, 105, 105, 105),
             ),
+            Spacer(),
+            if (isTravelMode)
+              Icon(Icons.airplanemode_active, color: myColor2, size: 16), // Ícone menor do avião
+            const SizedBox(width: 5),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                color: textColor,
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete_forever_outlined, color: myColor2),
+              onPressed: () {
+                _confirmarExclusao(userId, docId, tipo);
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          data,
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color.fromARGB(255, 105, 105, 105),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   void _confirmarExclusao(String userId, String docId, String tipo) {
     showDialog(

@@ -374,6 +374,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         iconeCategoria = Icons.category;
       }
 
+      bool isTravelMode = transacao['modoViagem'] ?? false;
+
       return Column(
         children: [
           _buildTransactionItem(
@@ -382,6 +384,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             'Data: $formattedDate',
             cor,
             iconeCategoria,
+            isTravelMode,
           ),
           const SizedBox(height: 10),
         ],
@@ -392,7 +395,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildTransactionItem(String title, String value, String data,
-      Color textColor, IconData icone) {
+      Color textColor, IconData icone, bool isTravelMode) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -413,6 +416,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                 ),
               ),
               Spacer(),
+              if (isTravelMode)
+              Icon(Icons.airplanemode_active, color: myColor2, size: 16), // Ícone menor do avião
+            const SizedBox(width: 5),
               Text(
                 value,
                 style: TextStyle(
