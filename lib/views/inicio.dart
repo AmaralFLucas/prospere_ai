@@ -174,23 +174,29 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userId)
-            .collection('receitas')
-            .snapshots(),
-        builder: (context, receitasSnapshot) {
-          if (!receitasSnapshot.hasData)
-            return Center(child: CircularProgressIndicator());
-          return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.userId)
-                .collection('despesas')
-                .snapshots(),
-            builder: (context, despesasSnapshot) {
-              if (!despesasSnapshot.hasData)
-                return Center(child: CircularProgressIndicator());
+  stream: FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('receitas')
+      .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(
+          DateTime.now().subtract(const Duration(days: 7))))
+      .snapshots(),
+  builder: (context, receitasSnapshot) {
+    if (!receitasSnapshot.hasData) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('despesas')
+          .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(
+              DateTime.now().subtract(const Duration(days: 7))))
+          .snapshots(),
+      builder: (context, despesasSnapshot) {
+        if (!despesasSnapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
 
               List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
                   .map((doc) => doc.data() as Map<String, dynamic>)

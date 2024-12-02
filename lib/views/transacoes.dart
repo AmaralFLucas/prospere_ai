@@ -40,6 +40,7 @@ class _TransacoesState extends State<Transacoes>
   void initState() {
     super.initState();
     loadCategorias();
+    selectedPeriodo;
 
     _animationController = AnimationController(
       vsync: this,
@@ -60,32 +61,53 @@ class _TransacoesState extends State<Transacoes>
         () {}); // Atualizar o estado para garantir que os ícones sejam carregados
   }
 
-  void _fetchTransactions() async {
-    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .collection('receitas')
-        .get();
-    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .collection('despesas')
-        .get();
+  void _fetchTransactions({DateTimeRange? filtroPeriodo}) async {
+  DateTime now = DateTime.now();
+  DateTime inicioFiltro = filtroPeriodo?.start ?? DateTime(now.year, now.month, 1);
+  DateTime fimFiltro = filtroPeriodo?.end ?? DateTime(now.year, now.month + 1, 0);
 
-    List<Map<String, dynamic>> receitas = receitasSnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-    List<Map<String, dynamic>> despesas = despesasSnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+  // Buscar receitas e despesas
+  QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('receitas')
+      .get();
+  QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('despesas')
+      .get();
 
-    setState(() {
-      transactions = [
-        ...receitas.map((r) => {...r, 'tipo': 'receita'}),
-        ...despesas.map((d) => {...d, 'tipo': 'despesa'})
-      ];
-    });
-  }
+  // Aplicar filtros ao carregar transações
+  List<Map<String, dynamic>> receitas = receitasSnapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .where((receita) {
+        DateTime data = (receita['data'] as Timestamp).toDate();
+        return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
+            data.isBefore(fimFiltro.add(const Duration(days: 1)));
+      }).toList();
+
+  List<Map<String, dynamic>> despesas = despesasSnapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .where((despesa) {
+        DateTime data = (despesa['data'] as Timestamp).toDate();
+        return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
+            data.isBefore(fimFiltro.add(const Duration(days: 1)));
+      }).toList();
+
+  setState(() {
+    // Combinar receitas e despesas filtradas
+    transactions = [
+      ...receitas.map((r) => {...r, 'tipo': 'receita'}),
+      ...despesas.map((d) => {...d, 'tipo': 'despesa'}),
+    ];
+
+    // Calcular totais
+    totalReceitas = receitas.fold(0.0, (sum, r) => sum + r['valor']);
+    totalDespesas = despesas.fold(0.0, (sum, d) => sum + d['valor']);
+    saldoAtual = totalReceitas - totalDespesas;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +181,6 @@ class _TransacoesState extends State<Transacoes>
                       'tipo': 'despesa',
                     }),
               ];
-              print(transacoes);
               // Ordenar e filtrar
               transacoes.sort((a, b) =>
                   (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
@@ -277,7 +298,7 @@ class _TransacoesState extends State<Transacoes>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Filtrar Relatório',
+          title: const Text('Filtrar Transações',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
@@ -285,7 +306,7 @@ class _TransacoesState extends State<Transacoes>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Selecione o período do relatório',
+                    const Text('Selecione o período das transações',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
@@ -395,7 +416,7 @@ class _TransacoesState extends State<Transacoes>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text('Selecione o tipo de relatório',
+                    const Text('Selecione o tipo de transação',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
