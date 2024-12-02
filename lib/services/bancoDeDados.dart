@@ -96,8 +96,21 @@ Future<void> addReceita(String userId, double valor, String categoria,
   });
 }
 
-Future<void> addDespesa(String userId, double valor, String categoria,
-    Timestamp data, String descricao) async {
+Future<void> addDespesa(
+    String userId, double valor, String categoria, Timestamp data, String descricao) async {
+  CollectionReference cadastro = FirebaseFirestore.instance
+      .collection('users')
+      .doc(userId)
+      .collection('meuCadastro');
+
+  final querySnapshot = await cadastro.get();
+  bool modoViagem = false;
+
+  if (querySnapshot.docs.isNotEmpty) {
+    final dataCadastro = querySnapshot.docs.first.data() as Map<String, dynamic>;
+    modoViagem = dataCadastro['travelMode'] ?? false;
+  }
+
   CollectionReference despesas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -108,8 +121,10 @@ Future<void> addDespesa(String userId, double valor, String categoria,
     'categoria': categoria,
     'data': data,
     'descricao': descricao,
+    'modoViagem': modoViagem, // Adiciona o campo no documento
   });
 
+  // Atualiza as metas financeiras relacionadas
   QuerySnapshot metasSnapshot = await FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
@@ -141,11 +156,13 @@ Future<void> editarReceita(String userId, String docId, double valor, String cat
   });
 }
 
-Future<void> editarDespesa(String userId, String docId, double valor, String categoria, Timestamp data, String descricao) async {
+Future<void> editarDespesa(
+    String userId, String docId, double valor, String categoria, Timestamp data, String descricao) async {
   CollectionReference despesas = FirebaseFirestore.instance
       .collection('users')
       .doc(userId)
       .collection('despesas');
+
   await despesas.doc(docId).update({
     'valor': valor,
     'categoria': categoria,

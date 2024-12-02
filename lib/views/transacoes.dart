@@ -40,6 +40,7 @@ class _TransacoesState extends State<Transacoes>
   void initState() {
     super.initState();
     loadCategorias();
+    selectedPeriodo;
 
     _animationController = AnimationController(
       vsync: this,
@@ -60,32 +61,53 @@ class _TransacoesState extends State<Transacoes>
         () {}); // Atualizar o estado para garantir que os ícones sejam carregados
   }
 
-  void _fetchTransactions() async {
-    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .collection('receitas')
-        .get();
-    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userId)
-        .collection('despesas')
-        .get();
+  void _fetchTransactions({DateTimeRange? filtroPeriodo}) async {
+  DateTime now = DateTime.now();
+  DateTime inicioFiltro = filtroPeriodo?.start ?? DateTime(now.year, now.month, 1);
+  DateTime fimFiltro = filtroPeriodo?.end ?? DateTime(now.year, now.month + 1, 0);
 
-    List<Map<String, dynamic>> receitas = receitasSnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
-    List<Map<String, dynamic>> despesas = despesasSnapshot.docs
-        .map((doc) => doc.data() as Map<String, dynamic>)
-        .toList();
+  // Buscar receitas e despesas
+  QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('receitas')
+      .get();
+  QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('despesas')
+      .get();
 
-    setState(() {
-      transactions = [
-        ...receitas.map((r) => {...r, 'tipo': 'receita'}),
-        ...despesas.map((d) => {...d, 'tipo': 'despesa'})
-      ];
-    });
-  }
+  // Aplicar filtros ao carregar transações
+  List<Map<String, dynamic>> receitas = receitasSnapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .where((receita) {
+        DateTime data = (receita['data'] as Timestamp).toDate();
+        return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
+            data.isBefore(fimFiltro.add(const Duration(days: 1)));
+      }).toList();
+
+  List<Map<String, dynamic>> despesas = despesasSnapshot.docs
+      .map((doc) => doc.data() as Map<String, dynamic>)
+      .where((despesa) {
+        DateTime data = (despesa['data'] as Timestamp).toDate();
+        return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
+            data.isBefore(fimFiltro.add(const Duration(days: 1)));
+      }).toList();
+
+  setState(() {
+    // Combinar receitas e despesas filtradas
+    transactions = [
+      ...receitas.map((r) => {...r, 'tipo': 'receita'}),
+      ...despesas.map((d) => {...d, 'tipo': 'despesa'}),
+    ];
+
+    // Calcular totais
+    totalReceitas = receitas.fold(0.0, (sum, r) => sum + r['valor']);
+    totalDespesas = despesas.fold(0.0, (sum, d) => sum + d['valor']);
+    saldoAtual = totalReceitas - totalDespesas;
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +181,6 @@ class _TransacoesState extends State<Transacoes>
                       'tipo': 'despesa',
                     }),
               ];
-              print(transacoes);
               // Ordenar e filtrar
               transacoes.sort((a, b) =>
                   (b['data'] as Timestamp).compareTo(a['data'] as Timestamp));
@@ -277,7 +298,7 @@ class _TransacoesState extends State<Transacoes>
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Filtrar Relatório',
+          title: const Text('Filtrar Transações',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
@@ -285,7 +306,7 @@ class _TransacoesState extends State<Transacoes>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Text('Selecione o período do relatório',
+                    const Text('Selecione o período das transações',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
@@ -395,7 +416,7 @@ class _TransacoesState extends State<Transacoes>
                       ),
                     ),
                     const SizedBox(height: 20),
-                    const Text('Selecione o tipo de relatório',
+                    const Text('Selecione o tipo de transação',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
@@ -622,108 +643,116 @@ class _TransacoesState extends State<Transacoes>
   }
 
   List<Widget> _buildTransactionItems(
-      List<Map<String, dynamic>> transacoes, String userId) {
-    List<Widget> transactionItems = [];
+    List<Map<String, dynamic>> transacoes, String userId) {
+  List<Widget> transactionItems = [];
 
-    transactionItems.addAll(transacoes.map((transacao) {
-      Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
-      Timestamp timestamp = transacao['data'] as Timestamp;
-      DateTime dateTime = timestamp.toDate();
-      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+  transactionItems.addAll(transacoes.map((transacao) {
+    Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
+    Timestamp timestamp = transacao['data'] as Timestamp;
+    DateTime dateTime = timestamp.toDate();
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
-      // Obter o ícone correspondente à categoria
-      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
-          ? categoriasReceitas.firstWhere(
-              (cat) => cat['nome'] == transacao['categoria'],
-              orElse: () => {'icone': Icons.category.codePoint})
-          : categoriasDespesas.firstWhere(
-              (cat) => cat['nome'] == transacao['categoria'],
-              orElse: () => {'icone': Icons.category.codePoint});
+    // Obter o ícone correspondente à categoria
+    Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+        ? categoriasReceitas.firstWhere(
+            (cat) => cat['nome'] == transacao['categoria'],
+            orElse: () => {'icone': Icons.category.codePoint})
+        : categoriasDespesas.firstWhere(
+            (cat) => cat['nome'] == transacao['categoria'],
+            orElse: () => {'icone': Icons.category.codePoint});
 
-      IconData iconeCategoria;
-      if (categoria['icone'] != null) {
-        iconeCategoria =
-            IconData(categoria['icone'], fontFamily: 'MaterialIcons');
-      } else {
-        iconeCategoria = Icons.category;
-      }
+    IconData iconeCategoria;
+    if (categoria['icone'] != null) {
+      iconeCategoria =
+          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+    } else {
+      iconeCategoria = Icons.category;
+    }
 
-      return Column(
-        children: [
-          _buildTransactionItem(
-            userId,
-            transacao['docId'], // Passa o ID do documento para exclusão
-            transacao['tipo'],
-            '${transacao['categoria']}',
-            'R\$ ${transacao['valor']}',
-            'Data: $formattedDate',
-            cor,
-            iconeCategoria,
-          ),
-          const SizedBox(height: 10),
-        ],
-      );
-    }).toList());
+    // Verifica se o modo viagem está ativo para esta transação
+    bool isTravelMode = transacao['modoViagem'] ?? false;
 
-    return transactionItems;
-  }
+    return Column(
+      children: [
+        _buildTransactionItem(
+          userId,
+          transacao['docId'],
+          transacao['tipo'],
+          '${transacao['categoria']}',
+          'R\$ ${transacao['valor']}',
+          'Data: $formattedDate',
+          cor,
+          iconeCategoria,
+          isTravelMode, // Passa o estado do modo viagem
+        ),
+        const SizedBox(height: 10),
+      ],
+    );
+  }).toList());
+
+  return transactionItems;
+}
 
   Widget _buildTransactionItem(
-      String userId,
-      String docId,
-      String tipo,
-      String title,
-      String value,
-      String data,
-      Color textColor,
-      IconData icone) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(icone, color: textColor),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor,
-                ),
+    String userId,
+    String docId,
+    String tipo,
+    String title,
+    String value,
+    String data,
+    Color textColor,
+    IconData icone,
+    bool isTravelMode) {
+  return Container(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+    ),
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icone, color: textColor),
+            const SizedBox(width: 10),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                color: textColor,
               ),
-              Spacer(),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: textColor,
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.delete_forever_outlined, color: myColor2),
-                onPressed: () {
-                  _confirmarExclusao(userId, docId, tipo);
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Text(
-            data,
-            style: TextStyle(
-              fontSize: 14,
-              color: const Color.fromARGB(255, 105, 105, 105),
             ),
+            Spacer(),
+            if (isTravelMode)
+              Icon(Icons.airplanemode_active, color: myColor2, size: 16), // Ícone menor do avião
+            const SizedBox(width: 5),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                color: textColor,
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete_forever_outlined, color: myColor2),
+              onPressed: () {
+                _confirmarExclusao(userId, docId, tipo);
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          data,
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color.fromARGB(255, 105, 105, 105),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   void _confirmarExclusao(String userId, String docId, String tipo) {
     showDialog(

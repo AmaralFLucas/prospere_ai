@@ -174,23 +174,29 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(widget.userId)
-            .collection('receitas')
-            .snapshots(),
-        builder: (context, receitasSnapshot) {
-          if (!receitasSnapshot.hasData)
-            return Center(child: CircularProgressIndicator());
-          return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .doc(widget.userId)
-                .collection('despesas')
-                .snapshots(),
-            builder: (context, despesasSnapshot) {
-              if (!despesasSnapshot.hasData)
-                return Center(child: CircularProgressIndicator());
+  stream: FirebaseFirestore.instance
+      .collection('users')
+      .doc(widget.userId)
+      .collection('receitas')
+      .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(
+          DateTime.now().subtract(const Duration(days: 7))))
+      .snapshots(),
+  builder: (context, receitasSnapshot) {
+    if (!receitasSnapshot.hasData) {
+      return Center(child: CircularProgressIndicator());
+    }
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userId)
+          .collection('despesas')
+          .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(
+              DateTime.now().subtract(const Duration(days: 7))))
+          .snapshots(),
+      builder: (context, despesasSnapshot) {
+        if (!despesasSnapshot.hasData) {
+          return Center(child: CircularProgressIndicator());
+        }
 
               List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
                   .map((doc) => doc.data() as Map<String, dynamic>)
@@ -374,6 +380,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         iconeCategoria = Icons.category;
       }
 
+      bool isTravelMode = transacao['modoViagem'] ?? false;
+
       return Column(
         children: [
           _buildTransactionItem(
@@ -382,6 +390,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             'Data: $formattedDate',
             cor,
             iconeCategoria,
+            isTravelMode,
           ),
           const SizedBox(height: 10),
         ],
@@ -392,7 +401,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildTransactionItem(String title, String value, String data,
-      Color textColor, IconData icone) {
+      Color textColor, IconData icone, bool isTravelMode) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -413,6 +422,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
                 ),
               ),
               Spacer(),
+              if (isTravelMode)
+              Icon(Icons.airplanemode_active, color: myColor2, size: 16), // Ícone menor do avião
+            const SizedBox(width: 5),
               Text(
                 value,
                 style: TextStyle(
