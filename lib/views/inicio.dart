@@ -54,6 +54,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
     setState(() {});
   }
 
+  String formatCurrency(double value) {
+    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return format.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -174,29 +179,31 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         ),
       ),
       body: StreamBuilder<QuerySnapshot>(
-  stream: FirebaseFirestore.instance
-      .collection('users')
-      .doc(widget.userId)
-      .collection('receitas')
-      .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(
-          DateTime.now().subtract(const Duration(days: 7))))
-      .snapshots(),
-  builder: (context, receitasSnapshot) {
-    if (!receitasSnapshot.hasData) {
-      return Center(child: CircularProgressIndicator());
-    }
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.userId)
-          .collection('despesas')
-          .where('data', isGreaterThanOrEqualTo: Timestamp.fromDate(
-              DateTime.now().subtract(const Duration(days: 7))))
-          .snapshots(),
-      builder: (context, despesasSnapshot) {
-        if (!despesasSnapshot.hasData) {
-          return Center(child: CircularProgressIndicator());
-        }
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(widget.userId)
+            .collection('receitas')
+            .where('data',
+                isGreaterThanOrEqualTo: Timestamp.fromDate(
+                    DateTime.now().subtract(const Duration(days: 7))))
+            .snapshots(),
+        builder: (context, receitasSnapshot) {
+          if (!receitasSnapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          return StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(widget.userId)
+                .collection('despesas')
+                .where('data',
+                    isGreaterThanOrEqualTo: Timestamp.fromDate(
+                        DateTime.now().subtract(const Duration(days: 7))))
+                .snapshots(),
+            builder: (context, despesasSnapshot) {
+              if (!despesasSnapshot.hasData) {
+                return Center(child: CircularProgressIndicator());
+              }
 
               List<Map<String, dynamic>> receitas = receitasSnapshot.data!.docs
                   .map((doc) => doc.data() as Map<String, dynamic>)
@@ -210,7 +217,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               totalDespesas = despesas.fold(
                   0.0, (sum, item) => sum + (item['valor'] ?? 0.0));
               saldoAtual = totalReceitas - totalDespesas;
-
 
               List<Map<String, dynamic>> transacoes =
                   despesas.map((d) => {...d, 'tipo': 'despesa'}).toList();
@@ -238,7 +244,6 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
   }
 
   Widget _buildBalanceCard() {
-
     Color saldoColor = saldoAtual >= 0 ? myColor : myColor2;
 
     return Container(
@@ -267,13 +272,11 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           ),
           const SizedBox(height: 10),
           Text(
-            'R\$ ${saldoAtual.toStringAsFixed(2)}',
+            '${formatCurrency(saldoAtual)}',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
-
-              color: saldoColor,
-
+              color: saldoColor, // Usar a cor dinâmica do saldo
             ),
           ),
           const SizedBox(height: 20),
@@ -282,10 +285,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
             children: [
               _buildBalanceDetail(
                 'Receitas',
-                'R\$ ${totalReceitas.toStringAsFixed(2)}',
-
-                myColor,
-
+                '${formatCurrency(totalReceitas)}',
+                myColor, // Verde para receitas
               ),
               Container(
                 height: 40,
@@ -294,10 +295,8 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               ),
               _buildBalanceDetail(
                 'Despesas',
-                'R\$ ${totalDespesas.toStringAsFixed(2)}',
-
-                myColor2,
-
+                '${formatCurrency(totalDespesas)}',
+                myColor2, // Vermelho para despesas
               ),
             ],
           ),
@@ -314,9 +313,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-
             color: valueColor,
-
           ),
         ),
         const SizedBox(height: 10),
@@ -386,7 +383,7 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
         children: [
           _buildTransactionItem(
             '${transacao['categoria']}',
-            'R\$ ${transacao['valor']}',
+            '${formatCurrency(transacao['valor'])}',
             'Data: $formattedDate',
             cor,
             iconeCategoria,
@@ -423,8 +420,9 @@ class _InicioState extends State<Inicio> with SingleTickerProviderStateMixin {
               ),
               Spacer(),
               if (isTravelMode)
-              Icon(Icons.airplanemode_active, color: myColor2, size: 16), // Ícone menor do avião
-            const SizedBox(width: 5),
+                Icon(Icons.airplanemode_active,
+                    color: myColor2, size: 16), // Ícone menor do avião
+              const SizedBox(width: 5),
               Text(
                 value,
                 style: TextStyle(

@@ -426,6 +426,11 @@ class _RelatorioState extends State<Relatorio>
     ));
   }
 
+  String formatCurrency(double value) {
+    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return format.format(value);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -524,7 +529,7 @@ class _RelatorioState extends State<Relatorio>
             ),
             const SizedBox(height: 10),
             Text(
-              'R\$ ${saldo.toStringAsFixed(2)}',
+              '${formatCurrency(saldo)}',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -539,7 +544,7 @@ class _RelatorioState extends State<Relatorio>
               children: [
                 _buildBalanceDetail(
                   'Receitas',
-                  'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                  '${formatCurrency(totalReceitas)}',
                   myColor,
                 ),
                 Container(
@@ -549,7 +554,7 @@ class _RelatorioState extends State<Relatorio>
                 ),
                 _buildBalanceDetail(
                   'Despesas',
-                  'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                  '${formatCurrency(totalDespesas)}',
                   myColor2,
                 ),
               ],
@@ -632,7 +637,7 @@ class _RelatorioState extends State<Relatorio>
                   ),
                 const SizedBox(width: 4), // Espaço entre os ícones
                 Text(
-                  'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}',
+                  '${(formatCurrency(transaction['valor'] ?? 0))}',
                   style: TextStyle(
                     color: corTexto, // Aplica a cor ao texto do valor
                   ),

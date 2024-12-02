@@ -62,52 +62,59 @@ class _TransacoesState extends State<Transacoes>
   }
 
   void _fetchTransactions({DateTimeRange? filtroPeriodo}) async {
-  DateTime now = DateTime.now();
-  DateTime inicioFiltro = filtroPeriodo?.start ?? DateTime(now.year, now.month, 1);
-  DateTime fimFiltro = filtroPeriodo?.end ?? DateTime(now.year, now.month + 1, 0);
+    DateTime now = DateTime.now();
+    DateTime inicioFiltro =
+        filtroPeriodo?.start ?? DateTime(now.year, now.month, 1);
+    DateTime fimFiltro =
+        filtroPeriodo?.end ?? DateTime(now.year, now.month + 1, 0);
 
-  // Buscar receitas e despesas
-  QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(widget.userId)
-      .collection('receitas')
-      .get();
-  QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .doc(widget.userId)
-      .collection('despesas')
-      .get();
+    // Buscar receitas e despesas
+    QuerySnapshot receitasSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('receitas')
+        .get();
+    QuerySnapshot despesasSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userId)
+        .collection('despesas')
+        .get();
 
-  // Aplicar filtros ao carregar transações
-  List<Map<String, dynamic>> receitas = receitasSnapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .where((receita) {
-        DateTime data = (receita['data'] as Timestamp).toDate();
-        return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
-            data.isBefore(fimFiltro.add(const Duration(days: 1)));
-      }).toList();
+    // Aplicar filtros ao carregar transações
+    List<Map<String, dynamic>> receitas = receitasSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .where((receita) {
+      DateTime data = (receita['data'] as Timestamp).toDate();
+      return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
+          data.isBefore(fimFiltro.add(const Duration(days: 1)));
+    }).toList();
 
-  List<Map<String, dynamic>> despesas = despesasSnapshot.docs
-      .map((doc) => doc.data() as Map<String, dynamic>)
-      .where((despesa) {
-        DateTime data = (despesa['data'] as Timestamp).toDate();
-        return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
-            data.isBefore(fimFiltro.add(const Duration(days: 1)));
-      }).toList();
+    List<Map<String, dynamic>> despesas = despesasSnapshot.docs
+        .map((doc) => doc.data() as Map<String, dynamic>)
+        .where((despesa) {
+      DateTime data = (despesa['data'] as Timestamp).toDate();
+      return data.isAfter(inicioFiltro.subtract(const Duration(days: 1))) &&
+          data.isBefore(fimFiltro.add(const Duration(days: 1)));
+    }).toList();
 
-  setState(() {
-    // Combinar receitas e despesas filtradas
-    transactions = [
-      ...receitas.map((r) => {...r, 'tipo': 'receita'}),
-      ...despesas.map((d) => {...d, 'tipo': 'despesa'}),
-    ];
+    setState(() {
+      // Combinar receitas e despesas filtradas
+      transactions = [
+        ...receitas.map((r) => {...r, 'tipo': 'receita'}),
+        ...despesas.map((d) => {...d, 'tipo': 'despesa'}),
+      ];
 
-    // Calcular totais
-    totalReceitas = receitas.fold(0.0, (sum, r) => sum + r['valor']);
-    totalDespesas = despesas.fold(0.0, (sum, d) => sum + d['valor']);
-    saldoAtual = totalReceitas - totalDespesas;
-  });
-}
+      // Calcular totais
+      totalReceitas = receitas.fold(0.0, (sum, r) => sum + r['valor']);
+      totalDespesas = despesas.fold(0.0, (sum, d) => sum + d['valor']);
+      saldoAtual = totalReceitas - totalDespesas;
+    });
+  }
+
+  String formatCurrency(double value) {
+    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+    return format.format(value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -561,7 +568,7 @@ class _TransacoesState extends State<Transacoes>
           ),
           const SizedBox(height: 10),
           Text(
-            'R\$ ${saldoAtual.toStringAsFixed(2)}',
+            '${formatCurrency(saldoAtual)}',
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.bold,
@@ -574,7 +581,7 @@ class _TransacoesState extends State<Transacoes>
             children: [
               _buildBalanceDetail(
                 'Receitas',
-                'R\$ ${totalReceitas.toStringAsFixed(2)}',
+                '${formatCurrency(totalReceitas)}',
                 myColor, // Verde para receitas
               ),
               Container(
@@ -584,7 +591,7 @@ class _TransacoesState extends State<Transacoes>
               ),
               _buildBalanceDetail(
                 'Despesas',
-                'R\$ ${totalDespesas.toStringAsFixed(2)}',
+                '${formatCurrency(totalDespesas)}',
                 myColor2, // Vermelho para despesas
               ),
             ],
@@ -643,116 +650,117 @@ class _TransacoesState extends State<Transacoes>
   }
 
   List<Widget> _buildTransactionItems(
-    List<Map<String, dynamic>> transacoes, String userId) {
-  List<Widget> transactionItems = [];
+      List<Map<String, dynamic>> transacoes, String userId) {
+    List<Widget> transactionItems = [];
 
-  transactionItems.addAll(transacoes.map((transacao) {
-    Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
-    Timestamp timestamp = transacao['data'] as Timestamp;
-    DateTime dateTime = timestamp.toDate();
-    String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
+    transactionItems.addAll(transacoes.map((transacao) {
+      Color cor = transacao['tipo'] == 'receita' ? myColor : myColor2;
+      Timestamp timestamp = transacao['data'] as Timestamp;
+      DateTime dateTime = timestamp.toDate();
+      String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
 
-    // Obter o ícone correspondente à categoria
-    Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
-        ? categoriasReceitas.firstWhere(
-            (cat) => cat['nome'] == transacao['categoria'],
-            orElse: () => {'icone': Icons.category.codePoint})
-        : categoriasDespesas.firstWhere(
-            (cat) => cat['nome'] == transacao['categoria'],
-            orElse: () => {'icone': Icons.category.codePoint});
+      // Obter o ícone correspondente à categoria
+      Map<String, dynamic>? categoria = (transacao['tipo'] == 'receita')
+          ? categoriasReceitas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint})
+          : categoriasDespesas.firstWhere(
+              (cat) => cat['nome'] == transacao['categoria'],
+              orElse: () => {'icone': Icons.category.codePoint});
 
-    IconData iconeCategoria;
-    if (categoria['icone'] != null) {
-      iconeCategoria =
-          IconData(categoria['icone'], fontFamily: 'MaterialIcons');
-    } else {
-      iconeCategoria = Icons.category;
-    }
+      IconData iconeCategoria;
+      if (categoria['icone'] != null) {
+        iconeCategoria =
+            IconData(categoria['icone'], fontFamily: 'MaterialIcons');
+      } else {
+        iconeCategoria = Icons.category;
+      }
 
-    // Verifica se o modo viagem está ativo para esta transação
-    bool isTravelMode = transacao['modoViagem'] ?? false;
+      // Verifica se o modo viagem está ativo para esta transação
+      bool isTravelMode = transacao['modoViagem'] ?? false;
 
-    return Column(
-      children: [
-        _buildTransactionItem(
-          userId,
-          transacao['docId'],
-          transacao['tipo'],
-          '${transacao['categoria']}',
-          'R\$ ${transacao['valor']}',
-          'Data: $formattedDate',
-          cor,
-          iconeCategoria,
-          isTravelMode, // Passa o estado do modo viagem
-        ),
-        const SizedBox(height: 10),
-      ],
-    );
-  }).toList());
+      return Column(
+        children: [
+          _buildTransactionItem(
+            userId,
+            transacao['docId'],
+            transacao['tipo'],
+            '${transacao['categoria']}',
+            '${formatCurrency(transacao['valor'])}',
+            'Data: $formattedDate',
+            cor,
+            iconeCategoria,
+            isTravelMode, // Passa o estado do modo viagem
+          ),
+          const SizedBox(height: 10),
+        ],
+      );
+    }).toList());
 
-  return transactionItems;
-}
+    return transactionItems;
+  }
 
   Widget _buildTransactionItem(
-    String userId,
-    String docId,
-    String tipo,
-    String title,
-    String value,
-    String data,
-    Color textColor,
-    IconData icone,
-    bool isTravelMode) {
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icone, color: textColor),
-            const SizedBox(width: 10),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                color: textColor,
+      String userId,
+      String docId,
+      String tipo,
+      String title,
+      String value,
+      String data,
+      Color textColor,
+      IconData icone,
+      bool isTravelMode) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icone, color: textColor),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
               ),
-            ),
-            Spacer(),
-            if (isTravelMode)
-              Icon(Icons.airplanemode_active, color: myColor2, size: 16), // Ícone menor do avião
-            const SizedBox(width: 5),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                color: textColor,
+              Spacer(),
+              if (isTravelMode)
+                Icon(Icons.airplanemode_active,
+                    color: myColor2, size: 16), // Ícone menor do avião
+              const SizedBox(width: 5),
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: textColor,
+                ),
               ),
-            ),
-            IconButton(
-              icon: Icon(Icons.delete_forever_outlined, color: myColor2),
-              onPressed: () {
-                _confirmarExclusao(userId, docId, tipo);
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 5),
-        Text(
-          data,
-          style: TextStyle(
-            fontSize: 14,
-            color: const Color.fromARGB(255, 105, 105, 105),
+              IconButton(
+                icon: Icon(Icons.delete_forever_outlined, color: myColor2),
+                onPressed: () {
+                  _confirmarExclusao(userId, docId, tipo);
+                },
+              ),
+            ],
           ),
-        ),
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 5),
+          Text(
+            data,
+            style: TextStyle(
+              fontSize: 14,
+              color: const Color.fromARGB(255, 105, 105, 105),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _confirmarExclusao(String userId, String docId, String tipo) {
     showDialog(
