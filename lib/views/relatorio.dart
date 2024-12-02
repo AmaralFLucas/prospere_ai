@@ -584,7 +584,8 @@ class _RelatorioState extends State<Relatorio>
   }
 
   Widget _buildTransactionList() {
-    List<Map<String, dynamic>> filteredTransactions = _filterTransactions(transactions);
+    List<Map<String, dynamic>> filteredTransactions =
+        _filterTransactions(transactions);
 
     if (filteredTransactions.isEmpty) {
       return const Center(child: Text('Nenhuma transação encontrada.'));
@@ -602,6 +603,9 @@ class _RelatorioState extends State<Relatorio>
         // Definir a cor com base no tipo da transação
         Color corTexto = transaction['tipo'] == 'receita' ? myColor : myColor2;
 
+        // Verificar se a transação está no modo viagem
+        bool isTravelMode = transaction['modoViagem'] ?? false;
+
         return Card(
           elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 4),
@@ -609,15 +613,31 @@ class _RelatorioState extends State<Relatorio>
             title: Text(
               transaction['descricao'] ?? 'Descrição não disponível',
               style: TextStyle(
-                  color: corTexto), // Aplica a cor ao texto da descrição
+                color: corTexto, // Aplica a cor ao texto da descrição
+              ),
             ),
             subtitle: Text(
               DateFormat('dd/MM/yyyy').format(transactionDate),
             ),
-            trailing: Text(
-              'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}',
-              style:
-                  TextStyle(color: corTexto), // Aplica a cor ao texto do valor
+            trailing: Row(
+              mainAxisSize:
+                  MainAxisSize.min, // Ajusta o tamanho para o conteúdo
+              children: [
+                // Exibir ícone do avião se estiver em modo viagem
+                if (isTravelMode)
+                  Icon(
+                    Icons.airplanemode_active,
+                    color: myColor2,
+                    size: 16, // Ícone menor para economizar espaço
+                  ),
+                const SizedBox(width: 4), // Espaço entre os ícones
+                Text(
+                  'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}',
+                  style: TextStyle(
+                    color: corTexto, // Aplica a cor ao texto do valor
+                  ),
+                ),
+              ],
             ),
           ),
         );
