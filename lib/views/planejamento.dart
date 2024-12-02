@@ -242,7 +242,7 @@ class _PlanejamentoState extends State<Planejamento> {
                         borderRadius: BorderRadius.circular(15),
                         boxShadow: const [
                           BoxShadow(
-                            color: Colors.black12,
+                            color: Color.fromARGB(31, 32, 32, 32),
                             blurRadius: 8,
                             offset: Offset(0, 4),
                           ),
@@ -294,7 +294,7 @@ class _PlanejamentoState extends State<Planejamento> {
               PieChartData(
                 sections: [
                   PieChartSectionData(
-                    color: Colors.green,
+                    color: Color.fromARGB(255, 30, 163, 132),
                     value: spentPercentage,
                     title: '${spentPercentage.toStringAsFixed(2)}%',
                   ),
@@ -340,7 +340,7 @@ class _PlanejamentoState extends State<Planejamento> {
                     title: '${spentPercentage.toStringAsFixed(2)}%',
                   ),
                   PieChartSectionData(
-                    color: Colors.green,
+                    color: Color.fromARGB(255, 30, 163, 132),
                     value: remainingPercentage,
                     title: '${remainingPercentage.toStringAsFixed(2)}%',
                   ),
@@ -375,8 +375,10 @@ class _PlanejamentoState extends State<Planejamento> {
 
   Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
     final isObjective = !plan['isExpense'];
-    final backgroundColor = isObjective ? Colors.grey : Colors.green;
-    final progressColor = isObjective ? Colors.green : Colors.red;
+    final backgroundColor =
+        isObjective ? Colors.grey : const Color.fromARGB(255, 30, 163, 132);
+    final progressColor =
+        isObjective ? const Color.fromARGB(255, 30, 163, 132) : Colors.red;
 
     double percentage =
         plan['value'] > 0 ? (plan['spent'] / plan['value']) * 100 : 0;
@@ -425,7 +427,8 @@ class _PlanejamentoState extends State<Planejamento> {
                   ),
                   if (!plan['isExpense'])
                     IconButton(
-                      icon: const Icon(Icons.add, color: Colors.green),
+                      icon: const Icon(Icons.add,
+                          color: const Color.fromARGB(255, 30, 163, 132)),
                       onPressed: () {
                         _addValueToPlan(index);
                       },
