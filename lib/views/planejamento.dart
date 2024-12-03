@@ -30,8 +30,6 @@ class _PlanejamentoState extends State<Planejamento> {
   bool showCategoryDropdown = false;
   String? selectedCategory;
   List<String> categorias = [];
-  final TextEditingController _nome = TextEditingController();
-  final TextEditingController _valor = TextEditingController();
 
   @override
   void initState() {
@@ -113,6 +111,7 @@ class _PlanejamentoState extends State<Planejamento> {
                     item[
                         'spent']); // Soma os valores gastos de metas de objetivo
       });
+      print(planList);
     });
   }
 
@@ -367,10 +366,28 @@ class _PlanejamentoState extends State<Planejamento> {
     );
   }
 
-// Função para formatar valores monetários
-  String formatCurrency(double value) {
-    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    return format.format(value);
+  String formatCurrency(dynamic value) {
+    // Tenta converter o valor para double, suportando diferentes formatos
+    try {
+      double parsedValue;
+
+      if (value is String) {
+        // Substitui separadores de milhar/decimal se necessário
+        String normalizedValue = value.replaceAll('.', '').replaceAll(',', '.');
+        parsedValue = double.parse(normalizedValue);
+      } else if (value is num) {
+        parsedValue = value.toDouble();
+      } else {
+        throw FormatException("Formato inválido: $value");
+      }
+
+      // Formata para o padrão brasileiro de moeda
+      final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+      return format.format(parsedValue);
+    } catch (e) {
+      // Retorna um valor padrão ou mensagem de erro em caso de falha
+      return 'Valor inválido';
+    }
   }
 
   Widget _buildPlanCard(Map<String, dynamic> plan, int index) {
@@ -523,124 +540,112 @@ class _PlanejamentoState extends State<Planejamento> {
   }
 
   void _showAddPlanDialog(BuildContext context) {
-    bool isExpense = false;
+    bool isExpense = false; // Inicialmente definido como objetivo
+    String descricao = "";
+    double valorMeta = 0.0;
+    String? selectedCategory; // Categoria selecionada
+    bool showCategoryDropdown = false;
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Adicionar Planejamento'),
-          content: StatefulBuilder(
-            builder: (context, setState) {
-              return Column(
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(isExpense ? 'Nova Meta de Gastos' : 'Novo Objetivo'),
+              content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Nome do Planejamento',
-                      labelStyle: TextStyle(color: textColor),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: myColor),
-                      ),
-                    ),
-                    onChanged: (value) {
-                      _nome.text = value;
-                    },
+                    decoration: const InputDecoration(labelText: 'Descrição'),
+                    onChanged: (value) => descricao = value,
                   ),
                   TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Valor Planejado',
-                      labelStyle: TextStyle(color: textColor),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(color: myColor),
-                      ),
-                    ),
+                    decoration: const InputDecoration(labelText: 'Valor Meta'),
                     keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      _valor.text = value;
-                    },
+                    onChanged: (value) =>
+                        valorMeta = double.tryParse(value) ?? 0.0,
                   ),
                   if (showCategoryDropdown)
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                          labelText: 'Selecionar Categoria'),
-                      items: categorias.isNotEmpty
-                          ? categorias.map((String categoria) {
-                              return DropdownMenuItem<String>(
-                                value: categoria,
-                                child: Text(categoria),
-                              );
-                            }).toList()
-                          : [
-                              const DropdownMenuItem<String>(
-                                value: null,
-                                child: Text('Nenhuma categoria disponível'),
-                              ),
-                            ],
-                      onChanged: (String? newValue) {
+                    DropdownButton<String>(
+                      value: selectedCategory,
+                      hint: const Text('Selecione uma categoria'),
+                      items: categorias
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
                         setState(() {
-                          selectedCategory = newValue;
+                          selectedCategory = value;
                         });
                       },
-                      value: selectedCategory,
                     ),
-                  Row(
-                    children: [
-                      Checkbox(
-                        value: isExpense,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isExpense = value!;
-                            showCategoryDropdown = isExpense;
-                          });
-                        },
-                      ),
-                      const Text('Meta de Gastos'),
-                    ],
+                  SwitchListTile(
+                    title: const Text('É meta de gasto?'),
+                    value: isExpense,
+                    onChanged: (value) {
+                      setState(() {
+                        isExpense = value;
+                        showCategoryDropdown =
+                            value; // Exibir dropdown apenas para metas de gastos
+                      });
+                    },
                   ),
                 ],
-              );
-            },
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'Cancelar',
-                style: TextStyle(color: myColor),
               ),
-              onPressed: () {
-                Navigator.of(context).pop();
-                isExpense = false;
-                showCategoryDropdown = isExpense;
-              },
-            ),
-            TextButton(
-              child: Text(
-                'Adicionar',
-                style: TextStyle(color: myColor),
-              ),
-              onPressed: () async {
-                if (_nome.text.isNotEmpty && _valor.text.isNotEmpty) {
-                  double valorMeta = double.parse(_valor.text);
-                  double valorAtual = 0.0;
-                  print(selectedCategory);
-                  if (isExpense && selectedCategory != null) {
-                    criarMetaGastoMensal(
-                        widget.userId,
-                        _nome.text,
-                        valorMeta,
-                        selectedCategory!,
-                        valorAtual,
-                        isExpense ? 'gastoMensal' : 'objetivo');
-                  }
-                  _loadMetas();
-                  Navigator.of(context).pop();
-                  isExpense = false;
-                  showCategoryDropdown = isExpense;
-                }
-              },
-            )
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    isExpense = false;
+                    showCategoryDropdown = false;
+                  },
+                  child: const Text('Cancelar'),
+                ),
+                TextButton(
+                  onPressed: () async {
+                    if (descricao.isEmpty || valorMeta <= 0) {
+                      print('Descrição ou valor inválido');
+                      return;
+                    }
+                    if (isExpense && selectedCategory == null) {
+                      print('Categoria não selecionada para meta de gasto');
+                      return;
+                    }
+                    try {
+                      if (isExpense) {
+                        // Adicionando argumentos faltantes: valorAtual e tipo
+                        await criarMetaGastoMensal(
+                          widget.userId,
+                          descricao,
+                          valorMeta,
+                          selectedCategory!,
+                          0.0, // valorAtual inicial como 0.0
+                          'gastoMesal', // Tipo definido como 'gasto'
+                        );
+                      } else {
+                        await criarMeta(
+                          widget.userId,
+                          'objetivo',
+                          descricao,
+                          valorMeta,
+                          null,
+                        );
+                      }
+                      Navigator.pop(context);
+                      _loadMetas(); // Atualizar a lista de metas
+                    } catch (e) {
+                      print('Erro ao criar meta: $e');
+                    }
+                  },
+                  child: const Text('Salvar'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -689,40 +694,34 @@ class _PlanejamentoState extends State<Planejamento> {
                       updatedPlanValue = value;
                     },
                   ),
-                  if (isExpense)
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                          labelText: 'Selecionar Categoria'),
-                      items: categorias.isNotEmpty
-                          ? categorias.map((String categoria) {
-                              return DropdownMenuItem<String>(
-                                value: categoria,
-                                child: Text(categoria),
-                              );
-                            }).toList()
-                          : [
-                              const DropdownMenuItem<String>(
-                                value: null,
-                                child: Text('Nenhuma categoria disponível'),
-                              ),
-                            ],
-                      onChanged: (String? newValue) {
+                  if (showCategoryDropdown)
+                    DropdownButton<String>(
+                      value: selectedCategory,
+                      hint: const Text('Selecione uma categoria'),
+                      items: categorias
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
                         setState(() {
-                          selectedCategory = newValue;
+                          selectedCategory = value;
                         });
                       },
-                      value: selectedCategory,
                     ),
-                  Checkbox(
+                  SwitchListTile(
+                    title: const Text('É meta de gasto?'),
                     value: isExpense,
-                    onChanged: (bool? value) {
+                    onChanged: (value) {
                       setState(() {
-                        isExpense = value!;
-                        showCategoryDropdown = isExpense;
+                        isExpense = value;
+                        showCategoryDropdown =
+                            value; // Exibir dropdown apenas para metas de gastos
                       });
                     },
                   ),
-                  const Text('Meta de Gastos'),
                 ],
               );
             },
@@ -734,6 +733,8 @@ class _PlanejamentoState extends State<Planejamento> {
                 style: TextStyle(color: myColor),
               ),
               onPressed: () {
+                isExpense = false;
+                showCategoryDropdown = false;
                 Navigator.of(context).pop();
               },
             ),

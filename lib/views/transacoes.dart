@@ -111,9 +111,28 @@ class _TransacoesState extends State<Transacoes>
     });
   }
 
-  String formatCurrency(double value) {
-    final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-    return format.format(value);
+  String formatCurrency(dynamic value) {
+    // Tenta converter o valor para double, suportando diferentes formatos
+    try {
+      double parsedValue;
+
+      if (value is String) {
+        // Substitui separadores de milhar/decimal se necessário
+        String normalizedValue = value.replaceAll('.', '').replaceAll(',', '.');
+        parsedValue = double.parse(normalizedValue);
+      } else if (value is num) {
+        parsedValue = value.toDouble();
+      } else {
+        throw FormatException("Formato inválido: $value");
+      }
+
+      // Formata para o padrão brasileiro de moeda
+      final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+      return format.format(parsedValue);
+    } catch (e) {
+      // Retorna um valor padrão ou mensagem de erro em caso de falha
+      return 'Valor inválido';
+    }
   }
 
   @override

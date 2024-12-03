@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 class CurrencyTextInputFormatter extends TextInputFormatter {
   @override
@@ -44,18 +45,27 @@ class CurrencyTextInputFormatter extends TextInputFormatter {
     return 'R\$ $wholePart${parts.length > 1 ? ',' + parts[1] : ''}';
   }
 
-  String formatToCurrency(String value) {
-    // Separa a parte inteira e a decimal
-    List<String> parts = value.split(',');
-    String wholePart = parts[0].replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match match) => '${match[1]}.',
-    );
+  String formatCurrency(dynamic value) {
+    // Tenta converter o valor para double, suportando diferentes formatos
+    try {
+      double parsedValue;
 
-    // Adiciona o símbolo de moeda e formata centavos
-    String formattedValue =
-        'R\$ $wholePart${parts.length > 1 ? ',' + parts[1] : ''}';
+      if (value is String) {
+        // Substitui separadores de milhar/decimal se necessário
+        String normalizedValue = value.replaceAll('.', '').replaceAll(',', '.');
+        parsedValue = double.parse(normalizedValue);
+      } else if (value is num) {
+        parsedValue = value.toDouble();
+      } else {
+        throw FormatException("Formato inválido: $value");
+      }
 
-    return formattedValue;
+      // Formata para o padrão brasileiro de moeda
+      final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+      return format.format(parsedValue);
+    } catch (e) {
+      // Retorna um valor padrão ou mensagem de erro em caso de falha
+      return 'Valor inválido';
+    }
   }
 }

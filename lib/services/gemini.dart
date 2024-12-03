@@ -69,7 +69,7 @@ Estrutura esperada:
 
 // Formata o valor como string no padrão monetário.
     String valorFormatado = CurrencyTextInputFormatter()
-        .formatToCurrency(valorDouble.toStringAsFixed(2).replaceAll('.', ','));
+        .formatCurrency(valorDouble);
 
     print(valorFormatado);
 
