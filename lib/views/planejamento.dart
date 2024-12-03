@@ -396,6 +396,8 @@ class _PlanejamentoState extends State<Planejamento> {
         isObjective ? Colors.grey : const Color.fromARGB(255, 30, 163, 132);
     final progressColor =
         isObjective ? const Color.fromARGB(255, 30, 163, 132) : Colors.red;
+    print('Renderizando plano: ${plan['name']} - isExpense: ${plan['isExpense']}');
+
 
     double percentage =
         plan['value'] > 0 ? (plan['spent'] / plan['value']) * 100 : 0;
@@ -624,7 +626,7 @@ class _PlanejamentoState extends State<Planejamento> {
                           valorMeta,
                           selectedCategory!,
                           0.0, // valorAtual inicial como 0.0
-                          'gastoMesal', // Tipo definido como 'gasto'
+                          'gastoMensal', // Tipo definido como 'gasto'
                         );
                       } else {
                         await criarMeta(

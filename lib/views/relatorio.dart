@@ -426,30 +426,6 @@ class _RelatorioState extends State<Relatorio>
     ));
   }
 
-  String formatCurrency(dynamic value) {
-    // Tenta converter o valor para double, suportando diferentes formatos
-    try {
-      double parsedValue;
-
-      if (value is String) {
-        // Substitui separadores de milhar/decimal se necessário
-        String normalizedValue = value.replaceAll('.', '').replaceAll(',', '.');
-        parsedValue = double.parse(normalizedValue);
-      } else if (value is num) {
-        parsedValue = value.toDouble();
-      } else {
-        throw FormatException("Formato inválido: $value");
-      }
-
-      // Formata para o padrão brasileiro de moeda
-      final format = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
-      return format.format(parsedValue);
-    } catch (e) {
-      // Retorna um valor padrão ou mensagem de erro em caso de falha
-      return 'Valor inválido';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -548,7 +524,7 @@ class _RelatorioState extends State<Relatorio>
             ),
             const SizedBox(height: 10),
             Text(
-              '${formatCurrency(saldo)}',
+              'R\$ ${saldo.toStringAsFixed(2)}',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -563,7 +539,7 @@ class _RelatorioState extends State<Relatorio>
               children: [
                 _buildBalanceDetail(
                   'Receitas',
-                  '${formatCurrency(totalReceitas)}',
+                  'R\$ ${totalReceitas.toStringAsFixed(2)}',
                   myColor,
                 ),
                 Container(
@@ -573,7 +549,7 @@ class _RelatorioState extends State<Relatorio>
                 ),
                 _buildBalanceDetail(
                   'Despesas',
-                  '${formatCurrency(totalDespesas)}',
+                  'R\$ ${totalDespesas.toStringAsFixed(2)}',
                   myColor2,
                 ),
               ],
@@ -656,7 +632,7 @@ class _RelatorioState extends State<Relatorio>
                   ),
                 const SizedBox(width: 4), // Espaço entre os ícones
                 Text(
-                  '${(formatCurrency(transaction['valor'] ?? 0))}',
+                  'R\$ ${(transaction['valor'] ?? 0).toStringAsFixed(2)}',
                   style: TextStyle(
                     color: corTexto, // Aplica a cor ao texto do valor
                   ),
