@@ -761,7 +761,7 @@ class _TransacoesState extends State<Transacoes>
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.delete_forever_outlined, color: myColor2),
+                icon: Icon(Icons.delete, color: myColor2),
                 onPressed: () {
                   _confirmarExclusao(userId, docId, tipo);
                 },

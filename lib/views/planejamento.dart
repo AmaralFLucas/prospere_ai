@@ -694,7 +694,7 @@ class _PlanejamentoState extends State<Planejamento> {
                       updatedPlanValue = value;
                     },
                   ),
-                  if (showCategoryDropdown)
+                  if (isExpense)
                     DropdownButton<String>(
                       value: selectedCategory,
                       hint: const Text('Selecione uma categoria'),
@@ -764,7 +764,10 @@ class _PlanejamentoState extends State<Planejamento> {
           ],
         );
       },
+      
     );
+    print(selectedCategory);
+    print(showCategoryDropdown);
   }
 
   void _addValueToPlan(int index) {
